@@ -12,7 +12,7 @@ import { useQa } from './QaShell';
 
 type Field =
   | { key: keyof QaCase; label: string; kind: 'text' | 'textarea' | 'date' | 'url' | 'pct' | 'rating' | 'analyst' }
-  | { key: keyof QaCase; label: string; kind: 'select'; options: readonly string[] }
+  | { key: keyof QaCase; label: string; kind: 'select'; options: readonly string[]; names?: Record<string, string> }
   | { key: keyof QaCase; label: string; kind: 'lookup'; options: Named[] }
   | { key: keyof QaCase; label: string; kind: 'multi'; options: readonly string[] }
   | { key: keyof QaCase; label: string; kind: 'multiLookup'; options: Named[] };
@@ -40,7 +40,7 @@ function groupsFor(c: QaCase, data: QaData): Group[] {
   }
   if (c.source === 'Survey') {
     caseFields.push(
-      { key: 'survey_type', label: 'Survey type', kind: 'select', options: o('qa_survey_type') },
+      { key: 'survey_type', label: 'Survey type', kind: 'select', options: o('qa_survey_type'), names: data.optionNames.qa_survey_type },
       { key: 'survey_id', label: 'Survey ID', kind: 'text' },
       { key: 'rating', label: 'Rating (1–6)', kind: 'rating' },
       { key: 'reason_type', label: 'Reason type', kind: 'select', options: o('qa_survey_reason') },
@@ -401,7 +401,9 @@ function FieldInput({ f, value, onChange, analysts }: { f: Field; value: unknown
       return (
         <select id={id} value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass}>
           <option value="">Not set</option>
-          {withCurrent(f.options, value).map((o) => <option key={o} value={o}>{o}</option>)}
+          {withCurrent(f.options, value).map((o) => (
+            <option key={o} value={o}>{f.names?.[o] ? `${o} – ${f.names[o]}` : o}</option>
+          ))}
         </select>
       );
     case 'lookup':
@@ -463,6 +465,10 @@ function FieldValue({ f, value }: { f: Field; value: unknown }) {
     case 'lookup': return box(f.options.find((o) => o.id === value)?.name ?? 'Unknown');
     case 'multiLookup': return box((value as string[]).map((v) => f.options.find((o) => o.id === v)?.name ?? 'Unknown').join(', '));
     case 'multi': return box((value as string[]).join(', '));
+    case 'select': {
+      const v = String(value);
+      return box(f.names?.[v] ? `${v} – ${f.names[v]}` : v);
+    }
     default: return box(String(value));
   }
 }

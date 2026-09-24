@@ -50,6 +50,7 @@ export type QaData = {
   courses: Named[];
   instructors: Named[];
   options: Record<string, string[]>;
+  optionNames: Record<string, Record<string, string>>; // list -> value -> meaning, e.g. MCS -> Mid Course Survey
   gaps: DataGap[];
   canEdit: boolean;
 };

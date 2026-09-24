@@ -17,6 +17,8 @@ export function SurveyInsightsView() {
   const types = inOrder(countBy(surveys, (c) => c.survey_type ?? 'Not set'), [...listedTypes, 'Not set']);
   const typeColor = (t: string, i: number) => SURVEY_TYPE_COLORS[t] ?? EXTRA_COLORS[(i + 3) % EXTRA_COLORS.length];
   const typeNames = types.map((t) => t.name);
+  const meaning = data.optionNames.qa_survey_type ?? {};
+  const withMeaning = (t: string) => (meaning[t] ? `${t} · ${meaning[t]}` : t);
 
   const months = periods(surveys.map((c) => c.case_date), range, 'month');
   const gapMonths = months.filter((p) => gapStatus(data.gaps, 'Survey', p.months) === 'missing').map((p) => p.key);
@@ -57,13 +59,13 @@ export function SurveyInsightsView() {
       </div>
 
       <Panel title="Surveys per month by type">
-        <Legend items={types.map((t, i) => ({ name: t.name, color: typeColor(t.name, i) }))} />
+        <Legend items={types.map((t, i) => ({ name: withMeaning(t.name), color: typeColor(t.name, i) }))} />
         <ColumnChart columns={columns} />
       </Panel>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Total by survey type">
-          <BarList items={types.map((t, i) => ({ ...t, color: typeColor(t.name, i) }))} empty="No survey records in this date range." />
+          <BarList items={types.map((t, i) => ({ ...t, name: withMeaning(t.name), color: typeColor(t.name, i) }))} empty="No survey records in this date range." />
         </Panel>
         <Panel title="Rating distribution">
           <BarList items={surveys.length ? ratings : []} color="#FF4500" empty="No survey records in this date range." />
@@ -76,7 +78,7 @@ export function SurveyInsightsView() {
       </Panel>
 
       <Panel title="Reason type by survey type">
-        <HeatTable rowHeader="Reason" rows={reasonNames} cols={typeNames.map((t) => ({ key: t, label: t }))} value={byType} />
+        <HeatTable rowHeader="Reason" rows={reasonNames} cols={typeNames.map((t) => ({ key: t, label: t, sub: meaning[t] }))} value={byType} />
       </Panel>
     </div>
   );

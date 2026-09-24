@@ -124,7 +124,7 @@ export function ColumnChart({ columns, height = 220 }: { columns: Column[]; heig
 export function HeatTable({
   rows, cols, value, missingCols = [], rowHeader,
 }: {
-  rows: string[]; cols: { key: string; label: string }[]; value: (row: string, col: string) => number;
+  rows: string[]; cols: { key: string; label: string; sub?: string }[]; value: (row: string, col: string) => number;
   missingCols?: string[]; rowHeader: string;
 }) {
   if (!rows.length || !cols.length) return <Empty>No survey records in this date range.</Empty>;
@@ -136,7 +136,10 @@ export function HeatTable({
           <tr>
             <th scope="col" className="sticky left-0 bg-white py-2 pr-3 text-left text-xs font-normal tracking-wide text-ink-muted uppercase">{rowHeader}</th>
             {cols.map((c) => (
-              <th key={c.key} scope="col" className="px-1.5 py-2 text-center text-xs font-normal whitespace-nowrap text-ink-muted">{c.label}</th>
+              <th key={c.key} scope="col" className="px-1.5 py-2 text-center align-bottom text-xs font-normal text-ink-muted">
+                <span className="block font-semibold whitespace-nowrap text-ink">{c.label}</span>
+                {c.sub && <span className="mx-auto block max-w-24 leading-tight">{c.sub}</span>}
+              </th>
             ))}
             <th scope="col" className="px-1.5 py-2 text-right text-xs font-normal text-ink-muted">Total</th>
           </tr>

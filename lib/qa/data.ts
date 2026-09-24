@@ -38,7 +38,7 @@ export async function loadQaData(): Promise<QaData> {
   const [courses, instructors, options, gaps] = await Promise.all([
     supabase.from('courses').select('id, name').eq('is_active', true).order('sort_order'),
     supabase.from('instructors').select('id, full_name').eq('is_active', true).order('full_name'),
-    supabase.from('option_values').select('list_key, value').eq('is_active', true).order('sort_order'),
+    supabase.from('option_values').select('list_key, value, description').eq('is_active', true).order('sort_order'),
     supabase.from('qa_data_gaps').select('source, start_month, end_month, note'),
   ]);
   for (const r of [courses, instructors, options, gaps]) {
@@ -46,8 +46,11 @@ export async function loadQaData(): Promise<QaData> {
   }
 
   const optionMap: Record<string, string[]> = {};
+  const optionNames: Record<string, Record<string, string>> = {};
   for (const o of options.data ?? []) {
-    if (o.list_key.startsWith('qa_')) (optionMap[o.list_key] ??= []).push(o.value);
+    if (!o.list_key.startsWith('qa_')) continue;
+    (optionMap[o.list_key] ??= []).push(o.value);
+    if (o.description) (optionNames[o.list_key] ??= {})[o.value] = o.description;
   }
 
   return {
@@ -55,6 +58,7 @@ export async function loadQaData(): Promise<QaData> {
     courses: (courses.data ?? []).map((c) => ({ id: c.id, name: c.name })),
     instructors: (instructors.data ?? []).map((i) => ({ id: i.id, name: i.full_name })),
     options: optionMap,
+    optionNames,
     gaps: (gaps.data ?? []).map((g) => ({
       source: g.source,
       start: String(g.start_month).slice(0, 7),

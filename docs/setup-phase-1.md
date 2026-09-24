@@ -110,7 +110,7 @@ Open <http://localhost:3000> in your browser. Leave the terminal window open whi
   update public.profiles set status = 'deactivated', deactivation_note = 'Testing' where email = 'viewer-test@yourdomain.com';
   ```
 - [ ] Click any page in the app. You are sent back to the Sign in page.
-- [ ] Trying to sign in again as the Viewer shows the same message.
+- [ ] Trying to sign in again as the Viewer shows "This account is not active. Please contact the management department for assistance with your account."
 - [ ] Reactivate it for later phases:
   ```sql
   update public.profiles set status = 'active', deactivation_note = null where email = 'viewer-test@yourdomain.com';

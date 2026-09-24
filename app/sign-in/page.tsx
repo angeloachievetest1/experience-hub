@@ -1,4 +1,5 @@
 import { Logo } from '@/components/Icon';
+import { INACTIVE_ACCOUNT_MESSAGE } from './messages';
 import { SignInForm } from './SignInForm';
 
 export const metadata = { title: 'Sign in' };
@@ -9,8 +10,7 @@ export default async function SignInPage({
   searchParams: Promise<{ next?: string; reason?: string }>;
 }) {
   const { next, reason } = await searchParams;
-  const notice =
-    reason === 'deactivated' ? 'This account has been deactivated. Ask a super-admin if you need access again.' : null;
+  const notice = reason === 'deactivated' ? INACTIVE_ACCOUNT_MESSAGE : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { INACTIVE_ACCOUNT_MESSAGE } from './messages';
 
 export type SignInState = { error: string | null; email: string };
 
@@ -41,7 +42,7 @@ export async function signIn(_prev: SignInState, formData: FormData): Promise<Si
   redirect(next);
 }
 
-const DEACTIVATED_MESSAGE = 'This account has been deactivated. Ask a super-admin if you need access again.';
+const DEACTIVATED_MESSAGE = INACTIVE_ACCOUNT_MESSAGE;
 
 // Only allow redirects to pages inside this app.
 function safeNext(value: string) {

@@ -48,7 +48,7 @@ export function SignInForm({ next, notice }: { next: string; notice: string | nu
         {pending ? 'Signing in…' : 'Sign in'}
       </button>
 
-      <p className="m-0 text-[13px] text-ink-muted">Forgot your password? Ask a super-admin to set a new one.</p>
+      <p className="m-0 text-[13px] text-ink-muted">Forgot your password? Contact the management department to have it reset.</p>
     </form>
   );
 }

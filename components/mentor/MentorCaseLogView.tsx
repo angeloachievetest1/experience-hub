@@ -8,6 +8,7 @@ import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { MENTOR_VALIDITY, mentorLabel, periodDate } from '@/lib/mentor/types';
+import { customerLabel } from '@/lib/records/labels';
 import { useMentor } from './MentorShell';
 
 const STATUS_STYLE: Record<string, string> = { 'New': '#FFE3D9', 'In-progress': '#DDD1FF', 'Closed': '#F6F3FF' };
@@ -46,12 +47,11 @@ export function MentorCaseLogView() {
       </div>
       <RecordTable
         rows={rows}
-        label={mentorLabel}
-        subLabel={(c) => c.customer_name || 'No customer'}
+        leading={{ key: 'date', header: 'Date', render: (c) => <span className="whitespace-nowrap">{formatDate(c.case_date) || (c.year ? `${c.year} ${c.quarter ?? ''}` : '—')}</span> }}
+        label={customerLabel}
         link={(c) => c.case_link}
         onOpen={open}
         columns={[
-          { key: 'date', header: 'Date', render: (c) => <span className="whitespace-nowrap">{formatDate(c.case_date) || (c.year ? `${c.year} ${c.quarter ?? ''}` : '—')}</span> },
           { key: 'mentor', header: 'Mentor', render: (c) => mentorName(c.mentor_id) || '—' },
           { key: 'course', header: 'Course', render: (c) => courseName(c.course_id) || '—' },
           { key: 'type', header: 'Complaint type', render: (c) => c.complaint_type || '—' },

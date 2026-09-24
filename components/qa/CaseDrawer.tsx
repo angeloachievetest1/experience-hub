@@ -3,7 +3,8 @@
 import { useMemo } from 'react';
 import { deleteQaCase, updateQaCase } from '@/app/(app)/quality-analyst/actions';
 import { RecordDrawer, type FieldDef, type FieldGroup } from '@/components/records/RecordDrawer';
-import { SOURCE_COLORS, VALIDITY_VALUES, caseLabel, type QaCase, type QaData, type QaPatch } from '@/lib/qa/types';
+import { customerLabel } from '@/lib/records/labels';
+import { SOURCE_COLORS, VALIDITY_VALUES, type QaCase, type QaData, type QaPatch } from '@/lib/qa/types';
 import { useQa } from './QaShell';
 
 function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
@@ -95,14 +96,14 @@ export function CaseDrawer({ id, onClose }: { id: string; onClose: () => void })
       loadingText={adding ? 'Creating the new case…' : undefined}
       kindLabel={c ? `${c.source} record` : ''}
       color={c ? SOURCE_COLORS[c.source] : '#DDD1FF'}
-      title={c ? caseLabel(c) : ''}
+      title={c ? customerLabel(c) : ''}
       isSample={c?.is_sample}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText="Read only. You can’t edit Quality Analyst cases."
       onSave={(patch) => updateQaCase(id, patch as QaPatch)}
       onDelete={() => deleteQaCase(id)}
-      deleteQuestion={c ? `Delete ${caseLabel(c)}?` : ''}
+      deleteQuestion={c ? `Delete the case for ${customerLabel(c)}?` : ''}
       onClose={onClose}
     />
   );

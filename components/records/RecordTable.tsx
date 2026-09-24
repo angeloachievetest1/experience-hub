@@ -5,12 +5,14 @@ import { LinkCell } from '@/components/ui/LinkCell';
 
 export type TableColumn<T> = { key: string; header: string; render: (row: T) => React.ReactNode };
 
-// Clickable table used by every case log. First column: record number + a
-// second line (customer); then an optional one-click Link column.
+// Clickable table used by every case log. Columns: an optional leading column
+// (Date), the clickable name (Case = customer name), an optional one-click Link,
+// then the rest.
 export function RecordTable<T extends { id: string; is_sample?: boolean }>({
-  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case',
+  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case', leading,
 }: {
   firstHeader?: string;
+  leading?: TableColumn<T>; // shown before the name column, e.g. Date
   rows: T[];
   label: (row: T) => string;
   subLabel?: (row: T) => string;
@@ -30,7 +32,8 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
         <table className="w-full border-collapse text-sm" style={{ minWidth }}>
           <thead className="bg-lilac-50">
             <tr>
-              <th scope="col" className={`${th} pl-6`}>{firstHeader}</th>
+              {leading && <th scope="col" className={`${th} pl-6`}>{leading.header}</th>}
+              <th scope="col" className={`${th} ${leading ? '' : 'pl-6'}`}>{firstHeader}</th>
               {link && <th scope="col" className={th}>Link</th>}
               {columns.map((c) => <th key={c.key} scope="col" className={th}>{c.header}</th>)}
             </tr>
@@ -40,7 +43,8 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
               return (
                 <tr key={row.id} onClick={() => onOpen(row.id)}
                   className="cursor-pointer border-t border-lilac-50 align-middle hover:bg-peach-50">
-                  <td className="py-3 pr-2.5 pl-6">
+                  {leading && <td className="py-3 pr-2.5 pl-6">{leading.render(row)}</td>}
+                  <td className={`py-3 pr-2.5 ${leading ? 'pl-2.5' : 'pl-6'}`}>
                     <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(row.id); }}
                       className="cursor-pointer p-0 py-1 text-left font-semibold underline decoration-primary underline-offset-[3px]">
                       {label(row)}

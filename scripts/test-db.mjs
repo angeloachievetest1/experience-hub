@@ -258,7 +258,7 @@ try {
   check('The one-time import can skip the activity log', skipLog.rows[0].n === 0);
   await q('rollback to savepoint skip');
   const label = await q(`select record_label from public.activity_log where record_id = $1 and action = 'Added a case' limit 1`, [mentorCase]);
-  check('Log entries carry a readable record name (e.g. MEN-0012)', /^MEN-\d{4,}$/.test(label.rows[0]?.record_label ?? ''), label.rows[0]?.record_label);
+  check('Log entries name the record by customer', label.rows[0]?.record_label === 'RLS test', label.rows[0]?.record_label);
 
   // ---------------------------------------------------------------------------
   console.log('\nLogin history');

@@ -7,6 +7,7 @@ import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { caseLabel, resolutionDays } from '@/lib/curriculum/types';
+import { customerLabel } from '@/lib/records/labels';
 import { caseKey, useCur, withKey } from './useCur';
 
 const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
@@ -40,12 +41,11 @@ export function CurCaseLogView() {
       </div>
       <RecordTable
         rows={rows}
-        label={caseLabel}
-        subLabel={(c) => c.customer_name || 'No customer'}
+        leading={{ key: 'date', header: 'Date', render: (c) => <span className="whitespace-nowrap">{formatDate(c.case_date) || '—'}</span> }}
+        label={customerLabel}
         link={(c) => c.case_link}
         onOpen={(id) => open(caseKey(id))}
         columns={[
-          { key: 'date', header: 'Date', render: (c) => <span className="whitespace-nowrap">{formatDate(c.case_date) || '—'}</span> },
           { key: 'category', header: 'Category', render: (c) => c.category || '—' },
           { key: 'course', header: 'Course', render: (c) => courseName(c.course_id) || '—' },
           { key: 'material', header: 'Material type', render: (c) => c.material_type || '—' },

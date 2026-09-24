@@ -7,6 +7,7 @@ import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { requestLabel } from '@/lib/curriculum/types';
+import { requesterLabel } from '@/lib/records/labels';
 import { reqKey, useCur, withKey } from './useCur';
 
 const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
@@ -54,12 +55,11 @@ export function RequestsView() {
       </div>
       <RecordTable
         rows={rows}
-        label={requestLabel}
-        subLabel={(r) => r.requester_name || 'No requester'}
+        leading={{ key: 'date', header: 'Date', render: (r) => <span className="whitespace-nowrap">{formatDate(r.date_submitted) || '—'}</span> }}
+        label={requesterLabel}
         onOpen={(id) => open(reqKey(id))}
         empty="No requests match these filters."
         columns={[
-          { key: 'date', header: 'Date', render: (r) => <span className="whitespace-nowrap">{formatDate(r.date_submitted) || '—'}</span> },
           { key: 'course', header: 'Course', render: (r) => courseName(r.course_id) || '—' },
           { key: 'feedback', header: 'Feedback type', render: (r) => r.feedback_type || '—' },
           { key: 'material', header: 'Material', render: (r) => r.base_material || '—' },

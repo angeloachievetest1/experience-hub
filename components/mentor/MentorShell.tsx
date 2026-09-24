@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 import { deleteMentorCase, updateMentorCase } from '@/app/(app)/mentor/actions';
 import { RecordDrawer, type FieldGroup } from '@/components/records/RecordDrawer';
 import { SectionShell, useShell } from '@/components/records/SectionShell';
-import { MENTOR_COLOR, MENTOR_VALIDITY, QUARTERS, mentorLabel, yearQuarterOf, type MentorData } from '@/lib/mentor/types';
+import { MENTOR_COLOR, MENTOR_VALIDITY, QUARTERS, yearQuarterOf, type MentorData } from '@/lib/mentor/types';
+import { customerLabel } from '@/lib/records/labels';
 
 export function MentorShell({ data, title, subtitle, children }: {
   data: MentorData; title: string; subtitle: string; children: React.ReactNode;
@@ -85,14 +86,14 @@ function MentorDrawer({ id, onClose }: { id: string; onClose: () => void }) {
       loadingText={adding ? 'Creating the new case…' : undefined}
       kindLabel="Mentor complaint"
       color={MENTOR_COLOR}
-      title={c ? mentorLabel(c) : ''}
+      title={c ? customerLabel(c) : ''}
       isSample={c?.is_sample}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText="Read only. You can’t edit Mentor cases."
       onSave={(patch) => updateMentorCase(id, patch)}
       onDelete={() => deleteMentorCase(id)}
-      deleteQuestion={c ? `Delete ${mentorLabel(c)}?` : ''}
+      deleteQuestion={c ? `Delete the case for ${customerLabel(c)}?` : ''}
       onClose={onClose}
       // Changing the date updates year and quarter to match.
       derive={(draft, key) => {

@@ -2,7 +2,8 @@
 
 import { RecordTable, type TableColumn } from '@/components/records/RecordTable';
 import { formatDate } from '@/lib/qa/stats';
-import { caseIssue, caseLabel, type QaCase } from '@/lib/qa/types';
+import { customerLabel } from '@/lib/records/labels';
+import { caseIssue, type QaCase } from '@/lib/qa/types';
 import { FollowBadge, SourceTag, ValidityBadge } from './Badges';
 import { useQa } from './QaShell';
 
@@ -35,13 +36,14 @@ export function CaseTable({
     },
   };
 
+  // Order: Date, Case (customer name), Link, then the rest.
   return (
     <RecordTable
       rows={cases}
-      label={caseLabel}
-      subLabel={(c) => c.customer_name || 'No customer'}
+      leading={all.date}
+      label={customerLabel}
       link={(c) => c.case_link}
-      columns={columns.map((c) => all[c])}
+      columns={columns.filter((c) => c !== 'date').map((c) => all[c])}
       onOpen={openCase}
       empty={empty}
     />

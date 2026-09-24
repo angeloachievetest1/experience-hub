@@ -2,7 +2,8 @@
 
 import { deleteCustomerCase, deleteRequest, updateCustomerCase, updateRequest } from '@/app/(app)/curriculum/actions';
 import { RecordDrawer, type FieldGroup } from '@/components/records/RecordDrawer';
-import { CURRICULUM_COLOR, caseLabel, daysBetween, requestLabel, type CurData } from '@/lib/curriculum/types';
+import { CURRICULUM_COLOR, daysBetween, type CurData } from '@/lib/curriculum/types';
+import { customerLabel, requesterLabel } from '@/lib/records/labels';
 import { useCur } from './useCur';
 
 const READ_ONLY = 'Read only. You can’t edit Curriculum records.';
@@ -49,14 +50,14 @@ export function CustomerCaseDrawer({ id, onClose }: { id: string; onClose: () =>
       loadingText={adding ? 'Creating the new case…' : undefined}
       kindLabel="Curriculum customer case"
       color={CURRICULUM_COLOR}
-      title={c ? caseLabel(c) : ''}
+      title={c ? customerLabel(c) : ''}
       isSample={c?.is_sample}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText={READ_ONLY}
       onSave={(patch) => updateCustomerCase(id, patch)}
       onDelete={() => deleteCustomerCase(id)}
-      deleteQuestion={c ? `Delete ${caseLabel(c)}?` : ''}
+      deleteQuestion={c ? `Delete the case for ${customerLabel(c)}?` : ''}
       onClose={onClose}
       // Fill the TAT from the two dates when both are set.
       derive={(draft, key) => {
@@ -98,7 +99,7 @@ function requestGroups(data: CurData): FieldGroup[] {
 export function RequestDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   const { data, adding } = useCur();
   const r = data.requests.find((x) => x.id === id) ?? null;
-  const title = r ? requestLabel(r) : '';
+  const title = r ? requesterLabel(r) : '';
 
   return (
     <RecordDrawer
@@ -113,7 +114,7 @@ export function RequestDrawer({ id, onClose }: { id: string; onClose: () => void
       readOnlyText={READ_ONLY}
       onSave={(patch) => updateRequest(id, patch)}
       onDelete={() => deleteRequest(id)}
-      deleteQuestion={`Delete ${title}?`}
+      deleteQuestion={`Delete the request from ${title}?`}
       deleteLabel="Delete request"
       onClose={onClose}
     />

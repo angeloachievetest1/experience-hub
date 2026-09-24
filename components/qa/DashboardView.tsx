@@ -64,7 +64,10 @@ export function DashboardView() {
           </div>
         }
       >
-        <Legend items={[...sources.map((s) => ({ name: s, color: SOURCE_COLORS[s] })), { name: 'No data (gap, not zero)', color: '', hatched: true }]} />
+        <Legend items={[
+          ...sources.map((s) => ({ name: s, color: SOURCE_COLORS[s] })),
+          ...(columns.some((c) => c.missing || c.partial) ? [{ name: 'No data (gap, not zero)', color: '', hatched: true }] : []),
+        ]} />
         <ColumnChart columns={columns} />
         {gapNotes.length > 0 && (
           <div className="flex items-start gap-2 text-[13px] text-ink-muted">

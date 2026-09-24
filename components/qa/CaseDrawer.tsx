@@ -98,6 +98,12 @@ export function CaseDrawer({ id, onClose }: { id: string; onClose: () => void })
 
   useEffect(() => { closeRef.current?.focus(); }, [id]);
 
+  // Freeze the page and menu behind the panel so only the panel scrolls.
+  useEffect(() => {
+    document.documentElement.classList.add('panel-open');
+    return () => document.documentElement.classList.remove('panel-open');
+  }, []);
+
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
       <div className="absolute inset-0 bg-ink/20" aria-hidden="true" />

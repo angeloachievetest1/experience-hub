@@ -27,6 +27,14 @@
 
 html {
   color-scheme: light;
+  /* Keep the page from shifting sideways when the scrollbar is hidden. */
+  scrollbar-gutter: stable;
+}
+
+/* While a case panel is open, only the panel scrolls. */
+html.panel-open body,
+html.panel-open nav[aria-label='Main'] {
+  overflow: hidden;
 }
 
 body {

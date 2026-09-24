@@ -23,7 +23,8 @@ function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
       emptyHint: 'The instructor list is empty until the master list is loaded.',
     });
   }
-  caseFields.push({ key: 'analyst', label: 'Analyst', kind: 'suggest', suggestions: analysts });
+  // Survey records never have an analyst (owner decision 2026-09-30).
+  if (c.source !== 'Survey') caseFields.push({ key: 'analyst', label: 'Analyst', kind: 'suggest', suggestions: analysts });
 
   if (c.source === 'Instructor' || c.source === 'Course') {
     const s = c.source === 'Instructor' ? 'instructor' : 'course';

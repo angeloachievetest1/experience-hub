@@ -23,8 +23,8 @@ function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
       emptyHint: 'The instructor list is empty until the master list is loaded.',
     });
   }
-  // Survey records never have an analyst (owner decision 2026-09-30).
-  if (c.source !== 'Survey') caseFields.push({ key: 'analyst', label: 'Analyst', kind: 'suggest', suggestions: analysts });
+  // Survey and Returned records have no analyst (owner decisions 2026-09-30).
+  if (c.source === 'Instructor' || c.source === 'Course') caseFields.push({ key: 'analyst', label: 'Analyst', kind: 'suggest', suggestions: analysts });
 
   if (c.source === 'Instructor' || c.source === 'Course') {
     const s = c.source === 'Instructor' ? 'instructor' : 'course';
@@ -61,13 +61,14 @@ function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
       ],
     });
   }
-  const outcome: FieldDef[] = [{ key: 'validity', label: 'Validity', kind: 'select', options: VALIDITY_VALUES }];
+  // Returned cases have no validity or follow-up (owner decision 2026-09-30).
+  const outcome: FieldDef[] = c.source === 'Returned' ? [] : [{ key: 'validity', label: 'Validity', kind: 'select', options: VALIDITY_VALUES }];
   if (c.source !== 'Survey') outcome.push({ key: 'resolution', label: 'Resolution', kind: 'select', options: o('qa_resolution') });
   if (c.source === 'Course' || c.source === 'Survey') {
     outcome.push({ key: 'case_closed_by', label: 'Case closed by', kind: 'select', options: o('qa_case_closed_by') });
   }
   groups.push({ title: 'Outcome', fields: outcome });
-  groups.push({
+  if (c.source !== 'Returned') groups.push({
     title: 'Follow-up',
     fields: [
       { key: 'followup_email', label: 'Email sent', kind: 'select', options: o('qa_followup_sent') },

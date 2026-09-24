@@ -82,7 +82,8 @@ export function DashboardView() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Panel title="Validity split" aside={picked.length ? picked.join(', ') : 'All sources'}>
-          <BarList items={validity(shown)} />
+          {/* Returned cases have no validity (owner decision 2026-09-30). */}
+          <BarList items={validity(shown.filter((c) => c.source !== 'Returned'))} />
         </Panel>
         <Panel title="Instructor & Course: validity" aside={`${complaints.length} complaints`}>
           <BarList items={validity(complaints)} empty="No Instructor or Course complaints in this selection." />

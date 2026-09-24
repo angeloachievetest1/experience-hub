@@ -16,8 +16,11 @@ export function CaseLogView() {
   const [validity, setValidity] = useState<string | null>(null);
   const [query, setQuery] = useState('');
 
-  // Survey records never have an analyst, so a Survey-only view hides the Analyst filter and column.
-  const surveyOnly = sources.length === 1 && sources[0] === 'Survey';
+  // Columns and filters that none of the selected sources use are hidden
+  // (Survey and Returned have no analyst; Returned has no validity or follow-up).
+  const shown = (sources.length ? sources : QA_SOURCES) as readonly string[];
+  const hasAnalyst = shown.some((s) => s === 'Instructor' || s === 'Course');
+  const hasOutcome = shown.some((s) => s !== 'Returned');
   const analysts = useMemo(() => [...new Set(data.cases.map((c) => c.analyst).filter(Boolean) as string[])].sort(), [data.cases]);
   const categories = useMemo(() => {
     const listed = [...(data.options.qa_category_instructor ?? []), ...(data.options.qa_category_course ?? [])];
@@ -30,15 +33,15 @@ export function CaseLogView() {
     return data.cases.filter((c) => {
       if (!inRange(c.case_date, range)) return false;
       if (sources.length && !sources.includes(c.source)) return false;
-      if (analyst && !surveyOnly && c.analyst !== analyst) return false;
+      if (analyst && hasAnalyst && c.analyst !== analyst) return false;
       if (category && c.category !== category) return false;
-      if (validity && c.validity !== validity) return false;
+      if (validity && hasOutcome && c.validity !== validity) return false;
       if (!q) return true;
       return [c.customer_name, courseNames(c), instructorName(c.instructor_id), c.analyst,
         caseIssue(c), c.survey_id, c.notes, c.customer_comment]
         .some((v) => v?.toLowerCase().includes(q));
     });
-  }, [data.cases, range, sources, analyst, surveyOnly, category, validity, query, courseNames, instructorName]);
+  }, [data.cases, range, sources, analyst, hasAnalyst, hasOutcome, category, validity, query, courseNames, instructorName]);
 
   const inDateRange = data.cases.filter((c) => inRange(c.case_date, range)).length;
 
@@ -46,9 +49,9 @@ export function CaseLogView() {
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-3">
         <FilterMulti label="Source" allLabel="All sources" options={[...QA_SOURCES]} value={sources} onChange={setSources} />
-        {!surveyOnly && <FilterSelect label="Analyst" allLabel="All analysts" options={analysts} value={analyst} onChange={setAnalyst} />}
+        {hasAnalyst && <FilterSelect label="Analyst" allLabel="All analysts" options={analysts} value={analyst} onChange={setAnalyst} />}
         <FilterSelect label="Category" allLabel="All categories" options={categories} value={category} onChange={setCategory} />
-        <FilterSelect label="Validity" allLabel="All validity" options={[...VALIDITY_VALUES]} value={validity} onChange={setValidity} />
+        {hasOutcome && <FilterSelect label="Validity" allLabel="All validity" options={[...VALIDITY_VALUES]} value={validity} onChange={setValidity} />}
         <label className="flex h-11 w-full items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3.5 sm:w-72">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M20 20l-4-4" />
@@ -59,10 +62,9 @@ export function CaseLogView() {
         {data.canEdit && <AddCaseButton />}
         <span className="ml-auto text-sm text-ink-muted">Showing {filtered.length} of {inDateRange} cases</span>
       </div>
-      <CaseTable cases={filtered}
-        columns={surveyOnly
-          ? ['date', 'source', 'course', 'instructor', 'issue', 'validity', 'follow']
-          : ['date', 'source', 'course', 'instructor', 'analyst', 'issue', 'validity', 'follow']} />
+      <CaseTable cases={filtered} columns={([
+        'date', 'source', 'course', 'instructor', 'analyst', 'issue', 'validity', 'follow',
+      ] as const).filter((c) => (c !== 'analyst' || hasAnalyst) && ((c !== 'validity' && c !== 'follow') || hasOutcome))} />
     </div>
   );
 }

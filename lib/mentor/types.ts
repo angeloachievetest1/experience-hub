@@ -9,6 +9,7 @@ export type MentorCase = {
   year: number | null;
   quarter: string | null;
   customer_name: string | null;
+  case_type: string | null;          // Mentor Complaint / Complaint (from the sheet)
   mentor_id: string | null;
   course_id: string | null;
   complaint_type: string | null;

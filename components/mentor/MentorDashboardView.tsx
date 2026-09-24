@@ -21,10 +21,13 @@ export function MentorDashboardView() {
     key: String(y), label: String(y),
     segments: [{ name: 'Complaints', color: '#FF4500', value: cases.filter((c) => c.year === y).length }],
   }));
-  const byQuarter: Column[] = years.flatMap((y) => QUARTERS.map((q) => ({
+  const allQuarters: Column[] = years.flatMap((y) => QUARTERS.map((q) => ({
     key: `${y}-${q}`, label: `${y} ${q}`,
     segments: [{ name: 'Complaints', color: '#9F7DFF', value: cases.filter((c) => c.year === y && c.quarter === q).length }],
   })));
+  // Start at the first quarter with a complaint and stop at the last one.
+  const hasData = (c: Column) => c.segments[0].value > 0;
+  const byQuarter = allQuarters.slice(allQuarters.findIndex(hasData), allQuarters.findLastIndex(hasData) + 1);
 
   return (
     <div className="flex flex-col gap-6">

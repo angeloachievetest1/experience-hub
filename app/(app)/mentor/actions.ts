@@ -12,7 +12,7 @@ const SPEC: Spec = {
   case_date: 'date',
   year: { number: { min: 2000, max: 2100, integer: true } },
   quarter: { oneOf: ['Q1', 'Q2', 'Q3', 'Q4'] },
-  customer_name: 'text', mentor_id: 'uuid', course_id: 'uuid', complaint_type: 'text', complaint_sub_type: 'text',
+  customer_name: 'text', case_type: 'text', mentor_id: 'uuid', course_id: 'uuid', complaint_type: 'text', complaint_sub_type: 'text',
   complaint_analysis: { oneOf: ['Valid', 'Partially Valid', 'Not Valid'] },
   status: 'text', case_closed_by: 'text', email_sent: 'bool', email_sms_preview: 'text', case_link: 'url', field_notes: 'notes',
 };

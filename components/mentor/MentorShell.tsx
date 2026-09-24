@@ -56,6 +56,7 @@ function MentorDrawer({ id, onClose }: { id: string; onClose: () => void }) {
     {
       title: 'Complaint',
       fields: [
+        { key: 'case_type', label: 'Case type', kind: 'select', options: o('mentor_case_type') },
         { key: 'complaint_type', label: 'Complaint type', kind: 'select', options: o('mentor_complaint_type') },
         { key: 'complaint_sub_type', label: 'Sub type', kind: 'select', options: o('mentor_complaint_sub_type') },
         { key: 'complaint_analysis', label: 'Complaint analysis', kind: 'select', options: MENTOR_VALIDITY },

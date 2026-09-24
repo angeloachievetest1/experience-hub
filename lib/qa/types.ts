@@ -36,6 +36,7 @@ export type QaCase = {
   customer_comment: string | null;
   reason_type: string | null;
   reassign_reason: string | null;
+  field_notes: Record<string, string>; // { field_name: note } from "+ Add note"
   is_sample: boolean;
   updated_at: string;
 };
@@ -65,7 +66,7 @@ export const QA_ID_FIELDS = ['course_id', 'instructor_id'] as const;
 
 export type QaPatch = Partial<Pick<QaCase,
   | (typeof QA_TEXT_FIELDS)[number] | (typeof QA_DATE_FIELDS)[number] | (typeof QA_PCT_FIELDS)[number]
-  | (typeof QA_ID_FIELDS)[number] | 'rating' | 'complaint_types' | 'course_ids'>>;
+  | (typeof QA_ID_FIELDS)[number] | 'rating' | 'complaint_types' | 'course_ids' | 'field_notes'>>;
 
 // Colours follow the prototype.
 export const SOURCE_COLORS: Record<QaSource, string> = {

@@ -136,7 +136,7 @@ function CaseForm({ c, onClose, closeRef, message, setMessage }: {
   const router = useRouter();
   const { data } = useQa();
   const groups = useMemo(() => groupsFor(c, data), [c, data]);
-  const keys = useMemo(() => groups.flatMap((g) => g.fields.map((f) => f.key as string)), [groups]);
+  const keys = useMemo(() => [...groups.flatMap((g) => g.fields.map((f) => f.key as string)), 'field_notes'], [groups]);
   const original = useMemo(() => Object.fromEntries(keys.map((k) => [k, c[k as keyof QaCase]])), [c, keys]);
   const [draft, setDraft] = useState<Draft>(original);
   const [confirming, setConfirming] = useState(false);
@@ -183,6 +183,7 @@ function CaseForm({ c, onClose, closeRef, message, setMessage }: {
   };
 
   const set = (k: string, v: unknown) => { setDraft((d) => ({ ...d, [k]: v })); setMessage(null); };
+  const notes = (draft.field_notes as Record<string, string>) ?? {};
 
   return (
     <>
@@ -210,6 +211,18 @@ function CaseForm({ c, onClose, closeRef, message, setMessage }: {
                   {canEdit
                     ? <FieldInput f={f} value={draft[f.key]} onChange={(v) => set(f.key, v)} analysts={analysts} />
                     : <FieldValue f={f} value={draft[f.key]} />}
+                  {NOTE_KINDS.includes(f.kind) && (
+                    <FieldNote
+                      label={f.label}
+                      note={notes[f.key] ?? ''}
+                      canEdit={canEdit}
+                      onChange={(text) => {
+                        const next = { ...notes };
+                        if (text.trim()) next[f.key] = text.trim(); else delete next[f.key];
+                        set('field_notes', next);
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             ))}
@@ -224,6 +237,9 @@ function CaseForm({ c, onClose, closeRef, message, setMessage }: {
               className={`m-0 rounded-[10px] px-3.5 py-2.5 text-sm ${message.kind === 'error' ? 'border border-primary bg-peach-100' : 'bg-highlight'}`}>
               {message.text}
             </p>
+          )}
+          {dirty && !message && !confirming && (
+            <p role="status" className="m-0 text-[13px] text-ink-muted">You have unsaved changes. Click <strong>Save changes</strong> to keep them.</p>
           )}
           {confirming ? (
             <div className="flex flex-col gap-2.5">
@@ -263,6 +279,79 @@ function CaseForm({ c, onClose, closeRef, message, setMessage }: {
 }
 
 // ---------------------------------------------------------------------------
+
+// Dropdown fields can carry a note, as in the prototype.
+const NOTE_KINDS: Field['kind'][] = ['select', 'lookup', 'rating'];
+
+function FieldNote({ label, note, canEdit, onChange }: {
+  label: string; note: string; canEdit: boolean; onChange: (text: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState(note);
+  const linkClass = 'cursor-pointer border-0 bg-transparent p-0 text-xs text-secondary underline decoration-dotted underline-offset-2';
+
+  if (editing) {
+    return (
+      <div className="mt-1.5 flex flex-col gap-1.5">
+        <textarea
+          autoFocus
+          rows={2}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Add a note about this field"
+          aria-label={`Note for ${label}`}
+          className="w-full rounded-md border border-lilac-200 px-2 py-1.5 text-xs"
+        />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button type="button" onClick={() => { onChange(text); setEditing(false); }}
+            className="h-8 cursor-pointer rounded-md bg-primary px-2.5 text-xs font-semibold">
+            Save note
+          </button>
+          <button type="button" onClick={() => { setText(note); setEditing(false); }}
+            className="h-8 cursor-pointer rounded-md border border-lilac-200 bg-white px-2.5 text-xs">
+            Cancel
+          </button>
+          {note && (
+            <button type="button" onClick={() => { onChange(''); setText(''); setEditing(false); }} className={`${linkClass} ml-1`}>
+              Remove note
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (!note) {
+    return canEdit ? (
+      <button type="button" onClick={() => { setText(''); setEditing(true); }} className={`${linkClass} mt-1.5 block`}>
+        + Add note
+      </button>
+    ) : null;
+  }
+
+  // Hover (or keyboard focus) shows the note; clicking edits it.
+  return (
+    <span className="group relative mt-1.5 inline-flex items-center gap-1">
+      <button
+        type="button"
+        onClick={canEdit ? () => { setText(note); setEditing(true); } : undefined}
+        aria-label={`Note for ${label}: ${note}${canEdit ? ' (click to edit)' : ''}`}
+        className={`${linkClass} inline-flex items-center gap-1 no-underline ${canEdit ? '' : 'cursor-default'}`}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M4 4h16v12H8l-4 4z" />
+        </svg>
+        <span className="underline decoration-dotted underline-offset-2">Notes</span>
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none invisible absolute bottom-full left-0 z-50 mb-1.5 w-max max-w-[260px] min-w-[200px] rounded-lg bg-ink px-2.5 py-2 text-xs leading-snug whitespace-pre-wrap text-white opacity-0 shadow-[0_8px_20px_rgba(45,21,89,0.25)] transition-opacity group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100"
+      >
+        {note}
+      </span>
+    </span>
+  );
+}
 
 const inputClass = 'h-10 w-full rounded-lg border border-lilac-200 bg-white px-2.5 text-sm focus:border-secondary';
 

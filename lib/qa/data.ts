@@ -25,6 +25,7 @@ export async function loadQaData(): Promise<QaData> {
       cases.push({
         ...(rest as unknown as QaCase),
         complaint_types: (rest.complaint_types as string[] | null) ?? [],
+        field_notes: (rest.field_notes as Record<string, string> | null) ?? {},
         course_ids: (qa_case_courses ?? []).map((x) => x.course_id),
         attendance_pct: toNumber(rest.attendance_pct),
         participation_pct: toNumber(rest.participation_pct),

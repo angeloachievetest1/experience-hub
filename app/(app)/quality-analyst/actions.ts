@@ -111,6 +111,18 @@ function sanitize(patch: QaPatch): Clean {
     const list = Array.isArray(p.complaint_types) ? p.complaint_types : [];
     values.complaint_types = [...new Set(list.map(text).filter(Boolean))];
   }
+  if ('field_notes' in p) {
+    const raw = p.field_notes;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { error: 'Invalid field notes.' };
+    const notes: Record<string, string> = {};
+    for (const [k, v] of Object.entries(raw)) {
+      if (!/^[a-z_]{1,40}$/.test(k) || typeof v !== 'string') return { error: 'Invalid field notes.' };
+      const t = v.trim();
+      if (t.length > 2000) return { error: 'Field notes can be at most 2000 characters.' };
+      if (t) notes[k] = t;
+    }
+    values.field_notes = notes;
+  }
   if (typeof values.case_link === 'string' && !/^https?:\/\/\S+$/i.test(values.case_link)) {
     return { error: 'The case link must be a full web address starting with https://' };
   }

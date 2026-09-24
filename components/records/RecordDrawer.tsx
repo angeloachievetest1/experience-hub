@@ -71,7 +71,7 @@ export function RecordDrawer(props: RecordDrawerProps) {
           <RecordForm key={`${record.id}:${record.updated_at ?? ''}`} {...props} record={record} closeRef={closeRef} message={message} setMessage={setMessage} />
         ) : (
           <div className="flex items-start justify-between gap-3">
-            <p className="m-0 text-sm text-ink-muted">{props.loadingText ?? 'Loading… If this doesn’t change, the record may have been deleted.'}</p>
+            <p className="m-0 min-w-0 flex-1 text-sm text-ink-muted">{props.loadingText ?? 'Loading… If this doesn’t change, the record may have been deleted.'}</p>
             <CloseButton ref={closeRef} onClick={onClose} />
           </div>
         )}
@@ -152,14 +152,15 @@ function RecordForm({
 
   return (
     <>
+      {/* min-w-0 + wrapping keeps long names/emails from pushing the close button out */}
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 text-[13px] text-ink-muted">
             <span className="size-2.5 rounded-[3px]" style={{ background: color }} aria-hidden="true" />
             <span>{kindLabel}</span>
             {isSample && <span className="rounded-full bg-highlight px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase">Sample</span>}
           </div>
-          <h2 className="mt-1.5 mb-0 font-display text-[26px] font-semibold">{title}</h2>
+          <h2 className="mt-1.5 mb-0 font-display text-[26px] leading-tight font-semibold [overflow-wrap:anywhere]">{title}</h2>
           {!canEdit && <p className="mt-1 mb-0 text-[13px] text-ink-muted">{readOnlyText}</p>}
         </div>
         <CloseButton ref={closeRef} onClick={close} />

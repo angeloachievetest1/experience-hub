@@ -46,7 +46,7 @@ Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phas
 
 - **Viewer**: reads all three sections.
 - **Admin**: reads all three sections; adds, edits and deletes cases only in their assigned sections.
-- **Super-admin flag**: opens the Experience Hub Dashboard and changes other users' access. It is separate from role and sections.
+- **Super-admin flag** (Admins only): opens the Experience Hub Dashboard and changes other users' access. Viewers can't be super-admins.
 - **Deactivated**: banned in Supabase Auth and denied everything by RLS.
 - New accounts start deactivated unless created by the Admin Dashboard (Phase 4).
 

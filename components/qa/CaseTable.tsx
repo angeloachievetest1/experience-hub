@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { LinkCell } from '@/components/ui/LinkCell';
 import { formatDate } from '@/lib/qa/stats';
 import { caseIssue, caseLabel, type QaCase } from '@/lib/qa/types';
 import { FollowBadge, SampleTag, SourceTag, ValidityBadge } from './Badges';
@@ -49,6 +50,7 @@ export function CaseTable({
           <thead className="bg-lilac-50">
             <tr>
               <th scope="col" className="px-6 py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase">Case</th>
+              <th scope="col" className="px-2.5 py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase">Link</th>
               {columns.map((col) => (
                 <th key={col} scope="col" className="px-2.5 py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase">{HEAD[col]}</th>
               ))}
@@ -67,6 +69,7 @@ export function CaseTable({
                     {c.is_sample && <SampleTag />}
                   </div>
                 </td>
+                <td className="px-2.5 py-3"><LinkCell url={c.case_link} /></td>
                 {columns.map((col) => <td key={col} className="px-2.5 py-3">{cell(c, col)}</td>)}
               </tr>
             ))}

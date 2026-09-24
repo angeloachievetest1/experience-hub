@@ -207,6 +207,9 @@ try {
 
       const date = parseDate(r.raw('date'));
       if (date && typeof r.raw('date') === 'string') report.change('Date typed as text', r.get('date'), date);
+      if (date && r.raw('date') instanceof Date && r.raw('date').getUTCFullYear() > 9999) {
+        report.change(`Date with a mistyped year (${where})`, `year ${r.raw('date').getUTCFullYear()}`, date);
+      }
       if (!date) {
         const d = r.get('date');
         report.problem('Rows with no usable date (imported without a date)', `${where}${d && !isMonthLabel(d) ? `: “${d}”` : ''}`);

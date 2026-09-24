@@ -126,8 +126,22 @@ export function parseDate(raw) {
   return /^\d{4}-\d{2}-\d{2}$/.test(d) && year >= 2000 && year <= 2100 ? d : null;
 }
 
+// A year typed with an extra digit, e.g. 20226 → 2026 (owner-approved fix).
+export function fixTypedYear(year) {
+  const s = String(year);
+  return s.length === 5 && s.startsWith('20') ? Number(`20${s.slice(3)}`) : null;
+}
+
 function parseDateLoose(raw) {
-  if (raw instanceof Date) return Number.isNaN(raw.getTime()) ? null : raw.getUTCFullYear() > 9999 ? 'bad' : isoDate(raw);
+  if (raw instanceof Date) {
+    if (Number.isNaN(raw.getTime())) return null;
+    const y = raw.getUTCFullYear();
+    if (y <= 9999) return isoDate(raw);
+    const fixed = fixTypedYear(y);
+    const mm = String(raw.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(raw.getUTCDate()).padStart(2, '0');
+    return fixed ? `${fixed}-${mm}-${dd}` : null;
+  }
   if (typeof raw === 'number' && raw > 20000 && raw < 80000) {
     return isoDate(new Date(Date.UTC(1899, 11, 30) + raw * 86400000)); // Excel serial date
   }

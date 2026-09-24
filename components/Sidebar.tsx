@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from '@/app/auth/actions';
@@ -17,19 +18,35 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
   const pathname = usePathname();
   const inAdmin = pathname === '/admin' || pathname.startsWith('/admin/');
   const groups: NavGroup[] = inAdmin ? [ADMIN_GROUP] : SECTION_GROUPS;
+  // On small screens the menu folds away behind a Menu button.
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => setMenuOpen(false), [pathname]);
 
   return (
     <nav
       aria-label="Main"
-      className="flex flex-col gap-8 border-b border-peach-200 bg-white px-5 py-7 md:sticky md:top-0 md:h-screen md:w-[248px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0"
+      className="flex flex-col gap-8 border-b border-peach-200 bg-white px-5 py-4 md:sticky md:top-0 md:h-screen md:w-[248px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 md:py-7"
     >
-      <Link href={inAdmin ? '/admin' : '/'} className="flex items-center gap-3 no-underline">
-        <Logo />
-        <span className="font-display text-lg leading-tight font-semibold">
-          {inAdmin ? 'Experience Hub Dashboard' : 'Experience Hub'}
-        </span>
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link href={inAdmin ? '/admin' : '/'} className="flex items-center gap-3 no-underline">
+          <Logo />
+          <span className="font-display text-lg leading-tight font-semibold">
+            {inAdmin ? 'Experience Hub Dashboard' : 'Experience Hub'}
+          </span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-expanded={menuOpen}
+          aria-controls="main-menu"
+          className="flex h-11 cursor-pointer items-center gap-2 rounded-[10px] border border-lilac-200 px-3.5 text-sm font-medium md:hidden"
+        >
+          <Icon name={menuOpen ? 'cross' : 'list'} size={18} />
+          {menuOpen ? 'Close' : 'Menu'}
+        </button>
+      </div>
 
+      <div id="main-menu" className={`${menuOpen ? 'flex' : 'hidden'} flex-1 flex-col gap-8 pb-3 md:flex md:pb-0`}>
       <div className="flex flex-col gap-6">
         {!inAdmin && <NavItem href="/" label="Home" icon="home" active={pathname === '/'} />}
         {groups.map((group) => (
@@ -76,6 +93,7 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
             </button>
           </form>
         </div>
+      </div>
       </div>
     </nav>
   );

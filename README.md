@@ -11,7 +11,7 @@ The full specification is in [BRIEF.md](BRIEF.md).
 | Phase | Scope | State |
 |---|---|---|
 | 1 | Foundation: schema, RLS, audit, auth, app shell | Done |
-| 2 | Quality Analyst section | Not started |
+| 2 | Quality Analyst section | Done (with sample records) |
 | 3 | Curriculum and Mentor sections | Not started |
 | 4 | Admin Dashboard and data import | Not started |
 | 5 | Netlify deployment | Not started |
@@ -25,6 +25,8 @@ Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phas
 | `npm run dev` | Start the app at http://localhost:3000 |
 | `npm run db:migrate` | Apply new files from `supabase/migrations/` to the Supabase database |
 | `npm run db:test` | Check every security rule with temporary users (all rolled back) |
+| `npm run db:sample` | Add the clearly marked sample records |
+| `npm run db:sample:remove` | Delete every sample record |
 | `npm run build` | Production build (checks everything compiles) |
 
 ## How access works

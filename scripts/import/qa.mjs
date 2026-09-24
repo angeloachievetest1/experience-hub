@@ -6,8 +6,13 @@
 //   npm run import:qa -- --write  the real import (replaces rows from an
 //                                earlier run of this import only)
 //
+// Owner decisions (2026-09-30): only the visible data tabs are imported
+// (Instructor Complaints, Course Complaints, Low Survey Scores, Returned Cases);
+// hidden tabs are ignored. "Instructor Trends" is used only as a cross-check.
+//
 // Cleanup rules (brief section 5 + owner decisions):
-//   - instructor spellings unified against the "Provisional Instructor List" tab
+//   - the instructor list is built from the names in these tabs; close
+//     spellings are unified to the most common one ("Tracey Stout" → "Tracey Stoute")
 //   - course names matched to the course list (known variants + close spellings)
 //   - validity: "Partially-See Feedback" → Partially Valid, "Invalid" → Not Valid
 //   - survey types: FCS→AFCS, ECF→ECS, MCF→MCS, PEF→PES, Post Tutoring→PTS
@@ -28,7 +33,6 @@ const TABS = [
   { tab: 'Instructor Complaints', source: 'Instructor' },
   { tab: 'Course Complaints', source: 'Course' },
   { tab: 'Low Survey Scores', source: 'Survey' },
-  { tab: 'Low Survey Scores 2025', source: 'Survey' },
   { tab: 'Returned Cases', source: 'Returned' },
 ];
 
@@ -103,12 +107,24 @@ try {
   const comments = await readThreadedComments(FILE);
 
   // --- Reference lists ---------------------------------------------------------
-  const listWs = wb.getWorksheet('Provisional Instructor List');
+  // Instructor list: every name used in the imported tabs. Close spellings are
+  // grouped and the most common spelling wins.
+  const nameCounts = new Map();
+  for (const { tab } of TABS) {
+    const ws = wb.getWorksheet(tab);
+    if (!ws) continue;
+    for (const r of readTab(ws, HEADERS).rows) {
+      for (const part of r.get('instructor').split(/\s*,\s*/)) {
+        const name = part.replace(/^dr\.?\s+/i, '').trim();
+        if (!isEmpty(name)) nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1);
+      }
+    }
+  }
   const masterNames = [];
-  listWs.eachRow((row, n) => {
-    const name = cellText(row.getCell(1).value);
-    if (n > 2 && name) masterNames.push(name);
-  });
+  for (const [name] of [...nameCounts.entries()].sort((a, b) => b[1] - a[1])) {
+    if (!makeMatcher(masterNames)(name).name) masterNames.push(name);
+  }
+  masterNames.sort();
   const courses = (await q('select id, name from public.courses where is_active')).rows;
   const courseId = new Map(courses.map((c) => [c.name, c.id]));
   const matchCourse = makeMatcher(courses.map((c) => c.name), COURSE_VARIANTS);
@@ -142,7 +158,7 @@ try {
       }
       return m.name;
     }
-    notes.push(`Instructor in sheet (not on the master list): ${parts[0]}`);
+    notes.push(`Instructor in sheet: ${parts[0]}`);
     const list = unmatchedInstructors.get(parts[0]) ?? [];
     list.push(where);
     unmatchedInstructors.set(parts[0], list);
@@ -320,10 +336,6 @@ try {
         }
       }
 
-      if (source === 'Course' && date && date >= '2025-07-01' && date < '2026-02-01') {
-        report.problem('Course complaints dated inside the known gap (Jul 2025 – Jan 2026)', `${where}: ${date}`);
-      }
-
       rec.notes = notes.length ? notes.join('\n') : null;
       rec.field_notes = noteMap;
       records.push(rec);
@@ -338,7 +350,34 @@ try {
   for (const [id, refs] of seen) if (refs.length > 1) report.problem('Survey IDs that appear more than once', `${id}: ${refs.join('; ')}`);
 
   for (const [name, wheres] of unmatchedInstructors) {
-    report.problem('Instructors not on the master list (left blank, name kept in Notes)', `“${name}” — ${wheres.length} row(s), e.g. ${wheres.slice(0, 3).join('; ')}`);
+    report.problem('Instructor names that could not be read (left blank, name kept in Notes)', `“${name}” — ${wheres.length} row(s), e.g. ${wheres.slice(0, 3).join('; ')}`);
+  }
+
+  // Cross-check against the "Instructor Trends" tab (a tally kept in the sheet).
+  let trendCheck = null;
+  const trends = wb.getWorksheet('Instructor Trends');
+  if (trends) {
+    let totalCol = 0;
+    for (let c = 1; c <= trends.columnCount; c++) if (cellText(trends.getRow(2).getCell(c).value) === 'Grand Total') totalCol = c;
+    const sheetTotals = [];
+    trends.eachRow((row) => {
+      const m = cellText(row.getCell(1).value).match(/^(.+) Total$/);
+      if (m && totalCol && m[1] !== 'Grand') sheetTotals.push({ name: m[1].trim(), total: Number(cellText(row.getCell(totalCol).value)) || 0 });
+    });
+    const ours = (name, year) => records.filter((r) => r.source === 'Instructor' && r.instructor_name === (matchInstructor(name).name ?? name)
+      && (!year || r.case_date?.startsWith(year))).length;
+    // The tally may cover one year only: use whichever period matches best.
+    const periods = [null, '2025', '2026'];
+    const score = (p) => sheetTotals.filter((t) => ours(t.name, p) === t.total).length;
+    const best = periods.reduce((a, b) => (score(b) > score(a) ? b : a));
+    const lines = [`Compared with Instructor Complaints ${best ? `dated ${best}` : '(all dates)'}, the period that matches the tab best.`, '',
+      '| Instructor | Instructor Trends tab | This import | |', '|---|---|---|---|'];
+    for (const t of sheetTotals) {
+      const n = ours(t.name, best);
+      lines.push(`| ${t.name} | ${t.total} | ${n} | ${n === t.total ? '✓' : '≠'} |`);
+    }
+    lines.push('', `${score(best)} of ${sheetTotals.length} instructors match exactly.`);
+    trendCheck = lines;
   }
   for (const [name, wheres] of unmatchedCourses) {
     report.problem('Courses not on the course list (left blank, name kept in Notes)', `“${name}” — ${wheres.length} row(s), e.g. ${wheres.slice(0, 3).join('; ')}`);
@@ -350,9 +389,10 @@ try {
     ...tabStats,
     '',
     `- **${records.length} cases** in total`,
-    `- **${masterNames.length} instructors** on the master list (from the “Provisional Instructor List” tab)`,
+    `- **${masterNames.length} instructors**, taken from the names in these tabs: ${masterNames.join(', ')}`,
     `- **${fieldNotes} cell comments** become notes on a field (hover “Notes” in the app); **${caseNotes}** go into the case’s Notes`,
   ]);
+  if (trendCheck) report.section('Check against the “Instructor Trends” tab', trendCheck);
   report.section('New dropdown values that will be added', newOptions.size
     ? [...newOptions.entries()].map(([k, n]) => { const [list, value] = k.split('|'); return `- ${list}: “${value}” (${n}×)`; })
     : ['None.']);

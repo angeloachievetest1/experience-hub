@@ -20,6 +20,9 @@ The full specification is in [BRIEF.md](BRIEF.md).
 
 | Date | Decision |
 |---|---|
+| 2026-09-30 | **Quality Analyst import uses the visible tabs only** (Instructor Complaints, Course Complaints, Low Survey Scores, Returned Cases). Hidden tabs, including Low Survey Scores 2025 and the Provisional Instructor List, are ignored. The instructor list is built from the names in these tabs. |
+| 2026-09-30 | **No Course data gap.** The dashboard shows what the Course Complaints tab contains (it has rows inside Jul 2025 – Jan 2026). |
+| 2026-09-30 | **Courses added:** Allegany College of Maryland Entrance Exam Prep, HESI Mobility/Challenge Prep, ODT Anatomy & Physiology 1, Tutoring - Chemistry, ODT Eng Composition. |
 | 2026-09-28 | **Instructor requests have no continuation lines.** Every sheet row is its own request; a blank requester or course stays blank (replaces brief section 6B, "import them as child lines"). |
 
 ## Running locally

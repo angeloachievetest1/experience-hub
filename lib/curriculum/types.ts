@@ -22,13 +22,11 @@ export type CurCase = {
   updated_at: string;
 };
 
-// B. Instructors Cases ("Instructor requests"). Rows with parent_id are
-// continuation lines of the request above them.
+// B. Instructors Cases ("Instructor requests"). Every sheet row is its own
+// request; a blank requester or course simply stays blank.
 export type CurRequest = {
   id: string;
   case_no: number;
-  parent_id: string | null;
-  line_order: number;
   requester_name: string | null;
   date_submitted: string | null;
   course_id: string | null;

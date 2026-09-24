@@ -13,7 +13,7 @@ export function CurDashboardView() {
   const { data, range } = useCur();
   const [by, setBy] = useState<'month' | 'quarter'>('month');
   const cases = useMemo(() => data.cases.filter((c) => inRange(c.case_date, range)), [data.cases, range]);
-  const requests = data.requests.filter((r) => !r.parent_id && inRange(r.date_submitted, range));
+  const requests = data.requests.filter((r) => inRange(r.date_submitted, range));
 
   const columns: Column[] = periods(cases.map((c) => c.case_date), range, by).map((p) => ({
     key: p.key,

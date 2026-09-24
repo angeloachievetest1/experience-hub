@@ -57,24 +57,13 @@ export async function deleteCustomerCase(id: string) {
   return remove('curriculum_customer_cases', id);
 }
 
-// Instructor requests and their continuation lines
+// Instructor requests
 export async function createRequest() {
   return insert('curriculum_instructor_requests', { date_submitted: today() });
-}
-export async function addRequestLine(parentId: string): Promise<ActionResult> {
-  const supabase = await createClient();
-  const { data: parent, error } = await supabase
-    .from('curriculum_instructor_requests').select('id, parent_id').eq('id', parentId).maybeSingle();
-  if (error) return { ok: false, error: friendlyError(error, NO_PERMISSION) };
-  if (!parent || parent.parent_id) return { ok: false, error: 'Lines can only be added to a request.' };
-  const { data: last } = await supabase
-    .from('curriculum_instructor_requests').select('line_order').eq('parent_id', parentId)
-    .order('line_order', { ascending: false }).limit(1);
-  return insert('curriculum_instructor_requests', { parent_id: parentId, line_order: (last?.[0]?.line_order ?? 0) + 1 });
 }
 export async function updateRequest(id: string, patch: Record<string, unknown>) {
   return update('curriculum_instructor_requests', id, patch, REQUEST_SPEC);
 }
 export async function deleteRequest(id: string) {
-  return remove('curriculum_instructor_requests', id); // continuation lines are removed with it
+  return remove('curriculum_instructor_requests', id);
 }

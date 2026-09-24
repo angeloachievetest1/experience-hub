@@ -16,6 +16,12 @@ The full specification is in [BRIEF.md](BRIEF.md).
 | 4 | Admin Dashboard and data import | Not started |
 | 5 | Netlify deployment | Not started |
 
+## Decisions that differ from the brief
+
+| Date | Decision |
+|---|---|
+| 2026-09-28 | **Instructor requests have no continuation lines.** Every sheet row is its own request; a blank requester or course stays blank (replaces brief section 6B, "import them as child lines"). |
+
 ## Running locally
 
 Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phase-1.md).

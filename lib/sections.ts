@@ -140,7 +140,7 @@ export const SECTION_GROUPS: NavGroup[] = [
         subtitle: 'Content-error feedback from instructors and mentors.',
         icon: 'chat',
         phase: 3,
-        planned: ['Requests with their continuation lines grouped underneath', 'Status and ticket manager tracking'],
+        planned: ['One row per request, with status and ticket manager tracking'],
       },
     ],
   },

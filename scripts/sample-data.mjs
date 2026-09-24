@@ -102,11 +102,10 @@ async function addCurriculumRequests() {
   const materials = await options('cur_base_material');
   const statuses = await options('cur_request_status');
   const tms = ['Sample Ticket Manager 1', 'Sample Ticket Manager 2'];
-  let total = 0;
   for (let n = 1; n <= 10; n++) {
     const status = pick(statuses);
     const submitted = randomDate(false);
-    const parentId = await insertRow('curriculum_instructor_requests', {
+    await insertRow('curriculum_instructor_requests', {
       requester_name: `Sample Requester ${String(n).padStart(2, '0')}`,
       date_submitted: submitted,
       course_id: pick(courses),
@@ -117,21 +116,8 @@ async function addCurriculumRequests() {
       date_completed: status === 'Complete' ? submitted : null,
       ticket_manager: pick(tms),
     });
-    total++;
-    const lines = Math.floor(rand() * 3); // 0–2 continuation lines
-    for (let l = 1; l <= lines; l++) {
-      await insertRow('curriculum_instructor_requests', {
-        parent_id: parentId,
-        line_order: l,
-        base_material: pick(materials),
-        comments: `Sample continuation line ${l}.`,
-        status: pick(statuses),
-        ticket_manager: pick(tms),
-      });
-      total++;
-    }
   }
-  console.log(`Added 10 sample instructor requests (${total} rows including continuation lines).`);
+  console.log('Added 10 sample instructor requests.');
 }
 
 async function addMentor() {

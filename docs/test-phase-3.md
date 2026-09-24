@@ -23,10 +23,8 @@ are removed in Phase 4 with `npm run db:sample:remove`.
 
 **Instructor requests**
 - [ ] The status boxes (All / Complete / In Progress / …) filter the list.
-- [ ] Continuation lines appear **indented under their request** (↳ REQ-0001 · line 2).
-- [ ] Open a request. The **Continuation lines** list shows its lines. **+ Add continuation line** adds one.
-- [ ] Open a line. **← Back to REQ-…** returns to the request. **Delete line** removes only that line.
-- [ ] **Delete request** warns that its lines are deleted with it.
+- [ ] One row per request, as in the prototype. A blank requester shows as "No requester".
+- [ ] **Add request**, **Save changes**, **Delete request** (asks first).
 
 ## Mentor (as yourself)
 

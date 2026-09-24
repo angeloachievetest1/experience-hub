@@ -8,7 +8,7 @@ export type TableColumn<T> = { key: string; header: string; render: (row: T) => 
 // Clickable table used by every case log. First column: record number + a
 // second line (customer); then an optional one-click Link column.
 export function RecordTable<T extends { id: string; is_sample?: boolean }>({
-  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', indent, minWidth = 980,
+  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980,
 }: {
   rows: T[];
   label: (row: T) => string;
@@ -17,7 +17,6 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
   columns: TableColumn<T>[];
   onOpen: (id: string) => void;
   empty?: string;
-  indent?: (row: T) => boolean; // continuation lines shown under their parent
   minWidth?: number;
 }) {
   const [limit, setLimit] = useState(100);
@@ -37,18 +36,14 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
           </thead>
           <tbody>
             {shown.map((row) => {
-              const child = indent?.(row) ?? false;
               return (
                 <tr key={row.id} onClick={() => onOpen(row.id)}
-                  className={`cursor-pointer align-middle hover:bg-peach-50 ${child ? 'bg-lilac-50/40' : 'border-t border-lilac-50'}`}>
-                  <td className={`py-3 pr-2.5 ${child ? 'pl-12' : 'pl-6'}`}>
-                    <div className="flex items-center gap-1.5">
-                      {child && <span className="text-ink-muted" aria-hidden="true">↳</span>}
-                      <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(row.id); }}
-                        className={`cursor-pointer p-0 py-1 text-left underline decoration-primary underline-offset-[3px] ${child ? 'font-medium' : 'font-semibold'}`}>
-                        {label(row)}
-                      </button>
-                    </div>
+                  className="cursor-pointer border-t border-lilac-50 align-middle hover:bg-peach-50">
+                  <td className="py-3 pr-2.5 pl-6">
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(row.id); }}
+                      className="cursor-pointer p-0 py-1 text-left font-semibold underline decoration-primary underline-offset-[3px]">
+                      {label(row)}
+                    </button>
                     {(subLabel || row.is_sample) && (
                       <div className="flex items-center gap-1.5 text-[13px] text-ink-muted">
                         {subLabel && <span className="max-w-44 truncate">{subLabel(row)}</span>}

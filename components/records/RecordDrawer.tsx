@@ -41,7 +41,7 @@ export type RecordDrawerProps = {
   onClose: () => void;
   // Adjust other fields when one changes (e.g. fill year/quarter from a date).
   derive?: (draft: Draft, changedKey: string) => Draft;
-  extra?: React.ReactNode;     // shown after the fields, e.g. continuation lines
+  extra?: React.ReactNode;     // shown after the fields
 };
 
 export function RecordDrawer(props: RecordDrawerProps) {

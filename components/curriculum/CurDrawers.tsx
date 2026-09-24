@@ -1,11 +1,9 @@
 'use client';
 
-import {
-  addRequestLine, deleteCustomerCase, deleteRequest, updateCustomerCase, updateRequest,
-} from '@/app/(app)/curriculum/actions';
+import { deleteCustomerCase, deleteRequest, updateCustomerCase, updateRequest } from '@/app/(app)/curriculum/actions';
 import { RecordDrawer, type FieldGroup } from '@/components/records/RecordDrawer';
 import { CURRICULUM_COLOR, caseLabel, daysBetween, requestLabel, type CurData } from '@/lib/curriculum/types';
-import { reqKey, useCur, withKey } from './useCur';
+import { useCur } from './useCur';
 
 const READ_ONLY = 'Read only. You can’t edit Curriculum records.';
 const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
@@ -70,10 +68,10 @@ export function CustomerCaseDrawer({ id, onClose }: { id: string; onClose: () =>
   );
 }
 
-function requestGroups(data: CurData, isLine: boolean): FieldGroup[] {
+function requestGroups(data: CurData): FieldGroup[] {
   const o = (k: string) => data.options[k] ?? [];
   const details: FieldGroup = {
-    title: isLine ? 'Line details' : 'Details',
+    title: 'Details',
     fields: [
       { key: 'base_material', label: 'Base material', kind: 'select', options: o('cur_base_material') },
       { key: 'comments', label: 'Comments', kind: 'textarea' },
@@ -83,7 +81,6 @@ function requestGroups(data: CurData, isLine: boolean): FieldGroup[] {
       { key: 'ticket_manager', label: 'Ticket manager', kind: 'suggest', suggestions: distinct(data.requests.map((r) => r.ticket_manager)) },
     ],
   };
-  if (isLine) return [details];
   return [
     {
       title: 'Request',
@@ -99,61 +96,26 @@ function requestGroups(data: CurData, isLine: boolean): FieldGroup[] {
 }
 
 export function RequestDrawer({ id, onClose }: { id: string; onClose: () => void }) {
-  const { data, adding, open, add } = useCur();
+  const { data, adding } = useCur();
   const r = data.requests.find((x) => x.id === id) ?? null;
-  const parent = r?.parent_id ? data.requests.find((x) => x.id === r.parent_id) ?? null : null;
-  const lines = r && !r.parent_id
-    ? data.requests.filter((x) => x.parent_id === r.id).sort((a, b) => a.line_order - b.line_order)
-    : [];
-  const isLine = Boolean(r?.parent_id);
-  const lineNo = parent ? data.requests.filter((x) => x.parent_id === parent.id).sort((a, b) => a.line_order - b.line_order).findIndex((x) => x.id === id) + 2 : 0;
-  const title = r ? (isLine && parent ? `${requestLabel(parent)} · line ${lineNo}` : requestLabel(r)) : '';
-
-  const extra = !r ? null : isLine ? (
-    parent && (
-      <button type="button" onClick={() => open(reqKey(parent.id))}
-        className="h-11 cursor-pointer self-start rounded-[10px] border border-lilac-200 px-4 text-sm">
-        ← Back to {requestLabel(parent)}
-      </button>
-    )
-  ) : (
-    <section className="flex flex-col gap-2">
-      <h3 className="m-0 font-display text-lg font-normal">Continuation lines</h3>
-      <p className="m-0 text-[13px] text-ink-muted">Extra rows that belong to this request (they had a blank requester and course in the sheet).</p>
-      {lines.length === 0 && <div className="text-sm text-ink-muted">No continuation lines.</div>}
-      {lines.map((l, i) => (
-        <button key={l.id} type="button" onClick={() => open(reqKey(l.id))}
-          className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-[10px] border border-lilac-200 px-3.5 py-2 text-left text-sm hover:bg-lilac-50">
-          <span><strong>Line {i + 2}</strong> · {l.base_material || 'No material'}{l.comments ? ` · ${l.comments.slice(0, 50)}` : ''}</span>
-          <span className="shrink-0 text-ink-muted">{l.status || '—'}</span>
-        </button>
-      ))}
-      {data.canEdit && (
-        <button type="button" disabled={adding} onClick={() => add(() => withKey(reqKey)(addRequestLine(r.id)))}
-          className="h-11 cursor-pointer self-start rounded-[10px] border border-primary px-4 text-sm font-semibold disabled:opacity-60">
-          {adding ? 'Adding…' : '+ Add continuation line'}
-        </button>
-      )}
-    </section>
-  );
+  const title = r ? requestLabel(r) : '';
 
   return (
     <RecordDrawer
       record={r}
-      loadingText={adding ? 'Creating…' : undefined}
-      kindLabel={isLine ? 'Continuation line' : 'Instructor request'}
+      loadingText={adding ? 'Creating the new request…' : undefined}
+      kindLabel="Instructor request"
       color={CURRICULUM_COLOR}
       title={title}
       isSample={r?.is_sample}
-      groups={requestGroups(data, isLine)}
+      groups={requestGroups(data)}
       canEdit={data.canEdit}
       readOnlyText={READ_ONLY}
       onSave={(patch) => updateRequest(id, patch)}
       onDelete={() => deleteRequest(id)}
-      deleteQuestion={isLine ? `Delete ${title}?` : `Delete ${title}${lines.length ? ` and its ${lines.length} continuation line${lines.length > 1 ? 's' : ''}` : ''}?`}
-      deleteLabel={isLine ? 'Delete line' : 'Delete request'}
+      deleteQuestion={`Delete ${title}?`}
+      deleteLabel="Delete request"
       onClose={onClose}
-      extra={extra}
     />
   );
 }

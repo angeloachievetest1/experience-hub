@@ -1,8 +1,16 @@
-import { PlaceholderPage, placeholderMetadata } from '@/components/PlaceholderPage';
+import { MentorDashboardView } from '@/components/mentor/MentorDashboardView';
+import { MentorShell } from '@/components/mentor/MentorShell';
+import { loadMentorData } from '@/lib/mentor/data';
+import { findPage } from '@/lib/sections';
 
-const HREF = '/mentor';
-export const metadata = placeholderMetadata(HREF);
+const page = findPage('/mentor');
+export const metadata = { title: page.title };
 
-export default function Page() {
-  return <PlaceholderPage href={HREF} />;
+export default async function Page() {
+  const data = await loadMentorData();
+  return (
+    <MentorShell data={data} title={page.title} subtitle={page.subtitle}>
+      <MentorDashboardView />
+    </MentorShell>
+  );
 }

@@ -40,12 +40,128 @@ async function options(listKey) {
   return rows.map((r) => r.value);
 }
 
+async function hasSamples(table) {
+  const { rows } = await q(`select count(*)::int as n from public.${table} where is_sample`);
+  if (rows[0].n > 0) console.log(`${table}: ${rows[0].n} sample rows already exist. Skipped.`);
+  return rows[0].n > 0;
+}
+
 async function add() {
-  const existing = await q('select count(*)::int as n from public.qa_cases where is_sample');
-  if (existing.rows[0].n > 0) {
-    console.log(`Sample records already exist (${existing.rows[0].n} Quality Analyst cases). Nothing added.`);
-    return;
+  if (!(await hasSamples('qa_cases'))) await addQa();
+  if (!(await hasSamples('curriculum_customer_cases'))) await addCurriculumCases();
+  if (!(await hasSamples('curriculum_instructor_requests'))) await addCurriculumRequests();
+  if (!(await hasSamples('mentor_cases'))) await addMentor();
+}
+
+async function courseIds() {
+  return (await q(`select id from public.courses where is_active order by sort_order`)).rows.map((r) => r.id);
+}
+
+async function insertRow(table, row) {
+  const cols = Object.keys(row);
+  const { rows } = await q(
+    `insert into public.${table} (${cols.join(', ')}, is_sample)
+     values (${cols.map((_, i) => `$${i + 1}`).join(', ')}, true) returning id`,
+    cols.map((c) => row[c]));
+  return rows[0].id;
+}
+
+async function addCurriculumCases() {
+  const courses = await courseIds();
+  const categories = await options('cur_category');
+  const materials = await options('cur_material_type');
+  const smes = ['Sample SME 1', 'Sample SME 2', 'Sample SME 3'];
+  for (let n = 1; n <= 24; n++) {
+    const caseDate = randomDate(false);
+    const resolved = maybe(0.8, (() => {
+      const d = new Date(caseDate);
+      d.setUTCDate(d.getUTCDate() + Math.floor(rand() * 6));
+      return d.toISOString().slice(0, 10);
+    })());
+    await insertRow('curriculum_customer_cases', {
+      case_date: caseDate,
+      customer_name: `Sample Customer ${String(n).padStart(2, '0')}`,
+      course_id: pick(courses),
+      category: pick(categories),
+      material_type: pick(materials),
+      curriculum_sme: pick(smes),
+      tm_on_sf: maybe(0.5, 'Sample TM'),
+      comments: 'Sample complaint about course content.',
+      feedback_progress: maybe(0.7, 'Sample progress note.'),
+      date_resolved: resolved,
+      resolution_tat_days: resolved ? Math.round((Date.parse(resolved) - Date.parse(caseDate)) / 86400000) : null,
+      case_link: maybe(0.7, `https://example.com/sample-curriculum/${n}`),
+    });
   }
+  console.log('Added 24 sample Curriculum customer cases.');
+}
+
+async function addCurriculumRequests() {
+  const courses = await courseIds();
+  const feedback = await options('cur_feedback_type');
+  const materials = await options('cur_base_material');
+  const statuses = await options('cur_request_status');
+  const tms = ['Sample Ticket Manager 1', 'Sample Ticket Manager 2'];
+  let total = 0;
+  for (let n = 1; n <= 10; n++) {
+    const status = pick(statuses);
+    const submitted = randomDate(false);
+    const parentId = await insertRow('curriculum_instructor_requests', {
+      requester_name: `Sample Requester ${String(n).padStart(2, '0')}`,
+      date_submitted: submitted,
+      course_id: pick(courses),
+      feedback_type: pick(feedback),
+      base_material: pick(materials),
+      comments: 'Sample content error reported by an instructor.',
+      status,
+      date_completed: status === 'Complete' ? submitted : null,
+      ticket_manager: pick(tms),
+    });
+    total++;
+    const lines = Math.floor(rand() * 3); // 0–2 continuation lines
+    for (let l = 1; l <= lines; l++) {
+      await insertRow('curriculum_instructor_requests', {
+        parent_id: parentId,
+        line_order: l,
+        base_material: pick(materials),
+        comments: `Sample continuation line ${l}.`,
+        status: pick(statuses),
+        ticket_manager: pick(tms),
+      });
+      total++;
+    }
+  }
+  console.log(`Added 10 sample instructor requests (${total} rows including continuation lines).`);
+}
+
+async function addMentor() {
+  const courses = await courseIds();
+  const mentors = (await q('select id from public.mentors where is_active')).rows.map((r) => r.id);
+  const types = await options('mentor_complaint_type');
+  const subTypes = await options('mentor_complaint_sub_type');
+  const statuses = await options('mentor_status');
+  const closedBy = await options('mentor_case_closed_by');
+  for (let n = 1; n <= 30; n++) {
+    const status = pick(statuses);
+    await insertRow('mentor_cases', {
+      case_date: randomDate(false),
+      customer_name: `Sample Customer ${String(n).padStart(2, '0')}`,
+      mentor_id: pick(mentors),
+      course_id: pick(courses),
+      complaint_type: pick(types),
+      complaint_sub_type: pick(subTypes),
+      complaint_analysis: pick(['Valid', 'Valid', 'Partially Valid', 'Not Valid']),
+      status,
+      case_closed_by: status === 'Closed' ? pick(closedBy) : null,
+      email_sent: rand() < 0.6,
+      email_sms_preview: maybe(0.5, 'Sample message sent to the customer.'),
+      case_link: maybe(0.8, `https://example.com/sample-mentor/${n}`),
+    });
+  }
+  console.log('Added 30 sample Mentor cases.');
+}
+
+async function addQa() {
 
   const instructorNames = ['Sample Instructor A', 'Sample Instructor B', 'Sample Instructor C', 'Sample Instructor D', 'Sample Instructor E'];
   for (const name of instructorNames) {

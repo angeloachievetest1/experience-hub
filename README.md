@@ -12,7 +12,7 @@ The full specification is in [BRIEF.md](BRIEF.md).
 |---|---|---|
 | 1 | Foundation: schema, RLS, audit, auth, app shell | Done |
 | 2 | Quality Analyst section | Done (with sample records) |
-| 3 | Curriculum and Mentor sections | Not started |
+| 3 | Curriculum and Mentor sections | Done (with sample records) |
 | 4 | Admin Dashboard and data import | Not started |
 | 5 | Netlify deployment | Not started |
 

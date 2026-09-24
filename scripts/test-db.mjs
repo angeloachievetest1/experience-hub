@@ -100,6 +100,8 @@ try {
     run(`insert into public.curriculum_customer_cases (customer_name) values ('x')`))));
   check('Cannot add a Mentor case', denied(await as(users.viewer,
     run(`insert into public.mentor_cases (customer_name) values ('x')`))));
+  check('Cannot add an Instructor request', denied(await as(users.viewer,
+    run(`insert into public.curriculum_instructor_requests (requester_name) values ('x')`))));
   r = await as(users.viewer, run(`update public.qa_cases set notes = 'x' where id = $1`, [qaCase]));
   check('Cannot edit a case (0 rows changed)', r.ok && r.rowCount === 0, r.message);
   r = await as(users.viewer, run(`delete from public.qa_cases where id = $1`, [qaCase]));
@@ -146,6 +148,10 @@ try {
   check('Can delete a Mentor case', r.ok && r.rowCount === 1, r.message);
   check('Cannot add a Quality Analyst case', denied(await as(users.mentorAdmin,
     run(`insert into public.qa_cases (source) values ('Survey')`))));
+  check('Cannot add a Curriculum customer case', denied(await as(users.mentorAdmin,
+    run(`insert into public.curriculum_customer_cases (customer_name) values ('x')`))));
+  check('Cannot add a Curriculum instructor request', denied(await as(users.mentorAdmin,
+    run(`insert into public.curriculum_instructor_requests (requester_name) values ('x')`))));
   r = await as(users.mentorAdmin, run(`update public.qa_cases set notes = 'x' where id = $1`, [qaCase]));
   check('Cannot edit a Quality Analyst case', r.ok && r.rowCount === 0, r.message);
   r = await as(users.mentorAdmin, run('select public.check_write_access() as a'));

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { START_PAGE } from '@/lib/sections';
 import { supabaseEnv } from './env';
 
 const PUBLIC_PATHS = ['/sign-in', '/auth/'];
@@ -40,7 +41,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && path === '/sign-in') {
     const home = request.nextUrl.clone();
-    home.pathname = '/';
+    home.pathname = START_PAGE;
     home.search = '';
     return NextResponse.redirect(home);
   }

@@ -8,7 +8,7 @@ Only super-admins see that link.
 **Add a test user**
 - [ ] Click **Add user**. Fill in a name, a made-up email (e.g. `admin-test@example.com`), a password of 8+ characters, role **Admin**, and tick **Mentor** only. Click **Create user**.
 - [ ] The new user's panel opens, and they appear in the list as Admin with Mentor.
-- [ ] Sign out, then sign in as that user. They can edit Mentor cases but not Quality Analyst or Curriculum. On Home, **Test my write access** confirms it. They have no "Switch to Experience Hub Dashboard" link.
+- [ ] Sign out, then sign in as that user. They can edit Mentor cases but not Quality Analyst or Curriculum. Opening a Quality Analyst case shows "Read only". They have no "Switch to Experience Hub Dashboard" link.
 - [ ] Sign back in as yourself.
 
 **Edit, password, deactivate**

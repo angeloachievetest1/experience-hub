@@ -1,4 +1,5 @@
 import { Logo } from '@/components/Icon';
+import { START_PAGE } from '@/lib/sections';
 import { INACTIVE_ACCOUNT_MESSAGE } from './messages';
 import { SignInForm } from './SignInForm';
 
@@ -23,7 +24,7 @@ export default async function SignInPage({
           <h1 className="m-0 font-display text-[32px] leading-tight font-light">Sign in</h1>
           <p className="mt-2 mb-0 text-ink-muted">Staff only. Use the email and password you were given.</p>
         </div>
-        <SignInForm next={next ?? '/'} notice={notice} />
+        <SignInForm next={next ?? START_PAGE} notice={notice} />
       </div>
     </main>
   );

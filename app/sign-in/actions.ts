@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { START_PAGE } from '@/lib/sections';
 import { createClient } from '@/lib/supabase/server';
 import { INACTIVE_ACCOUNT_MESSAGE } from './messages';
 
@@ -46,5 +47,5 @@ const DEACTIVATED_MESSAGE = INACTIVE_ACCOUNT_MESSAGE;
 
 // Only allow redirects to pages inside this app.
 function safeNext(value: string) {
-  return value.startsWith('/') && !value.startsWith('//') && !value.startsWith('/\\') ? value : '/';
+  return value.startsWith('/') && !value.startsWith('//') && !value.startsWith('/\\') ? value : START_PAGE;
 }

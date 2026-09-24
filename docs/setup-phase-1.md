@@ -90,18 +90,16 @@ Open <http://localhost:3000> in your browser. Leave the terminal window open whi
 
 - [ ] Going to <http://localhost:3000> sends you to the **Sign in** page.
 - [ ] A wrong password shows "That email and password don't match".
-- [ ] Your real password takes you to **Home** ("Welcome, …").
+- [ ] Your real password takes you to the **Quality Analyst Dashboard**. (The Home page was removed on 2026-09-30.)
 - [ ] The left menu shows **Quality Analyst** (6 pages), **Curriculum** (3), **Mentor** (2). Each opens a placeholder page.
 - [ ] At the bottom of the menu you see **Switch to Experience Hub Dashboard**. It opens Users / Activity Log / Login History placeholders. **Back to Experience Hub** returns.
-- [ ] On Home, **Your access** says Admin, can edit all three sections, super-admin Yes.
-- [ ] **Test my write access** shows all three sections allowed, each marked "Matches your profile".
 - [ ] **Sign out** returns you to the Sign in page.
 
 **As the Viewer test account:**
 
 - [ ] Sign in. The menu shows the three sections but **no** "Switch to Experience Hub Dashboard" link.
 - [ ] Type <http://localhost:3000/admin> into the address bar. You get "Page not found".
-- [ ] On Home, **Test my write access** shows all three sections as **"Database blocks changes (read only)"**, each marked "Matches your profile". The database refused the write, not just the screen.
+- [ ] Case panels show "Read only", with no Save or Delete. (The database also refuses the write: see `npm run db:test`.)
 
 **Deactivation:**
 

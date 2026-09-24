@@ -2,6 +2,9 @@
 
 export type SectionKey = 'quality_analyst' | 'curriculum' | 'mentor';
 
+// Where the app opens (there is no separate Home page).
+export const START_PAGE = '/quality-analyst';
+
 export type IconName =
   | 'home' | 'grid' | 'chart' | 'list' | 'person' | 'bookmark' | 'clock'
   | 'cap' | 'chat' | 'users' | 'login';

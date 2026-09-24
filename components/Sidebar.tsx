@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from '@/app/auth/actions';
-import { ADMIN_GROUP, SECTION_GROUPS, type NavGroup } from '@/lib/sections';
+import { ADMIN_GROUP, SECTION_GROUPS, START_PAGE, type NavGroup } from '@/lib/sections';
 import { Icon, Logo } from './Icon';
 
 type Props = {
@@ -28,7 +28,7 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
       className="flex flex-col gap-8 border-b border-peach-200 bg-white px-5 py-4 md:sticky md:top-0 md:h-screen md:w-[248px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 md:py-7"
     >
       <div className="flex items-center justify-between gap-3">
-        <Link href={inAdmin ? '/admin' : '/'} className="flex items-center gap-3 no-underline">
+        <Link href={inAdmin ? '/admin' : START_PAGE} className="flex items-center gap-3 no-underline">
           <Logo />
           <span className="font-display text-lg leading-tight font-semibold">
             {inAdmin ? 'Experience Hub Dashboard' : 'Experience Hub'}
@@ -48,7 +48,6 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
 
       <div id="main-menu" className={`${menuOpen ? 'flex' : 'hidden'} flex-1 flex-col gap-8 pb-3 md:flex md:pb-0`}>
       <div className="flex flex-col gap-6">
-        {!inAdmin && <NavItem href="/" label="Home" icon="home" active={pathname === '/'} />}
         {groups.map((group) => (
           <div key={group.key} className="flex flex-col gap-1">
             <div className="px-3.5 pb-2 font-display text-[15px] font-semibold tracking-[0.03em] uppercase">
@@ -69,7 +68,7 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
 
       <div className="mt-auto flex flex-col gap-3">
         {inAdmin ? (
-          <SwitchLink href="/" label="Back to Experience Hub" icon="back" />
+          <SwitchLink href={START_PAGE} label="Back to Experience Hub" icon="back" />
         ) : (
           isSuperAdmin && <SwitchLink href="/admin" label="Switch to Experience Hub Dashboard" icon="arrow" />
         )}

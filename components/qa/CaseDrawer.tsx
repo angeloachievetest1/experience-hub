@@ -218,7 +218,7 @@ function CaseForm({ c, onClose, closeRef, message, setMessage }: {
       ))}
 
       {canEdit && (
-        <div className="sticky bottom-0 -mx-7 -mb-10 flex flex-col gap-3 border-t border-lilac-50 bg-white px-7 py-4">
+        <div className="flex flex-col gap-3 border-t border-lilac-50 pt-4">
           {message && (
             <p role={message.kind === 'error' ? 'alert' : 'status'}
               className={`m-0 rounded-[10px] px-3.5 py-2.5 text-sm ${message.kind === 'error' ? 'border border-primary bg-peach-100' : 'bg-highlight'}`}>

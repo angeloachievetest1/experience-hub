@@ -8,8 +8,9 @@ export type TableColumn<T> = { key: string; header: string; render: (row: T) => 
 // Clickable table used by every case log. First column: record number + a
 // second line (customer); then an optional one-click Link column.
 export function RecordTable<T extends { id: string; is_sample?: boolean }>({
-  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980,
+  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case',
 }: {
+  firstHeader?: string;
   rows: T[];
   label: (row: T) => string;
   subLabel?: (row: T) => string;
@@ -29,7 +30,7 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
         <table className="w-full border-collapse text-sm" style={{ minWidth }}>
           <thead className="bg-lilac-50">
             <tr>
-              <th scope="col" className={`${th} pl-6`}>Case</th>
+              <th scope="col" className={`${th} pl-6`}>{firstHeader}</th>
               {link && <th scope="col" className={th}>Link</th>}
               {columns.map((c) => <th key={c.key} scope="col" className={th}>{c.header}</th>)}
             </tr>

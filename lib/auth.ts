@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { SectionKey } from '@/lib/sections';
 
@@ -49,6 +49,13 @@ export async function requireActiveProfile(): Promise<Profile> {
   const profile = await getCurrentProfile();
   if (!profile) redirect('/sign-in');
   if (profile.status !== 'active') redirect('/auth/deactivated');
+  return profile;
+}
+
+// Admin Dashboard pages and actions: active super-admins only; others get a 404.
+export async function requireSuperAdmin(): Promise<Profile> {
+  const profile = await requireActiveProfile();
+  if (!profile.is_super_admin) notFound();
   return profile;
 }
 

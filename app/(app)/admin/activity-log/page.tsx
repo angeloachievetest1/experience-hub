@@ -1,8 +1,11 @@
-import { PlaceholderPage, placeholderMetadata } from '@/components/PlaceholderPage';
+import { ActivityPage } from '@/components/admin/AdminShells';
+import { loadActivity } from '@/lib/admin/data';
+import { findPage } from '@/lib/sections';
 
-const HREF = '/admin/activity-log';
-export const metadata = placeholderMetadata(HREF);
+const page = findPage('/admin/activity-log');
+export const metadata = { title: page.title };
 
-export default function Page() {
-  return <PlaceholderPage href={HREF} />;
+export default async function Page() {
+  const data = await loadActivity();
+  return <ActivityPage data={data} title={page.title} subtitle={page.subtitle} />;
 }

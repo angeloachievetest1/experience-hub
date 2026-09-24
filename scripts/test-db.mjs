@@ -229,6 +229,38 @@ try {
   await q('rollback to savepoint multicourse');
 
   // ---------------------------------------------------------------------------
+  console.log('\nAdmin Dashboard support');
+  const invited = randomUUID();
+  await q(
+    `insert into auth.users (id, aud, role, email, raw_user_meta_data, raw_app_meta_data, created_at, updated_at)
+     values ($1, 'authenticated', 'authenticated', $2, '{"full_name":"RLS test invited","department":"QA"}', $3::jsonb, now(), now())`,
+    [invited, `rls-test-invited-${invited.slice(0, 8)}@example.invalid`,
+      JSON.stringify({ eh_approved: true, eh_role: 'admin', eh_sections: ['curriculum', 'not_a_section'], eh_super_admin: false })]);
+  const inv = (await q('select role, sections, is_super_admin, status, department from public.profiles where id = $1', [invited])).rows[0];
+  check('A user created by the Admin Dashboard gets their role and sections straight away',
+    inv?.role === 'admin' && JSON.stringify(inv.sections) === JSON.stringify(['curriculum']) && inv.status === 'active' && inv.department === 'QA',
+    JSON.stringify(inv));
+  check('A viewer cannot write to the log through the admin helper', denied(await as(users.viewer,
+    run(`select public.admin_log_event('x', 'x', 'x', 'x')`))));
+  check('A viewer cannot claim log entries', denied(await as(users.viewer,
+    run(`select public.admin_claim_event('x', 'x')`))));
+  r = await as(users.superAdmin, async () => {
+    await q(`select public.admin_log_event('Set a new password', $1, 'RLS test viewer', null)`, [users.viewer]);
+    await q('reset role');
+    const log = await q(`select actor_id from public.activity_log where action = 'Set a new password' and record_id = $1`, [users.viewer]);
+    return { actor: log.rows[0]?.actor_id };
+  });
+  check('A super-admin action with no table trigger is logged under their name', r.ok && r.actor === users.superAdmin, r.message);
+  await q('savepoint skip');
+  await q(`set local app.skip_audit = 'on'`);
+  const skipped = (await q(`insert into public.mentor_cases (customer_name, is_sample) values ('RLS skip test', true) returning id`)).rows[0].id;
+  const skipLog = await q('select count(*)::int as n from public.activity_log where record_id = $1', [skipped]);
+  check('The one-time import can skip the activity log', skipLog.rows[0].n === 0);
+  await q('rollback to savepoint skip');
+  const label = await q(`select record_label from public.activity_log where record_id = $1 and action = 'Added a case' limit 1`, [mentorCase]);
+  check('Log entries carry a readable record name (e.g. MEN-0012)', /^MEN-\d{4,}$/.test(label.rows[0]?.record_label ?? ''), label.rows[0]?.record_label);
+
+  // ---------------------------------------------------------------------------
   console.log('\nLogin history');
   const sessionId = randomUUID();
   await q(`insert into auth.sessions (id, user_id, created_at, updated_at) values ($1, $2, now(), now())`,

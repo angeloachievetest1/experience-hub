@@ -14,7 +14,8 @@ export type Named = { id: string; name: string };
 export type FieldDef =
   | { key: string; label: string; kind: 'text' | 'textarea' | 'date' | 'url' | 'pct' | 'number' | 'rating' | 'bool' }
   | { key: string; label: string; kind: 'suggest'; suggestions: string[] }
-  | { key: string; label: string; kind: 'select'; options: readonly string[]; names?: Record<string, string> }
+  // names: shown next to the value (MCS – Mid Course Survey); labels: shown instead of it (admin → Admin)
+  | { key: string; label: string; kind: 'select'; options: readonly string[]; names?: Record<string, string>; labels?: Record<string, string>; required?: boolean }
   | { key: string; label: string; kind: 'lookup'; options: Named[]; emptyHint?: string }
   | { key: string; label: string; kind: 'multi'; options: readonly string[] }
   | { key: string; label: string; kind: 'multiLookup'; options: Named[] };
@@ -359,9 +360,9 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
     case 'select':
       return (
         <select id={id} value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass}>
-          <option value="">Not set</option>
+          {!f.required && <option value="">Not set</option>}
           {withCurrent(f.options, value).map((o) => (
-            <option key={o} value={o}>{f.names?.[o] ? `${o} – ${f.names[o]}` : o}</option>
+            <option key={o} value={o}>{f.labels?.[o] ?? (f.names?.[o] ? `${o} – ${f.names[o]}` : o)}</option>
           ))}
         </select>
       );
@@ -426,7 +427,7 @@ function FieldValue({ f, value }: { f: FieldDef; value: unknown }) {
     case 'multi': return box((value as string[]).join(', '));
     case 'select': {
       const v = String(value);
-      return box(f.names?.[v] ? `${v} – ${f.names[v]}` : v);
+      return box(f.labels?.[v] ?? (f.names?.[v] ? `${v} – ${f.names[v]}` : v));
     }
     default: return box(String(value));
   }

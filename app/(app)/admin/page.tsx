@@ -1,8 +1,11 @@
-import { PlaceholderPage, placeholderMetadata } from '@/components/PlaceholderPage';
+import { UsersPage } from '@/components/admin/AdminShells';
+import { loadUsers } from '@/lib/admin/data';
+import { findPage } from '@/lib/sections';
 
-const HREF = '/admin';
-export const metadata = placeholderMetadata(HREF);
+const page = findPage('/admin');
+export const metadata = { title: page.title };
 
-export default function Page() {
-  return <PlaceholderPage href={HREF} />;
+export default async function Page() {
+  const data = await loadUsers();
+  return <UsersPage data={data} title={page.title} subtitle={page.subtitle} />;
 }

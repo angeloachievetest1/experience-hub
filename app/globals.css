@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Brand tokens. Use them as Tailwind classes, e.g. bg-primary, text-ink,
+   bg-peach-50, border-lilac-200, font-display. */
+@theme {
+  --color-primary: #FF4500;      /* actions / buttons */
+  --color-secondary: #9F7DFF;    /* accent */
+  --color-ink: #2D1559;          /* text — no pure black anywhere */
+  --color-ink-muted: #5B4A7D;    /* secondary text (from the prototype) */
+  --color-highlight: #DDFF7D;    /* sparingly */
+
+  --color-peach-200: #FFE3D9;
+  --color-peach-100: #FFEFE9;
+  --color-peach-50: #FFF5F2;
+  --color-lilac-200: #DDD1FF;
+  --color-lilac-100: #EAE2FF;
+  --color-lilac-50: #F6F3FF;
+
+  /* Tailwind's own black also maps to the brand text colour. */
+  --color-black: #2D1559;
+}
+
+@theme inline {
+  --font-display: var(--font-bitter), Georgia, serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-peach-50);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}

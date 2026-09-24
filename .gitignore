@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# Next.js build output
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# secrets — never commit these
+.env
+.env*.local
+
+# customer data exports for the Phase 4 import (keep out of Git)
+/data/import/*
+!/data/import/README.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

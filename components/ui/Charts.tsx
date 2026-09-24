@@ -183,15 +183,16 @@ export function Donut({ a, b, aLabel, bLabel, aColor = '#FF4500', bColor = '#9F7
   return (
     <div className="relative size-[200px] shrink-0" role="img" aria-label={`${aLabel} ${aPct}%, ${bLabel} ${100 - aPct}%`}>
       <div className="size-full rounded-full" style={{ background: `conic-gradient(${aColor} 0 ${aPct}%, ${bColor} ${aPct}% 100%)` }} />
+      {/* The first part fills clockwise from the top, so it sits on the right: its label goes on the right too. */}
       <div className="absolute inset-5 flex items-center justify-center gap-3 rounded-full bg-white">
-        <div className="text-center">
-          <div className="font-display text-[22px] leading-tight font-semibold" style={{ color: aColor }}>{aPct}%</div>
-          <div className="text-[11px] text-ink-muted">{aLabel}</div>
-        </div>
-        <div className="w-px self-stretch bg-lilac-50" />
         <div className="text-center">
           <div className="font-display text-[22px] leading-tight font-semibold" style={{ color: bColor }}>{total ? 100 - aPct : 0}%</div>
           <div className="text-[11px] text-ink-muted">{bLabel}</div>
+        </div>
+        <div className="w-px self-stretch bg-lilac-50" />
+        <div className="text-center">
+          <div className="font-display text-[22px] leading-tight font-semibold" style={{ color: aColor }}>{aPct}%</div>
+          <div className="text-[11px] text-ink-muted">{aLabel}</div>
         </div>
       </div>
     </div>

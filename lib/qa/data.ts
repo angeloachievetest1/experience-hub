@@ -17,7 +17,7 @@ export async function loadQaData(): Promise<QaData> {
       .from('qa_cases')
       .select('*, qa_case_courses(course_id)')
       .order('case_date', { ascending: false, nullsFirst: false })
-      .order('case_no', { ascending: false })
+      .order('created_at', { ascending: false })
       .range(from, from + PAGE - 1);
     if (error) throw new Error(`Could not load Quality Analyst cases: ${error.message}`);
     for (const row of data ?? []) {

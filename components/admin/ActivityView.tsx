@@ -21,7 +21,7 @@ const TABS: { value: Tab; label: string }[] = [
 ];
 
 const FIELD_LABELS: Record<string, string> = {
-  case_no: 'Case number', customer_name: 'Customer', course_id: 'Course', course_ids: 'Courses', instructor_id: 'Instructor',
+  customer_name: 'Customer', course_id: 'Course', course_ids: 'Courses', instructor_id: 'Instructor',
   mentor_id: 'Mentor', case_date: 'Date', is_sample: 'Sample record', field_notes: 'Field notes',
   is_super_admin: 'Super-admin', full_name: 'Full name', resolution_tat_days: 'Resolution TAT (days)',
 };

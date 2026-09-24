@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { FilterMulti, FilterSelect, usePopover } from '@/components/ui/Dropdowns';
 import { inRange } from '@/lib/qa/stats';
-import { QA_SOURCES, VALIDITY_VALUES, caseIssue, caseLabel, type QaSource } from '@/lib/qa/types';
+import { QA_SOURCES, VALIDITY_VALUES, caseIssue, type QaSource } from '@/lib/qa/types';
 import { CaseTable } from './CaseTable';
 import { useQa } from './QaShell';
 
@@ -32,7 +32,7 @@ export function CaseLogView() {
       if (category && c.category !== category) return false;
       if (validity && c.validity !== validity) return false;
       if (!q) return true;
-      return [caseLabel(c), c.customer_name, courseNames(c), instructorName(c.instructor_id), c.analyst,
+      return [c.customer_name, courseNames(c), instructorName(c.instructor_id), c.analyst,
         caseIssue(c), c.survey_id, c.notes, c.customer_comment]
         .some((v) => v?.toLowerCase().includes(q));
     });
@@ -51,7 +51,7 @@ export function CaseLogView() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M20 20l-4-4" />
           </svg>
-          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search case, customer, course, instructor"
+          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search customer, course, instructor"
             aria-label="Search cases" className="w-full border-0 bg-transparent text-sm outline-none" />
         </label>
         {data.canEdit && <AddCaseButton />}

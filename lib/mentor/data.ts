@@ -11,7 +11,7 @@ export async function loadMentorData(): Promise<MentorData> {
 
   const [cases, mentors, courses, { options }] = await Promise.all([
     fetchAll<MentorCase>(supabase, 'mentor_cases', '*', [
-      { column: 'case_date', ascending: false }, { column: 'case_no', ascending: false },
+      { column: 'case_date', ascending: false }, { column: 'created_at', ascending: false },
     ]),
     supabase.from('mentors').select('id, full_name').eq('is_active', true).order('full_name'),
     loadCourses(supabase),

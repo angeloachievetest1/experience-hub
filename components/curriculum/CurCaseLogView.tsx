@@ -6,7 +6,7 @@ import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
-import { caseLabel, resolutionDays } from '@/lib/curriculum/types';
+import { resolutionDays } from '@/lib/curriculum/types';
 import { customerLabel } from '@/lib/records/labels';
 import { caseKey, useCur, withKey } from './useCur';
 
@@ -24,7 +24,7 @@ export function CurCaseLogView() {
     (!category || c.category === category) &&
     (!material || c.material_type === material) &&
     (!sme || c.curriculum_sme === sme) &&
-    matches(query, [caseLabel(c), c.customer_name, courseName(c.course_id), c.comments, c.feedback_progress, c.curriculum_sme]));
+    matches(query, [c.customer_name, courseName(c.course_id), c.comments, c.feedback_progress, c.curriculum_sme]));
 
   return (
     <div className="flex flex-col gap-5">
@@ -35,7 +35,7 @@ export function CurCaseLogView() {
           options={distinct(data.cases.map((c) => c.material_type))} />
         <FilterSelect label="Curriculum SME" allLabel="All SMEs" value={sme} onChange={setSme}
           options={distinct(data.cases.map((c) => c.curriculum_sme))} />
-        <SearchBox value={query} onChange={setQuery} placeholder="Search case, customer, course, comment" label="Search curriculum cases" />
+        <SearchBox value={query} onChange={setQuery} placeholder="Search customer, course, comment" label="Search curriculum cases" />
         {data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(() => withKey(caseKey)(createCustomerCase()))} />}
         <span className="ml-auto text-sm text-ink-muted">Showing {rows.length} of {inDates.length} cases</span>
       </div>

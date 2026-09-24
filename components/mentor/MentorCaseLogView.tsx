@@ -7,7 +7,7 @@ import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
-import { MENTOR_VALIDITY, mentorLabel, periodDate } from '@/lib/mentor/types';
+import { MENTOR_VALIDITY, periodDate } from '@/lib/mentor/types';
 import { customerLabel } from '@/lib/records/labels';
 import { useMentor } from './MentorShell';
 
@@ -29,7 +29,7 @@ export function MentorCaseLogView() {
     (!subType || c.complaint_sub_type === subType) &&
     (!status || c.status === status) &&
     (!validity || c.complaint_analysis === validity) &&
-    matches(query, [mentorLabel(c), c.customer_name, mentorName(c.mentor_id), courseName(c.course_id), c.email_sms_preview]));
+    matches(query, [c.customer_name, mentorName(c.mentor_id), courseName(c.course_id), c.email_sms_preview]));
 
   const o = (k: string) => data.options[k] ?? [];
 
@@ -41,7 +41,7 @@ export function MentorCaseLogView() {
         <FilterSelect label="Sub type" allLabel="All sub types" value={subType} onChange={setSubType} options={o('mentor_complaint_sub_type')} />
         <FilterSelect label="Status" allLabel="All statuses" value={status} onChange={setStatus} options={o('mentor_status')} />
         <FilterSelect label="Validity" allLabel="All validity" value={validity} onChange={setValidity} options={[...MENTOR_VALIDITY]} />
-        <SearchBox value={query} onChange={setQuery} placeholder="Search case, customer, mentor" label="Search mentor complaints" />
+        <SearchBox value={query} onChange={setQuery} placeholder="Search customer, mentor, course" label="Search mentor complaints" />
         {data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(createMentorCase)} />}
         <span className="ml-auto text-sm text-ink-muted">Showing {rows.length} of {inDates.length} cases</span>
       </div>

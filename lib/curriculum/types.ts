@@ -4,7 +4,6 @@ import type { Named } from '@/components/records/RecordDrawer';
 // A. Customer Cases: customer complaints about course content.
 export type CurCase = {
   id: string;
-  case_no: number;
   case_date: string | null;
   customer_name: string | null;
   course_id: string | null;
@@ -26,7 +25,6 @@ export type CurCase = {
 // request; a blank requester or course simply stays blank.
 export type CurRequest = {
   id: string;
-  case_no: number;
   requester_name: string | null;
   date_submitted: string | null;
   course_id: string | null;
@@ -51,9 +49,6 @@ export type CurData = {
 };
 
 export const CURRICULUM_COLOR = '#9F7DFF';
-
-export const caseLabel = (c: Pick<CurCase, 'case_no'>) => `CUR-${String(c.case_no).padStart(4, '0')}`;
-export const requestLabel = (r: Pick<CurRequest, 'case_no'>) => `REQ-${String(r.case_no).padStart(4, '0')}`;
 
 // Days between two YYYY-MM-DD dates (null if either is missing or order is wrong).
 export function daysBetween(from: string | null, to: string | null) {

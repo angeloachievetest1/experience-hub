@@ -7,7 +7,6 @@ export const VALIDITY_VALUES = ['Valid', 'Partially Valid', 'Not Valid', 'N/A'] 
 
 export type QaCase = {
   id: string;
-  case_no: number;
   source: QaSource;
   case_date: string | null;
   customer_name: string | null;
@@ -100,10 +99,6 @@ export const SURVEY_TYPE_COLORS: Record<string, string> = {
 };
 
 export const EXTRA_COLORS = ['#FF4500', '#9F7DFF', '#2D1559', '#FFB199', '#DDD1FF', '#DDFF7D', '#5B4A7D', '#EAE2FF'];
-
-export function caseLabel(c: Pick<QaCase, 'case_no'>) {
-  return `QA-${String(c.case_no).padStart(4, '0')}`;
-}
 
 // "Type or reason" column: what the case is about, whatever its source.
 export function caseIssue(c: QaCase) {

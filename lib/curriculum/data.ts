@@ -11,10 +11,10 @@ export async function loadCurriculumData(): Promise<CurData> {
 
   const [cases, requests, courses, { options }] = await Promise.all([
     fetchAll<CurCase>(supabase, 'curriculum_customer_cases', '*', [
-      { column: 'case_date', ascending: false }, { column: 'case_no', ascending: false },
+      { column: 'case_date', ascending: false }, { column: 'created_at', ascending: false },
     ]),
     fetchAll<CurRequest>(supabase, 'curriculum_instructor_requests', '*', [
-      { column: 'date_submitted', ascending: false }, { column: 'case_no', ascending: false },
+      { column: 'date_submitted', ascending: false }, { column: 'created_at', ascending: false },
     ]),
     loadCourses(supabase),
     loadOptions(supabase, 'cur_'),

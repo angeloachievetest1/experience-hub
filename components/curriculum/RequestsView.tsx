@@ -6,7 +6,6 @@ import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
-import { requestLabel } from '@/lib/curriculum/types';
 import { requesterLabel } from '@/lib/records/labels';
 import { reqKey, useCur, withKey } from './useCur';
 
@@ -28,7 +27,7 @@ export function RequestsView() {
     (status === 'All' || r.status === status) &&
     (!feedback || r.feedback_type === feedback) &&
     (!tm || r.ticket_manager === tm) &&
-    matches(query, [requestLabel(r), r.requester_name, courseName(r.course_id), r.comments, r.notes, r.base_material]));
+    matches(query, [r.requester_name, courseName(r.course_id), r.comments, r.notes, r.base_material]));
 
   return (
     <div className="flex flex-col gap-5">

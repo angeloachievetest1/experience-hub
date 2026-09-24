@@ -65,7 +65,7 @@ export async function createUser(input: NewUser): Promise<ActionResult> {
       eh_approved: true,
       eh_role: input.role,
       eh_sections: input.role === 'admin' ? sections : [],
-      eh_super_admin: Boolean(input.is_super_admin),
+      eh_super_admin: input.role === 'admin' && Boolean(input.is_super_admin), // Viewers can't be super-admins
     },
   });
   if (error || !data.user) return { ok: false, error: authError(error?.message ?? 'No user returned.') };
@@ -115,6 +115,16 @@ export async function updateUser(id: string, patch: Record<string, unknown>): Pr
     }
   }
 
+  // Viewers are view-only: no sections and no super-admin (also enforced by the database).
+  if (values.role === 'viewer') {
+    values.sections = [];
+    values.is_super_admin = false;
+  } else if (!('role' in values) && ((Array.isArray(values.sections) && values.sections.length) || values.is_super_admin === true)) {
+    const supabase = await createClient();
+    const { data: current } = await supabase.from('profiles').select('role').eq('id', id).maybeSingle();
+    if (current?.role === 'viewer') return { ok: false, error: 'Viewers can’t have sections or be super-admins. Change their role to Admin first.' };
+  }
+
   // Email lives in Supabase Auth; the profile copy follows automatically.
   if ('email' in patch) {
     const email = text(patch.email)?.toLowerCase();
@@ -130,6 +140,9 @@ export async function updateUser(id: string, patch: Record<string, unknown>): Pr
     const supabase = await createClient();
     const { data, error } = await supabase.from('profiles').update(values).eq('id', id).select('id');
     if (error) {
+      if (/profiles_viewer_read_only/.test(error.message)) {
+        return { ok: false, error: 'Viewers can’t have sections or be super-admins. Change their role to Admin first.' };
+      }
       if (/At least one active super-admin/.test(error.message)) {
         return { ok: false, error: 'At least one active super-admin is required. Give someone else the super-admin flag first.' };
       }

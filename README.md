@@ -22,6 +22,7 @@ The full specification is in [BRIEF.md](BRIEF.md).
 |---|---|
 | 2026-09-30 | **Quality Analyst import uses the visible tabs only** (Instructor Complaints, Course Complaints, Low Survey Scores, Returned Cases). Hidden tabs, including Low Survey Scores 2025 and the Provisional Instructor List, are ignored. The instructor list is built from the names in these tabs. |
 | 2026-09-30 | **No Course data gap.** The dashboard shows what the Course Complaints tab contains (it has rows inside Jul 2025 – Jan 2026). |
+| 2026-09-30 | **Viewers are view-only.** They can’t have sections or be super-admins (replaces the brief’s “super-admin flag independent of role”); enforced in the database. Admins edit only their ticked sections and view the rest. |
 | 2026-09-30 | **No Home page.** The app opens on the Quality Analyst dashboard; the Phase 1 "Test my write access" button was removed (the same checks run in `npm run db:test`). |
 | 2026-09-30 | **Records are shown by customer name, not number.** Case tables start with Date, Case (customer name; requester for Instructor requests), Link. Panel titles and the Activity Log also use the name. Case numbers were removed entirely (migration 019). |
 | 2026-09-30 | **Mentor import:** the sheet’s Case Type column is kept as a new “Case type” field; “Developmental Psychology” maps to Human Growth and Development; blank Email / SMS previews stay blank. |

@@ -24,8 +24,9 @@ const GROUPS: FieldGroup[] = [
     title: 'Access',
     fields: [
       { key: 'role', label: 'Role', kind: 'select', options: ['viewer', 'admin'], labels: ROLE_LABELS, required: true },
-      { key: 'sections', label: 'Sections they can edit', kind: 'multiLookup', options: SECTIONS },
-      { key: 'is_super_admin', label: 'Super-admin', kind: 'bool' },
+      // Viewers are view-only: no sections, no super-admin (owner decision 2026-09-30).
+      { key: 'sections', label: 'Sections they can edit', kind: 'multiLookup', options: SECTIONS, visible: (d) => d.role === 'admin' },
+      { key: 'is_super_admin', label: 'Super-admin', kind: 'bool', visible: (d) => d.role === 'admin' },
     ],
   },
   {
@@ -46,8 +47,9 @@ export function UserDrawer({ id, onClose }: { id: string; onClose: () => void })
   const extra = u && (
     <>
       <div className="rounded-[10px] bg-lilac-50 px-4 py-3 text-[13px] leading-relaxed text-ink-muted">
-        <strong className="text-ink">How access works:</strong> Viewers can read everything. Admins can also edit cases in
-        the sections ticked above. Super-admins can open this dashboard. Deactivated users can’t sign in at all.
+        <strong className="text-ink">How access works:</strong> Viewers can only view: they can’t edit anything and can’t
+        be super-admins. Admins view every section and edit only the sections ticked above. Super-admins (Admins only)
+        can also open this dashboard. Deactivated users can’t sign in at all.
       </div>
       <PasswordSection id={id} />
     </>
@@ -69,6 +71,8 @@ export function UserDrawer({ id, onClose }: { id: string; onClose: () => void })
       deleteLabel="Delete user"
       onClose={onClose}
       extra={extra}
+      // Switching to Viewer removes their sections and super-admin.
+      derive={(draft, key) => (key === 'role' && draft.role === 'viewer' ? { ...draft, sections: [], is_super_admin: false } : draft)}
     />
   );
 }

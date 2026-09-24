@@ -54,6 +54,8 @@ try {
     mentorAdmin: randomUUID(),
     deactivated: randomUUID(),
     superAdmin: randomUUID(),
+    qaAdmin: randomUUID(),
+    curAdmin: randomUUID(),
   };
   const addAuthUser = (id, key, approved) => q(
     `insert into auth.users (id, aud, role, email, raw_user_meta_data, raw_app_meta_data, created_at, updated_at)
@@ -66,7 +68,7 @@ try {
 
   console.log('\nSetup');
   const prof = await q(`select count(*)::int as n from public.profiles where id = any($1) and status = 'active'`, [Object.values(users)]);
-  check('A profile is created automatically for each new Auth user', prof.rows[0].n === 4);
+  check('A profile is created automatically for each new Auth user', prof.rows[0].n === Object.keys(users).length);
 
   console.log('\nAccount created outside the Admin Dashboard (e.g. public sign-up)');
   const strangerProfile = await q('select status from public.profiles where id = $1', [stranger]);
@@ -75,7 +77,9 @@ try {
   await q(`update public.profiles set role = 'admin', sections = '{mentor}' where id = $1`, [users.mentorAdmin]);
   await q(`update public.profiles set role = 'admin', sections = '{mentor}' where id = $1`, [users.deactivated]);
   await q(`update public.profiles set status = 'deactivated', deactivation_note = 'test' where id = $1`, [users.deactivated]);
-  await q(`update public.profiles set is_super_admin = true where id = $1`, [users.superAdmin]);
+  await q(`update public.profiles set role = 'admin', sections = '{}', is_super_admin = true where id = $1`, [users.superAdmin]);
+  await q(`update public.profiles set role = 'admin', sections = '{quality_analyst}' where id = $1`, [users.qaAdmin]);
+  await q(`update public.profiles set role = 'admin', sections = '{curriculum}' where id = $1`, [users.curAdmin]);
 
   const [course] = (await q(`select id from public.courses order by sort_order limit 1`)).rows;
   const [mentor] = (await q(`select id from public.mentors limit 1`)).rows;
@@ -162,6 +166,42 @@ try {
   check('The write test leaves nothing behind', probeLeft.rows[0].n === 0);
 
   // ---------------------------------------------------------------------------
+  // Each admin edits only their own section and can still view the others.
+  const INSERTS = {
+    quality_analyst: `insert into public.qa_cases (source) values ('Survey')`,
+    curriculum: `insert into public.curriculum_customer_cases (customer_name) values ('x')`,
+    mentor: `insert into public.mentor_cases (customer_name) values ('x')`,
+  };
+  const TABLES = { quality_analyst: 'qa_cases', curriculum: 'curriculum_customer_cases', mentor: 'mentor_cases' };
+  const NAMES = { quality_analyst: 'Quality Analyst', curriculum: 'Curriculum', mentor: 'Mentor' };
+  for (const [key, own] of [['qaAdmin', 'quality_analyst'], ['curAdmin', 'curriculum']]) {
+    console.log(`\nAdmin with the ${NAMES[own]} section only`);
+    check(`Can add a ${NAMES[own]} case`, (await as(users[key], run(INSERTS[own]))).ok);
+    for (const other of Object.keys(INSERTS).filter((k) => k !== own)) {
+      const blocked = denied(await as(users[key], run(INSERTS[other])));
+      const canView = (await as(users[key], run(`select id from public.${TABLES[other]} limit 1`))).ok;
+      check(`Can view ${NAMES[other]} but cannot add to it`, blocked && canView);
+    }
+    r = await as(users[key], run('select public.check_write_access() as a'));
+    check('The database reports only their own section as editable',
+      sameAccess(r, { quality_analyst: own === 'quality_analyst', curriculum: own === 'curriculum', mentor: false }),
+      r.message ?? JSON.stringify(r.rows?.[0]?.a));
+  }
+
+  console.log('\nViewers are view-only');
+  for (const [what, sql] of [['sections', `update public.profiles set sections = '{mentor}' where id = $1`],
+    ['super-admin', `update public.profiles set is_super_admin = true where id = $1`]]) {
+    await q('savepoint viewer_rule');
+    try {
+      await q(sql, [users.viewer]);
+      check(`A Viewer can't be given ${what}`, false, 'update was allowed');
+    } catch (err) {
+      check(`A Viewer can't be given ${what}`, /profiles_viewer_read_only/.test(err.message), err.message);
+    }
+    await q('rollback to savepoint viewer_rule');
+  }
+
+  // ---------------------------------------------------------------------------
   console.log('\nDeactivated user');
   const ban = await q('select banned_until from auth.users where id = $1', [users.deactivated]);
   check('Is banned in Supabase Auth (cannot sign in)', ban.rows[0].banned_until !== null);
@@ -173,11 +213,11 @@ try {
     run(`insert into public.mentor_cases (customer_name) values ('x')`))));
 
   // ---------------------------------------------------------------------------
-  console.log('\nSuper-admin (Viewer role)');
+  console.log('\nSuper-admin (Admin role, no sections)');
   r = await as(users.superAdmin, run('select id from public.activity_log'));
   check('Can read the activity log', r.ok && r.rowCount > 0, r.message);
   r = await as(users.superAdmin, run('select id from public.profiles where id = any($1)', [Object.values(users)]));
-  check('Can see all profiles', r.ok && r.rowCount === 4, r.message);
+  check('Can see all profiles', r.ok && r.rowCount === Object.keys(users).length, r.message);
   check('Cannot add cases (role and sections still apply)', denied(await as(users.superAdmin,
     run(`insert into public.qa_cases (source) values ('Survey')`))));
   r = await as(users.superAdmin, async () => {

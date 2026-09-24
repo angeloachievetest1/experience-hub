@@ -71,8 +71,9 @@ export function AddUserDialog({ onClose }: { onClose: () => void }) {
           <legend className="mb-1.5 text-sm font-medium">Role</legend>
           {(['viewer', 'admin'] as const).map((r) => (
             <label key={r} className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border border-lilac-200 px-3 text-sm">
-              <input type="radio" name="role" checked={form.role === r} onChange={() => set('role', r)} />
-              <span><strong>{r === 'admin' ? 'Admin' : 'Viewer'}</strong> — {r === 'admin' ? 'reads everything, edits cases in the sections below' : 'reads everything, can’t change anything'}</span>
+              <input type="radio" name="role" checked={form.role === r}
+                onChange={() => { set('role', r); if (r === 'viewer') { set('sections', []); set('is_super_admin', false); } }} />
+              <span><strong>{r === 'admin' ? 'Admin' : 'Viewer'}</strong> — {r === 'admin' ? 'views everything, edits only the sections ticked below' : 'view only, can’t edit anything'}</span>
             </label>
           ))}
         </fieldset>
@@ -89,10 +90,12 @@ export function AddUserDialog({ onClose }: { onClose: () => void }) {
           </fieldset>
         )}
 
-        <label className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border border-lilac-200 px-3 text-sm">
-          <input type="checkbox" checked={form.is_super_admin} onChange={(e) => set('is_super_admin', e.target.checked)} />
-          <span><strong>Super-admin</strong> — can open this dashboard and manage users</span>
-        </label>
+        {form.role === 'admin' && (
+          <label className="flex min-h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border border-lilac-200 px-3 text-sm">
+            <input type="checkbox" checked={form.is_super_admin} onChange={(e) => set('is_super_admin', e.target.checked)} />
+            <span><strong>Super-admin</strong> — can open this dashboard and manage users</span>
+          </label>
+        )}
 
         {error && <p role="alert" className="m-0 rounded-[10px] border border-primary bg-peach-100 px-4 py-3 text-sm">{error}</p>}
 

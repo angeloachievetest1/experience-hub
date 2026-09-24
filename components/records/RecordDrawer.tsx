@@ -11,14 +11,18 @@ import { formatDate } from '@/lib/qa/stats';
 
 export type Named = { id: string; name: string };
 
-export type FieldDef =
+export type FieldDef = (
   | { key: string; label: string; kind: 'text' | 'textarea' | 'date' | 'url' | 'pct' | 'number' | 'rating' | 'bool' }
   | { key: string; label: string; kind: 'suggest'; suggestions: string[] }
   // names: shown next to the value (MCS – Mid Course Survey); labels: shown instead of it (admin → Admin)
   | { key: string; label: string; kind: 'select'; options: readonly string[]; names?: Record<string, string>; labels?: Record<string, string>; required?: boolean }
   | { key: string; label: string; kind: 'lookup'; options: Named[]; emptyHint?: string }
   | { key: string; label: string; kind: 'multi'; options: readonly string[] }
-  | { key: string; label: string; kind: 'multiLookup'; options: Named[] };
+  | { key: string; label: string; kind: 'multiLookup'; options: Named[] }
+) & {
+  // Show the field only when this returns true (e.g. sections only for Admins).
+  visible?: (draft: Record<string, unknown>) => boolean;
+};
 
 export type FieldGroup = { title: string; fields: FieldDef[] };
 
@@ -170,7 +174,7 @@ function RecordForm({
         <section key={g.title} className="flex flex-col gap-2">
           <h3 className="m-0 font-display text-lg font-normal">{g.title}</h3>
           <div className="flex flex-col">
-            {g.fields.map((f) => (
+            {g.fields.filter((f) => !f.visible || f.visible(draft)).map((f) => (
               <div key={f.key} className="grid grid-cols-[130px_minmax(0,1fr)] items-start gap-3 border-t border-lilac-50 py-2 text-sm">
                 <label htmlFor={`f-${f.key}`} className="pt-2.5 text-ink-muted">{f.label}</label>
                 <div className="min-w-0">

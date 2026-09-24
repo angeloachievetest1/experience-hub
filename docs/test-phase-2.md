@@ -35,7 +35,7 @@ npm run db:sample:remove
 - [ ] Pick an instructor (or course) on the left. You see its cases, most common issues and validity split.
 - [ ] Clicking a case opens the same panel.
 
-**Follow-up**
+**Resolution** (formerly "Follow-up")
 - [ ] The four boxes filter the table: all open items, not reached, urgent action, no case link.
 - [ ] "Reached vs not reached" shows the ring and the reach rate for email, SMS and call.
 

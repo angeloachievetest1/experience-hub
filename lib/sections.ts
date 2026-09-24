@@ -96,9 +96,9 @@ export const SECTION_GROUPS: NavGroup[] = [
         planned: ['Most common issues per course', 'Validity split for the selected course'],
       },
       {
-        href: '/quality-analyst/follow-up',
-        label: 'Follow-up',
-        title: 'Follow-up view',
+        href: '/quality-analyst/resolution',
+        label: 'Resolution',
+        title: 'Resolution',
         subtitle: 'Customers still waiting on contact or action.',
         icon: 'clock',
         phase: 2,

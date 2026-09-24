@@ -23,7 +23,7 @@ export function CaseTable({
     analyst: { key: 'analyst', header: 'Analyst', render: (c) => c.analyst || '—' },
     issue: { key: 'issue', header: 'Type or reason', render: (c) => caseIssue(c) || '—' },
     validity: { key: 'validity', header: 'Validity', render: (c) => <ValidityBadge value={c.validity} /> },
-    follow: { key: 'follow', header: 'Follow-up', render: (c) => <FollowBadge c={c} /> },
+    follow: { key: 'follow', header: 'Resolution', render: (c) => <FollowBadge c={c} /> },
     needs: {
       key: 'needs', header: 'Needs',
       render: (c) => (

@@ -3,7 +3,7 @@ import { QaShell } from '@/components/qa/QaShell';
 import { loadQaData } from '@/lib/qa/data';
 import { findPage } from '@/lib/sections';
 
-const page = findPage('/quality-analyst/follow-up');
+const page = findPage('/quality-analyst/resolution');
 export const metadata = { title: page.title };
 
 export default async function Page() {

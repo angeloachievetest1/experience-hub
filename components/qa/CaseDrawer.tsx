@@ -41,7 +41,10 @@ function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
     );
   }
   if (c.source === 'Returned') {
-    caseFields.push({ key: 'reassign_reason', label: 'Reassign reason', kind: 'select', options: o('qa_reassign_reason') });
+    caseFields.push(
+      { key: 'complaint_types', label: 'Complaint type', kind: 'multi', options: o('qa_returned_type') },
+      { key: 'reassign_reason', label: 'Reassign reason', kind: 'select', options: o('qa_reassign_reason') },
+    );
   }
 
   const groups: FieldGroup[] = [{ title: 'Case', fields: caseFields }];
@@ -58,7 +61,9 @@ function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
   }
   const outcome: FieldDef[] = [{ key: 'validity', label: 'Validity', kind: 'select', options: VALIDITY_VALUES }];
   if (c.source !== 'Survey') outcome.push({ key: 'resolution', label: 'Resolution', kind: 'select', options: o('qa_resolution') });
-  if (c.source === 'Course') outcome.push({ key: 'case_closed_by', label: 'Case closed by', kind: 'select', options: o('qa_case_closed_by') });
+  if (c.source === 'Course' || c.source === 'Survey') {
+    outcome.push({ key: 'case_closed_by', label: 'Case closed by', kind: 'select', options: o('qa_case_closed_by') });
+  }
   groups.push({ title: 'Outcome', fields: outcome });
   groups.push({
     title: 'Follow-up',

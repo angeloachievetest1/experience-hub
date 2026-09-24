@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { BarList, Donut, Panel } from '@/components/ui/Charts';
 import { inRange, pct } from '@/lib/qa/stats';
-import type { QaCase } from '@/lib/qa/types';
+import { isNotReached, isReached, type QaCase } from '@/lib/qa/types';
 import { CaseTable } from './CaseTable';
 import { useQa } from './QaShell';
 
@@ -12,7 +12,7 @@ const NEEDS: Need[] = ['Not reached', 'Urgent action', 'No case link'];
 
 function needsOf(c: QaCase): Need[] {
   const out: Need[] = [];
-  if (c.customer_reached === 'Not Reached') out.push('Not reached');
+  if (isNotReached(c.customer_reached)) out.push('Not reached');
   if (c.resolution === 'Urgent Action') out.push('Urgent action');
   if (!c.case_link?.trim()) out.push('No case link');
   return out;
@@ -32,11 +32,11 @@ export function FollowUpView() {
   const rows = filter === 'All' ? open : open.filter((c) => needsOf(c).includes(filter));
 
   // Reach rate: of the customers with a known outcome, how many were reached.
-  const known = inDates.filter((c) => c.customer_reached === 'Reached' || c.customer_reached === 'Not Reached');
-  const reached = known.filter((c) => c.customer_reached === 'Reached').length;
+  const known = inDates.filter((c) => isReached(c.customer_reached) || isNotReached(c.customer_reached));
+  const reached = known.filter((c) => isReached(c.customer_reached)).length;
   const channels = CHANNELS.map((ch) => {
     const tried = known.filter((c) => c[ch.key] === 'Yes');
-    const ok = tried.filter((c) => c.customer_reached === 'Reached').length;
+    const ok = tried.filter((c) => isReached(c.customer_reached)).length;
     return { name: `${ch.name}: ${ok} of ${tried.length} reached`, value: pct(ok, tried.length) };
   });
 

@@ -114,10 +114,14 @@ export function caseIssue(c: QaCase) {
 
 export type FollowState = 'Urgent action' | 'Not reached' | 'Reached' | null;
 
+// "Reached" and variants such as "Reached by DA" (dedicated advisor) count as reached.
+export const isReached = (v: string | null) => Boolean(v && /^reached\b/i.test(v));
+export const isNotReached = (v: string | null) => v === 'Not Reached';
+
 export function followState(c: QaCase): FollowState {
   if (c.resolution === 'Urgent Action') return 'Urgent action';
-  if (c.customer_reached === 'Not Reached') return 'Not reached';
-  if (c.customer_reached === 'Reached') return 'Reached';
+  if (isNotReached(c.customer_reached)) return 'Not reached';
+  if (isReached(c.customer_reached)) return 'Reached';
   return null;
 }
 

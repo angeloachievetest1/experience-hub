@@ -1,0 +1,12 @@
+# Netlify settings. Netlify detects Next.js and adds its Next.js support automatically.
+# Environment variables (Supabase URL and keys) are set in the Netlify dashboard, never here.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+  # Skip the build when a push only changes files the website doesn't use
+  # (notes, database migrations, scripts, import data). Saves build minutes.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude)docs' ':(exclude)*.md' ':(exclude)supabase' ':(exclude)scripts' ':(exclude)data' ':(exclude).claude'"
+
+[build.environment]
+  NODE_VERSION = "22"

@@ -14,7 +14,7 @@ The full specification is in [BRIEF.md](BRIEF.md).
 | 2 | Quality Analyst section | Done |
 | 3 | Curriculum and Mentor sections | Done |
 | 4 | Admin Dashboard and data import | Done (real data imported, sample records removed) |
-| 5 | Netlify deployment | Not started |
+| 5 | Netlify deployment | In progress |
 
 ## Decisions that differ from the brief
 
@@ -41,6 +41,25 @@ Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phas
 | `npm run db:test` | Check every security rule with temporary users (all rolled back) |
 | `npm run import:qa` (also `import:mentor`, `import:curriculum`) | Practice run of a spreadsheet import; add `-- --write` to import for real (already done) |
 | `npm run build` | Production build (checks everything compiles) |
+
+## Deployment (Netlify)
+
+The site deploys from the `main` branch on GitHub. Settings are in `netlify.toml`.
+
+Environment variables (Netlify → Site configuration → Environment variables):
+
+| Name | Notes |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Same value as in `.env.local` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Same value as in `.env.local` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Same value as in `.env.local`; mark it **secret** |
+
+`DATABASE_URL` and `SUPABASE_DB_PASSWORD` stay local: only the scripts use them.
+
+**Keeping builds low.** Every push to `main` that changes website code starts one build.
+Pushes that only change notes, migrations, scripts or import data are skipped
+automatically (the `ignore` rule in `netlify.toml`). Batch changes and push once at the
+end of the day rather than after every change.
 
 ## How access works
 

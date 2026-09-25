@@ -55,7 +55,11 @@ export function CurCaseLogView() {
           { key: 'type', header: 'Type', render: (c) => c.issue_type || '—' },
           { key: 'material', header: 'Achieve material', render: (c) => c.material_type || '—' },
           { key: 'sme', header: 'Curriculum SME', render: (c) => c.curriculum_sme || '—' },
-          { key: 'tat', header: 'TAT', render: (c) => { const d = resolutionDays(c); return d === null ? '—' : `${d} d`; } },
+          {
+            key: 'tat', header: 'TAT',
+            // Kept on one line so the number and its unit never split.
+            render: (c) => { const d = resolutionDays(c); return d === null ? '—' : <span className="whitespace-nowrap">{d} {d === 1 ? 'day' : 'days'}</span>; },
+          },
           { key: 'comment', header: 'Comment', render: (c) => <span className="line-clamp-2 max-w-72 text-ink-muted">{c.comments || '—'}</span> },
         ]}
       />

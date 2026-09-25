@@ -130,8 +130,8 @@ export const SECTION_GROUPS: NavGroup[] = [
       {
         href: '/curriculum/case-log',
         label: 'Case log',
-        title: 'Curriculum case log',
-        subtitle: 'Customer Cases about course content.',
+        title: 'Case Log',
+        subtitle: 'Every Curriculum Customer Cases about course content',
         icon: 'list',
         phase: 3,
         planned: ['Searchable table of Customer Cases', 'Add, edit and delete for Curriculum admins'],
@@ -167,7 +167,7 @@ export const SECTION_GROUPS: NavGroup[] = [
       {
         href: '/mentor/case-log',
         label: 'Case log',
-        title: 'Mentor case log',
+        title: 'Case Log',
         subtitle: 'Every mentor complaint in one table.',
         icon: 'list',
         phase: 3,

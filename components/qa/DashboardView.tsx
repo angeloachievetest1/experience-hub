@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { BarList, ColumnChart, HATCH, Kpi, Legend, Panel, type Column } from '@/components/ui/Charts';
 import { FilterMulti, Segmented } from '@/components/ui/Dropdowns';
-import { countBy, gapStatus, inOrder, inRange, monthLabel, periods } from '@/lib/qa/stats';
+import { countBy, gapStatus, inOrder, inRange, monthLabel, periodText, periods } from '@/lib/qa/stats';
 import { QA_SOURCES, SOURCE_COLORS, VALIDITY_COLORS, VALIDITY_VALUES, type QaSource } from '@/lib/qa/types';
 import { useQa } from './QaShell';
 
@@ -56,7 +56,7 @@ export function DashboardView() {
       </div>
 
       <Panel
-        title={by === 'month' ? 'Cases per month' : 'Cases per quarter'}
+        title={`Cases ${periodText(range)}`}
         aside={
           <div className="flex flex-wrap items-center gap-3">
             <FilterMulti label="Source" allLabel="All sources" options={[...QA_SOURCES]} value={picked} onChange={setPicked} align="right" />

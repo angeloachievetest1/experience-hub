@@ -28,6 +28,9 @@ export function MentorDashboardView() {
   // Start at the first quarter with a complaint and stop at the last one.
   const hasData = (c: Column) => c.segments[0].value > 0;
   const byQuarter = allQuarters.slice(allQuarters.findIndex(hasData), allQuarters.findLastIndex(hasData) + 1);
+  // With a single complaint type (today: Mentor) the chart says nothing, so it only appears once there are two or more.
+  const complaintTypes = countBy(cases, (c) => c.complaint_type ?? 'Not set');
+  const showTypes = complaintTypes.length > 1;
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,16 +44,18 @@ export function MentorDashboardView() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="Complaints by year"><ColumnChart columns={byYear} height={150} /></Panel>
         <Panel title="Complaints by quarter"><ColumnChart columns={byQuarter} height={150} /></Panel>
-        <Panel title="By complaint type">
-          <BarList items={countBy(cases, (c) => c.complaint_type ?? 'Not set')} color="#FF4500" empty="No complaints in this date range." />
-        </Panel>
+        {showTypes && (
+          <Panel title="By complaint type">
+            <BarList items={complaintTypes} color="#FF4500" />
+          </Panel>
+        )}
         <Panel title="By sub type">
           <BarList items={countBy(cases, (c) => c.complaint_sub_type ?? 'Not set')} empty="No complaints in this date range." />
         </Panel>
         <Panel title="By mentor">
           <BarList items={countBy(cases, (c) => mentorName(c.mentor_id) || 'Not set')} color="#2D1559" empty="No complaints in this date range." />
         </Panel>
-        <Panel title="Validity split">
+        <Panel title="Validity split" className={showTypes ? '' : 'lg:col-span-2'}>
           <BarList
             items={inOrder(countBy(cases, (c) => c.complaint_analysis ?? 'Not set'), [...MENTOR_VALIDITY, 'Not set'])
               .map((v) => ({ ...v, color: VALIDITY_COLORS[v.name] ?? '#F6F3FF' }))}

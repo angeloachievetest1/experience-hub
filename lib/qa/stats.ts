@@ -100,6 +100,17 @@ export function formatDate(date: string | null) {
   return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
 }
 
+// For chart titles: "all time", "in 2026" (a whole year, or this year so far), or the chosen dates.
+export function periodText(r: DateRange) {
+  if (!r.from && !r.to) return 'all time';
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const year = r.from?.slice(0, 4);
+  if (r.from === `${year}-01-01` && (r.to === `${year}-12-31` || (r.to === today && today.startsWith(year!)))) return `in ${year}`;
+  if (r.from && r.to) return `${formatDate(r.from)} – ${formatDate(r.to)}`;
+  return r.from ? `since ${formatDate(r.from)}` : `until ${formatDate(r.to)}`;
+}
+
 export function pct(part: number, whole: number) {
   return whole ? Math.round((part / whole) * 100) : 0;
 }

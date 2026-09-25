@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { BarList, ColumnChart, Kpi, Panel, type Column } from '@/components/ui/Charts';
 import { Segmented } from '@/components/ui/Dropdowns';
-import { average, countBy, inRange, periods } from '@/lib/qa/stats';
+import { average, countBy, inRange, periodText, periods } from '@/lib/qa/stats';
 import { resolutionDays } from '@/lib/curriculum/types';
 import { useCur } from './useCur';
 
@@ -48,7 +48,7 @@ export function CurDashboardView() {
       </div>
 
       <Panel
-        title={by === 'month' ? 'Cases per month' : 'Cases per quarter'}
+        title={`Cases ${periodText(range)}`}
         aside={<Segmented label="Group by" value={by} onChange={setBy} options={[{ value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }]} />}
       >
         <ColumnChart columns={columns} />
@@ -56,7 +56,7 @@ export function CurDashboardView() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="By category"><BarList items={categories} color="#FF4500" /></Panel>
-        <Panel title="By material type"><BarList items={countBy(cases, (c) => c.material_type ?? 'Not set')} /></Panel>
+        <Panel title="By material type"><BarList items={countBy(cases, (c) => c.material_type ?? 'Not set')} limit={5} /></Panel>
         <Panel title="Avg resolution time by category" aside="Days">
           <BarList items={avgByCategory} color="#2D1559" empty="No resolution times recorded in this date range." />
         </Panel>

@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { BarList, ColumnChart, HeatTable, Kpi, Legend, Panel, type Column } from '@/components/ui/Charts';
-import { average, countBy, gapStatus, inOrder, inRange, periods } from '@/lib/qa/stats';
+import { average, countBy, gapStatus, inOrder, inRange, periodText, periods } from '@/lib/qa/stats';
 import { EXTRA_COLORS, SURVEY_TYPE_COLORS } from '@/lib/qa/types';
 import { useQa } from './QaShell';
 
@@ -58,7 +58,7 @@ export function SurveyInsightsView() {
         <Kpi label="Most common reason" value={topReason ? topReason.value : '—'} note={topReason?.name ?? 'No reasons recorded'} />
       </div>
 
-      <Panel title="Surveys per month by type">
+      <Panel title={`Surveys ${periodText(range)} by type`}>
         <Legend items={types.map((t, i) => ({ name: withMeaning(t.name), color: typeColor(t.name, i) }))} />
         <ColumnChart columns={columns} />
       </Panel>

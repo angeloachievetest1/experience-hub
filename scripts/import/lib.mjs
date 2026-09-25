@@ -120,10 +120,15 @@ const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 
 
 // Returns YYYY-MM-DD, or null when missing or impossible (e.g. a mistyped year).
 export function parseDate(raw) {
-  const d = parseDateLoose(raw);
-  if (!d) return null;
-  const year = Number(d.slice(0, 4));
-  return /^\d{4}-\d{2}-\d{2}$/.test(d) && year >= 2000 && year <= 2100 ? d : null;
+  let d = parseDateLoose(raw);
+  if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return null;
+  let [y, m, day] = d.split('-').map(Number);
+  // "2025-26-02" = 26 Feb 2025 typed day-before-month: swap when the month can't be a month.
+  if (m > 12 && day <= 12) [m, day] = [day, m];
+  d = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const real = new Date(Date.UTC(y, m - 1, day));
+  const valid = real.getUTCFullYear() === y && real.getUTCMonth() === m - 1 && real.getUTCDate() === day;
+  return valid && y >= 2000 && y <= 2100 ? d : null;
 }
 
 // A year typed with an extra digit, e.g. 20226 → 2026 (owner-approved fix).

@@ -10,8 +10,8 @@ const NO_PERMISSION = 'You don’t have permission to change Curriculum records.
 const today = () => new Date().toISOString().slice(0, 10);
 
 const CASE_SPEC: Spec = {
-  case_date: 'date', customer_name: 'text', course_id: 'uuid', category: 'text', material_type: 'text',
-  curriculum_sme: 'text', tm_on_sf: 'text', comments: 'text', feedback_progress: 'text',
+  case_date: 'date', customer_name: 'text', course_id: 'uuid', category: 'text', material_type: 'text', issue_type: 'text', case_source: 'text',
+  case_resolution: 'text', case_status_in_sf: 'text', curriculum_sme: 'text', tm_on_sf: 'text', comments: 'text', feedback_progress: 'text',
   resolution_tat_days: { number: { min: 0, max: 9999 } }, date_resolved: 'date', case_link: 'url', field_notes: 'notes',
 };
 

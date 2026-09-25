@@ -8,7 +8,11 @@ export type CurCase = {
   customer_name: string | null;
   course_id: string | null;
   category: string | null;
-  material_type: string | null;
+  material_type: string | null;        // sheet column "Achieve Material"
+  issue_type: string | null;           // sheet column "Type"
+  case_source: string | null;          // sheet column "Source of case"
+  case_resolution: string | null;
+  case_status_in_sf: string | null;
   curriculum_sme: string | null;
   tm_on_sf: string | null;
   comments: string | null;

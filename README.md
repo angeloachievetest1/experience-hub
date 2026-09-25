@@ -11,9 +11,9 @@ The full specification is in [BRIEF.md](BRIEF.md).
 | Phase | Scope | State |
 |---|---|---|
 | 1 | Foundation: schema, RLS, audit, auth, app shell | Done |
-| 2 | Quality Analyst section | Done (with sample records) |
-| 3 | Curriculum and Mentor sections | Done (with sample records) |
-| 4 | Admin Dashboard and data import | Not started |
+| 2 | Quality Analyst section | Done |
+| 3 | Curriculum and Mentor sections | Done |
+| 4 | Admin Dashboard and data import | Done (real data imported, sample records removed) |
 | 5 | Netlify deployment | Not started |
 
 ## Decisions that differ from the brief
@@ -22,6 +22,7 @@ The full specification is in [BRIEF.md](BRIEF.md).
 |---|---|
 | 2026-09-30 | **Quality Analyst import uses the visible tabs only** (Instructor Complaints, Course Complaints, Low Survey Scores, Returned Cases). Hidden tabs, including Low Survey Scores 2025 and the Provisional Instructor List, are ignored. The instructor list is built from the names in these tabs. |
 | 2026-09-30 | **No Course data gap.** The dashboard shows what the Course Complaints tab contains (it has rows inside Jul 2025 – Jan 2026). |
+| 2026-09-30 | **Curriculum import:** only rows present in the sheet are imported (Customer Cases starts Nov 2024; the Yearly tab counts older rows no longer in the file). Type, Source of case, Case Resolution and Case Status in SF are kept; Science category and Spanish 1 & 2 course added; requester names unified; DEEP = Dental Hygiene Entrance Exam Prep under Dental Exam; Date completed 2020-01-18 corrected to 2024-01-18. |
 | 2026-09-30 | **Viewers are view-only.** They can’t have sections or be super-admins (replaces the brief’s “super-admin flag independent of role”); enforced in the database. Admins edit only their ticked sections and view the rest. |
 | 2026-09-30 | **No Home page.** The app opens on the Quality Analyst dashboard; the Phase 1 "Test my write access" button was removed (the same checks run in `npm run db:test`). |
 | 2026-09-30 | **Records are shown by customer name, not number.** Case tables start with Date, Case (customer name; requester for Instructor requests), Link. Panel titles and the Activity Log also use the name. Case numbers were removed entirely (migration 019). |

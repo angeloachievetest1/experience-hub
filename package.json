@@ -12,7 +12,8 @@
     "db:sample": "node --env-file=.env.local scripts/sample-data.mjs add",
     "db:sample:remove": "node --env-file=.env.local scripts/sample-data.mjs remove",
     "import:qa": "node --env-file=.env.local scripts/import/qa.mjs",
-    "import:mentor": "node --env-file=.env.local scripts/import/mentor.mjs"
+    "import:mentor": "node --env-file=.env.local scripts/import/mentor.mjs",
+    "import:curriculum": "node --env-file=.env.local scripts/import/curriculum.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

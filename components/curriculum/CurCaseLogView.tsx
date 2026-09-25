@@ -16,6 +16,7 @@ export function CurCaseLogView() {
   const { data, range, open, add, adding, courseName } = useCur();
   const [category, setCategory] = useState<string | null>(null);
   const [material, setMaterial] = useState<string | null>(null);
+  const [issueType, setIssueType] = useState<string | null>(null);
   const [sme, setSme] = useState<string | null>(null);
   const [query, setQuery] = useState('');
 
@@ -23,6 +24,7 @@ export function CurCaseLogView() {
   const rows = inDates.filter((c) =>
     (!category || c.category === category) &&
     (!material || c.material_type === material) &&
+    (!issueType || c.issue_type === issueType) &&
     (!sme || c.curriculum_sme === sme) &&
     matches(query, [c.customer_name, courseName(c.course_id), c.comments, c.feedback_progress, c.curriculum_sme]));
 
@@ -31,7 +33,9 @@ export function CurCaseLogView() {
       <div className="flex flex-wrap items-center gap-3">
         <FilterSelect label="Category" allLabel="All categories" value={category} onChange={setCategory}
           options={distinct([...(data.options.cur_category ?? []), ...data.cases.map((c) => c.category)])} />
-        <FilterSelect label="Material type" allLabel="All types" value={material} onChange={setMaterial}
+        <FilterSelect label="Type" allLabel="All types" value={issueType} onChange={setIssueType}
+          options={distinct(data.cases.map((c) => c.issue_type))} />
+        <FilterSelect label="Achieve material" allLabel="All materials" value={material} onChange={setMaterial}
           options={distinct(data.cases.map((c) => c.material_type))} />
         <FilterSelect label="Curriculum SME" allLabel="All SMEs" value={sme} onChange={setSme}
           options={distinct(data.cases.map((c) => c.curriculum_sme))} />
@@ -48,7 +52,8 @@ export function CurCaseLogView() {
         columns={[
           { key: 'category', header: 'Category', render: (c) => c.category || '—' },
           { key: 'course', header: 'Course', render: (c) => courseName(c.course_id) || '—' },
-          { key: 'material', header: 'Material type', render: (c) => c.material_type || '—' },
+          { key: 'type', header: 'Type', render: (c) => c.issue_type || '—' },
+          { key: 'material', header: 'Achieve material', render: (c) => c.material_type || '—' },
           { key: 'sme', header: 'Curriculum SME', render: (c) => c.curriculum_sme || '—' },
           { key: 'tat', header: 'TAT', render: (c) => { const d = resolutionDays(c); return d === null ? '—' : `${d} d`; } },
           { key: 'comment', header: 'Comment', render: (c) => <span className="line-clamp-2 max-w-72 text-ink-muted">{c.comments || '—'}</span> },

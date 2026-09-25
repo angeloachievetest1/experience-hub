@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BarList, Empty, Kpi, Panel } from '@/components/ui/Charts';
+import { BAR_LIMIT, BarList, Empty, Kpi, Panel } from '@/components/ui/Charts';
 import { average, countBy, inOrder, inRange } from '@/lib/qa/stats';
 import { VALIDITY_COLORS, VALIDITY_VALUES, type QaCase } from '@/lib/qa/types';
 import { CaseTable } from './CaseTable';
@@ -81,7 +81,8 @@ export function EntityView({ kind }: { kind: 'instructor' | 'course' }) {
           )}
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
             <Panel title="Most common issues" aside="Complaint types and survey reasons">
-              <BarList items={issues.slice(0, 8)} compact />
+              {/* key: picking another instructor or course folds the list back to the top 7 */}
+              <BarList key={current.id} items={issues} limit={BAR_LIMIT} compact />
             </Panel>
             <Panel title="Validity split">
               <BarList items={validity} compact empty="No validity recorded for these cases." />

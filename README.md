@@ -14,7 +14,7 @@ The full specification is in [BRIEF.md](BRIEF.md).
 | 2 | Quality Analyst section | Done |
 | 3 | Curriculum and Mentor sections | Done |
 | 4 | Admin Dashboard and data import | Done (real data imported, sample records removed) |
-| 5 | Netlify deployment | In progress |
+| 5 | Netlify deployment | Done (https://experience-hub-team.netlify.app) |
 
 ## Decisions that differ from the brief
 
@@ -44,7 +44,9 @@ Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phas
 
 ## Deployment (Netlify)
 
-The site deploys from the `main` branch on GitHub. Settings are in `netlify.toml`.
+Live at https://experience-hub-team.netlify.app. It deploys from the `main` branch on GitHub;
+settings are in `netlify.toml`. Netlify's visitor protection applies to previews only, and the
+"Powered by Netlify" badge is turned off in Project configuration → General.
 
 Environment variables (Netlify → Site configuration → Environment variables):
 

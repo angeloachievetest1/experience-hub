@@ -17,10 +17,11 @@ export function CaseLogView() {
   const [query, setQuery] = useState('');
 
   // Columns and filters that none of the selected sources use are hidden
-  // (Survey and Returned have no analyst; Returned has no validity or follow-up).
+  // (Survey and Returned have no analyst or resolution; Returned has no validity).
   const shown = (sources.length ? sources : QA_SOURCES) as readonly string[];
   const hasAnalyst = shown.some((s) => s === 'Instructor' || s === 'Course');
   const hasOutcome = shown.some((s) => s !== 'Returned');
+  const hasResolution = hasAnalyst;
   const analysts = useMemo(() => [...new Set(data.cases.map((c) => c.analyst).filter(Boolean) as string[])].sort(), [data.cases]);
   const categories = useMemo(() => {
     const listed = [...(data.options.qa_category_instructor ?? []), ...(data.options.qa_category_course ?? [])];
@@ -64,7 +65,7 @@ export function CaseLogView() {
       </div>
       <CaseTable cases={filtered} columns={([
         'date', 'source', 'course', 'instructor', 'analyst', 'issue', 'validity', 'follow',
-      ] as const).filter((c) => (c !== 'analyst' || hasAnalyst) && ((c !== 'validity' && c !== 'follow') || hasOutcome))} />
+      ] as const).filter((c) => (c !== 'analyst' || hasAnalyst) && (c !== 'validity' || hasOutcome) && (c !== 'follow' || hasResolution))} />
     </div>
   );
 }

@@ -93,7 +93,7 @@ export function DashboardView() {
             empty="No Instructor or Course complaints in this selection." />
         </Panel>
         <Panel title="Instructor & Course: by complaint type">
-          <BarList items={countBy(complaints, (c) => (c.complaint_types.length ? c.complaint_types : 'Not set'))}
+          <BarList items={countBy(complaints, (c) => (c.complaint_types.length ? c.complaint_types : 'Not set'))} limit={5}
             empty="No Instructor or Course complaints in this selection." />
         </Panel>
       </div>

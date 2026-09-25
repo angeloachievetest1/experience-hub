@@ -1,5 +1,7 @@
 // Lightweight charts drawn with plain HTML/CSS, styled after the prototype.
 
+import { useState } from 'react';
+
 export function Panel({
   title, aside, children, className = '',
 }: { title: React.ReactNode; aside?: React.ReactNode; children: React.ReactNode; className?: string }) {
@@ -30,14 +32,18 @@ export function Empty({ children }: { children: React.ReactNode }) {
 
 export type BarItem = { name: string; value: number; color?: string };
 
-export function BarList({ items, empty = 'No cases in this selection.', color = '#9F7DFF', compact = false }: {
-  items: BarItem[]; empty?: string; color?: string; compact?: boolean;
+// limit: show only the first N bars, with a "View all" button when there are more.
+export function BarList({ items, empty = 'No cases in this selection.', color = '#9F7DFF', compact = false, limit }: {
+  items: BarItem[]; empty?: string; color?: string; compact?: boolean; limit?: number;
 }) {
+  const [all, setAll] = useState(false);
   if (!items.length) return <Empty>{empty}</Empty>;
   const max = Math.max(...items.map((i) => i.value), 1);
+  const cut = limit !== undefined && items.length > limit;
+  const visible = cut && !all ? items.slice(0, limit) : items;
   return (
     <div className={`flex flex-col ${compact ? 'gap-3' : 'gap-4'}`}>
-      {items.map((i) => (
+      {visible.map((i) => (
         <div key={i.name} className="flex flex-col gap-1.5">
           <div className="flex justify-between gap-3 text-sm">
             <span>{i.name}</span>
@@ -48,6 +54,12 @@ export function BarList({ items, empty = 'No cases in this selection.', color = 
           </div>
         </div>
       ))}
+      {cut && (
+        <button type="button" onClick={() => setAll(!all)} aria-expanded={all}
+          className="h-10 cursor-pointer self-center rounded-[10px] border border-lilac-200 bg-white px-5 text-sm hover:border-secondary hover:bg-lilac-50">
+          {all ? 'Show fewer' : `View all (${items.length})`}
+        </button>
+      )}
     </div>
   );
 }

@@ -32,6 +32,9 @@ export function Empty({ children }: { children: React.ReactNode }) {
 
 export type BarItem = { name: string; value: number; color?: string };
 
+// How many bars long lists show before "View all".
+export const BAR_LIMIT = 7;
+
 // limit: show only the first N bars, with a "View all" button when there are more.
 export function BarList({ items, empty = 'No cases in this selection.', color = '#9F7DFF', compact = false, limit }: {
   items: BarItem[]; empty?: string; color?: string; compact?: boolean; limit?: number;

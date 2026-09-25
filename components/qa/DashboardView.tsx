@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { BarList, ColumnChart, HATCH, Kpi, Legend, Panel, type Column } from '@/components/ui/Charts';
+import { BAR_LIMIT, BarList, ColumnChart, HATCH, Kpi, Legend, Panel, type Column } from '@/components/ui/Charts';
 import { FilterMulti, Segmented } from '@/components/ui/Dropdowns';
 import { countBy, gapStatus, inOrder, inRange, monthLabel, periodText, periods } from '@/lib/qa/stats';
 import { QA_SOURCES, SOURCE_COLORS, VALIDITY_COLORS, VALIDITY_VALUES, type QaSource } from '@/lib/qa/types';
@@ -93,7 +93,7 @@ export function DashboardView() {
             empty="No Instructor or Course complaints in this selection." />
         </Panel>
         <Panel title="Instructor & Course: by complaint type">
-          <BarList items={countBy(complaints, (c) => (c.complaint_types.length ? c.complaint_types : 'Not set'))} limit={5}
+          <BarList items={countBy(complaints, (c) => (c.complaint_types.length ? c.complaint_types : 'Not set'))} limit={BAR_LIMIT}
             empty="No Instructor or Course complaints in this selection." />
         </Panel>
       </div>

@@ -9,8 +9,10 @@ export type TableColumn<T> = { key: string; header: string; render: (row: T) => 
 // (Date), the clickable name (Case = customer name), an optional one-click Link,
 // then the rest.
 export function RecordTable<T extends { id: string; is_sample?: boolean }>({
-  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case', leading,
+  rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case', leading, fit = false,
 }: {
+  // Fit the screen width: smaller text, tighter spacing, text wraps (no sideways scrolling).
+  fit?: boolean;
   firstHeader?: string;
   leading?: TableColumn<T>; // shown before the name column, e.g. Date
   rows: T[];
@@ -24,16 +26,18 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
 }) {
   const [limit, setLimit] = useState(100);
   const shown = rows.slice(0, limit);
-  const th = 'px-2.5 py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase';
+  const pad = fit ? 'px-1.5' : 'px-2.5';
+  const edge = fit ? 'pl-3' : 'pl-6';
+  const th = `${pad} py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase ${fit ? 'align-bottom' : ''}`;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-peach-200 bg-white">
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm" style={{ minWidth }}>
+        <table className={`w-full border-collapse ${fit ? 'text-[13px]' : 'text-sm'}`} style={fit ? undefined : { minWidth }}>
           <thead className="bg-lilac-50">
             <tr>
-              {leading && <th scope="col" className={`${th} pl-6`}>{leading.header}</th>}
-              <th scope="col" className={`${th} ${leading ? '' : 'pl-6'}`}>{firstHeader}</th>
+              {leading && <th scope="col" className={`${th} ${edge}`}>{leading.header}</th>}
+              <th scope="col" className={`${th} ${leading ? '' : edge}`}>{firstHeader}</th>
               {link && <th scope="col" className={th}>Link</th>}
               {columns.map((c) => <th key={c.key} scope="col" className={th}>{c.header}</th>)}
             </tr>
@@ -43,8 +47,8 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
               return (
                 <tr key={row.id} onClick={() => onOpen(row.id)}
                   className="cursor-pointer border-t border-lilac-50 align-middle hover:bg-peach-50">
-                  {leading && <td className="py-3 pr-2.5 pl-6">{leading.render(row)}</td>}
-                  <td className={`py-3 pr-2.5 ${leading ? 'pl-2.5' : 'pl-6'}`}>
+                  {leading && <td className={`py-3 ${fit ? 'pr-2' : 'pr-2.5'} ${edge}`}>{leading.render(row)}</td>}
+                  <td className={`py-3 ${fit ? 'pr-2' : 'pr-2.5'} ${leading ? (fit ? 'pl-2' : 'pl-2.5') : edge}`}>
                     <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(row.id); }}
                       className="cursor-pointer p-0 py-1 text-left font-semibold underline decoration-primary underline-offset-[3px]">
                       {label(row)}
@@ -56,8 +60,8 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
                       </div>
                     )}
                   </td>
-                  {link && <td className="px-2.5 py-3"><LinkCell url={link(row)} /></td>}
-                  {columns.map((c) => <td key={c.key} className="px-2.5 py-3">{c.render(row)}</td>)}
+                  {link && <td className={`${pad} py-3`}><LinkCell url={link(row)} compact={fit} /></td>}
+                  {columns.map((c) => <td key={c.key} className={`${pad} py-3`}>{c.render(row)}</td>)}
                 </tr>
               );
             })}

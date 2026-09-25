@@ -45,6 +45,7 @@ export function CurCaseLogView() {
       </div>
       <RecordTable
         rows={rows}
+        fit
         leading={{ key: 'date', header: 'Date', render: (c) => <span className="whitespace-nowrap">{formatDate(c.case_date) || '—'}</span> }}
         label={customerLabel}
         link={(c) => c.case_link}
@@ -60,7 +61,7 @@ export function CurCaseLogView() {
             // Kept on one line so the number and its unit never split.
             render: (c) => { const d = resolutionDays(c); return d === null ? '—' : <span className="whitespace-nowrap">{d} {d === 1 ? 'day' : 'days'}</span>; },
           },
-          { key: 'comment', header: 'Comment', render: (c) => <span className="line-clamp-2 max-w-72 text-ink-muted">{c.comments || '—'}</span> },
+          { key: 'comment', header: 'Comment', render: (c) => <span className="line-clamp-2 w-44 text-ink-muted" title={c.comments ?? undefined}>{c.comments || '—'}</span> },
         ]}
       />
     </div>

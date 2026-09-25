@@ -34,7 +34,7 @@ export function MentorCaseLogView() {
   const o = (k: string) => data.options[k] ?? [];
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <FilterSelect label="Mentor" allLabel="All mentors" value={mentor} onChange={setMentor} options={data.mentors.map((m) => m.name)} />
         <FilterSelect label="Complaint type" allLabel="All types" value={type} onChange={setType} options={o('mentor_complaint_type')} />

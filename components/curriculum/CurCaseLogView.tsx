@@ -29,7 +29,7 @@ export function CurCaseLogView() {
     matches(query, [c.customer_name, courseName(c.course_id), c.comments, c.feedback_progress, c.curriculum_sme]));
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <FilterSelect label="Category" allLabel="All categories" value={category} onChange={setCategory}
           options={distinct([...(data.options.cur_category ?? []), ...data.cases.map((c) => c.category)])} />

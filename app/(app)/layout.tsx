@@ -13,7 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         roleLabel={profile.role === 'admin' ? 'Admin' : 'Viewer'}
         isSuperAdmin={profile.is_super_admin}
       />
-      <main className="min-w-0 flex-1 px-4 py-8 md:px-10 md:pt-9 md:pb-12">{children}</main>
+      <main className="min-w-0 flex-1 px-4 py-6 md:px-8 md:pt-6 md:pb-10">{children}</main>
     </div>
   );
 }

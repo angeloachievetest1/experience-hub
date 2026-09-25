@@ -3,7 +3,7 @@
 export function ExportButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
   return (
     <button type="button" onClick={onClick} disabled={disabled}
-      className="flex h-11 cursor-pointer items-center gap-2 rounded-[10px] border border-ink bg-white px-4 text-sm font-medium disabled:cursor-default disabled:opacity-50">
+      className="flex h-9 cursor-pointer items-center gap-2 rounded-[10px] border border-ink bg-white px-4 text-sm font-medium disabled:cursor-default disabled:opacity-50">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12 4v11 M7 10l5 5 5-5 M5 20h14" />
       </svg>

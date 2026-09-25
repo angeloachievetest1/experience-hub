@@ -43,7 +43,7 @@ export function DateRangeButton({ value, onChange }: { value: DateRange; onChang
         onClick={toggle}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="flex h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border border-ink bg-white px-4 text-sm font-medium"
+        className="flex h-9 cursor-pointer items-center gap-2.5 rounded-[10px] border border-ink bg-white px-4 text-sm font-medium"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4" />
@@ -59,7 +59,7 @@ export function DateRangeButton({ value, onChange }: { value: DateRange; onChang
               const on = p.range.from === value.from && p.range.to === value.to;
               return (
                 <button key={p.label} type="button" onClick={() => apply(p.range)}
-                  className={`min-h-11 cursor-pointer rounded-[10px] px-3 text-left text-sm ${on ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'}`}>
+                  className={`min-h-9 cursor-pointer rounded-[10px] px-3 text-left text-sm ${on ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'}`}>
                   {p.label}
                 </button>
               );
@@ -69,17 +69,17 @@ export function DateRangeButton({ value, onChange }: { value: DateRange; onChang
             <div className="text-xs tracking-wide text-ink-muted uppercase">Custom range</div>
             <label className="flex flex-col gap-1.5 text-sm">
               From
-              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-11 rounded-[10px] border border-lilac-200 px-3" />
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 rounded-[10px] border border-lilac-200 px-3" />
             </label>
             <label className="flex flex-col gap-1.5 text-sm">
               To
-              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-11 rounded-[10px] border border-lilac-200 px-3" />
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 rounded-[10px] border border-lilac-200 px-3" />
             </label>
             {!valid && <div className="text-[13px] text-primary">“From” must be before “To”.</div>}
             <div className="mt-auto flex justify-end gap-2">
-              <button type="button" onClick={() => setOpen(false)} className="h-11 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">Cancel</button>
+              <button type="button" onClick={() => setOpen(false)} className="h-9 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">Cancel</button>
               <button type="button" disabled={!valid} onClick={() => apply({ from: from || null, to: to || null })}
-                className="h-11 cursor-pointer rounded-[10px] bg-primary px-5 text-sm font-semibold disabled:opacity-50">
+                className="h-9 cursor-pointer rounded-[10px] bg-primary px-5 text-sm font-semibold disabled:opacity-50">
                 Apply
               </button>
             </div>

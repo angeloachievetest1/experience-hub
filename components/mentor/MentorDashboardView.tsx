@@ -30,7 +30,7 @@ export function MentorDashboardView() {
   const byQuarter = allQuarters.slice(allQuarters.findIndex(hasData), allQuarters.findLastIndex(hasData) + 1);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi label="Total complaints" value={cases.length} note="In the selected date range" />
         <Kpi label="Closed" value={closed} note={note(closed)} />
@@ -38,9 +38,9 @@ export function MentorDashboardView() {
         <Kpi label="Valid complaints" value={valid} note={note(valid)} />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Panel title="Complaints by year"><ColumnChart columns={byYear} height={180} /></Panel>
-        <Panel title="Complaints by quarter"><ColumnChart columns={byQuarter} height={180} /></Panel>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Panel title="Complaints by year"><ColumnChart columns={byYear} height={150} /></Panel>
+        <Panel title="Complaints by quarter"><ColumnChart columns={byQuarter} height={150} /></Panel>
         <Panel title="By complaint type">
           <BarList items={countBy(cases, (c) => c.complaint_type ?? 'Not set')} color="#FF4500" empty="No complaints in this date range." />
         </Panel>

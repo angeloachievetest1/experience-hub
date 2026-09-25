@@ -39,7 +39,7 @@ export function CurDashboardView() {
   }).filter((x) => x.value > 0).sort((a, b) => b.value - a.value);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi label="Customer cases" value={cases.length} note="In the selected date range" />
         <Kpi label="Avg resolution time" value={fmtDays(average(cases.map(resolutionDays)))} note="From TAT, or case date to date resolved" />
@@ -54,14 +54,14 @@ export function CurDashboardView() {
         <ColumnChart columns={columns} />
       </Panel>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="By category"><BarList items={categories} color="#FF4500" /></Panel>
         <Panel title="By material type"><BarList items={countBy(cases, (c) => c.material_type ?? 'Not set')} /></Panel>
         <Panel title="Avg resolution time by category" aside="Days">
           <BarList items={avgByCategory} color="#2D1559" empty="No resolution times recorded in this date range." />
         </Panel>
         <Panel title="5-year trend" aside="All customer cases, by year">
-          <ColumnChart columns={years} height={180} />
+          <ColumnChart columns={years} height={150} />
         </Panel>
       </div>
     </div>

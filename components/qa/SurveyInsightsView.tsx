@@ -51,7 +51,7 @@ export function SurveyInsightsView() {
   const topReason = reasons.find((r) => r.name !== 'Not set');
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Kpi label="Survey records" value={surveys.length} note="In the selected date range" />
         <Kpi label="Average rating" value={avg === null ? '—' : avg.toFixed(1)} note="Out of 6" />
@@ -63,7 +63,7 @@ export function SurveyInsightsView() {
         <ColumnChart columns={columns} />
       </Panel>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="Total by survey type">
           <BarList items={types.map((t, i) => ({ ...t, name: withMeaning(t.name), color: typeColor(t.name, i) }))} empty="No survey records in this date range." />
         </Panel>

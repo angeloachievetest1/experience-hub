@@ -47,13 +47,13 @@ export function CaseLogView() {
   const inDateRange = data.cases.filter((c) => inRange(c.case_date, range)).length;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <FilterMulti label="Source" allLabel="All sources" options={[...QA_SOURCES]} value={sources} onChange={setSources} />
         {hasAnalyst && <FilterSelect label="Analyst" allLabel="All analysts" options={analysts} value={analyst} onChange={setAnalyst} />}
         <FilterSelect label="Category" allLabel="All categories" options={categories} value={category} onChange={setCategory} />
         {hasOutcome && <FilterSelect label="Validity" allLabel="All validity" options={[...VALIDITY_VALUES]} value={validity} onChange={setValidity} />}
-        <label className="flex h-11 w-full items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3.5 sm:w-72">
+        <label className="flex h-9 w-full items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3.5 sm:w-72">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M20 20l-4-4" />
           </svg>
@@ -79,7 +79,7 @@ export function AddCaseButton() {
   return (
     <div ref={ref} className="relative">
       <button type="button" disabled={adding} aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)}
-        className="flex h-11 cursor-pointer items-center gap-2 rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:cursor-wait disabled:opacity-60">
+        className="flex h-9 cursor-pointer items-center gap-2 rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:cursor-wait disabled:opacity-60">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
         {adding ? 'Adding…' : 'Add case'}
       </button>
@@ -89,7 +89,7 @@ export function AddCaseButton() {
           <div className="px-2.5 pt-1.5 pb-1 text-xs tracking-wide text-ink-muted uppercase">New case type</div>
           {QA_SOURCES.map((s) => (
             <button key={s} type="button" role="option" aria-selected={false} onClick={() => { setOpen(false); addCase(s); }}
-              className="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-left text-sm hover:bg-lilac-50">
+              className="flex min-h-9 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-left text-sm hover:bg-lilac-50">
               <Icon name="list" size={16} />
               {labels[s]}
             </button>

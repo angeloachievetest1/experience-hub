@@ -6,9 +6,9 @@ export function Panel({
   title, aside, children, className = '',
 }: { title: React.ReactNode; aside?: React.ReactNode; children: React.ReactNode; className?: string }) {
   return (
-    <section className={`flex min-w-0 flex-col gap-5 rounded-2xl border border-peach-200 bg-white p-6 ${className}`}>
+    <section className={`flex min-w-0 flex-col gap-4 rounded-2xl border border-peach-200 bg-white p-5 ${className}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0 font-display text-[22px] font-normal">{title}</h2>
+        <h2 className="m-0 font-display text-[18px] font-normal">{title}</h2>
         {aside && <div className="text-[13px] text-ink-muted">{aside}</div>}
       </div>
       {children}
@@ -18,9 +18,9 @@ export function Panel({
 
 export function Kpi({ label, value, note }: { label: string; value: React.ReactNode; note?: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-2xl border border-peach-200 bg-white p-6">
+    <div className="flex flex-col gap-1 rounded-2xl border border-peach-200 bg-white px-5 py-4">
       <div className="text-sm text-ink-muted">{label}</div>
-      <div className="font-display text-[44px] leading-[1.1] font-light">{value}</div>
+      <div className="font-display text-[32px] leading-[1.1] font-light">{value}</div>
       {note && <div className="text-sm text-ink-muted">{note}</div>}
     </div>
   );
@@ -42,21 +42,21 @@ export function BarList({ items, empty = 'No cases in this selection.', color = 
   const cut = limit !== undefined && items.length > limit;
   const visible = cut && !all ? items.slice(0, limit) : items;
   return (
-    <div className={`flex flex-col ${compact ? 'gap-3' : 'gap-4'}`}>
+    <div className={`flex flex-col ${compact ? 'gap-2.5' : 'gap-3'}`}>
       {visible.map((i) => (
         <div key={i.name} className="flex flex-col gap-1.5">
           <div className="flex justify-between gap-3 text-sm">
             <span>{i.name}</span>
             <span className="font-semibold">{i.value}</span>
           </div>
-          <div className="h-2.5 rounded-md bg-lilac-50">
-            <div className="h-2.5 rounded-md" style={{ width: `${(i.value / max) * 100}%`, background: i.color ?? color }} />
+          <div className="h-2 rounded-md bg-lilac-50">
+            <div className="h-2 rounded-md" style={{ width: `${(i.value / max) * 100}%`, background: i.color ?? color }} />
           </div>
         </div>
       ))}
       {cut && (
         <button type="button" onClick={() => setAll(!all)} aria-expanded={all}
-          className="h-10 cursor-pointer self-center rounded-[10px] border border-lilac-200 bg-white px-5 text-sm hover:border-secondary hover:bg-lilac-50">
+          className="h-9 cursor-pointer self-center rounded-[10px] border border-lilac-200 bg-white px-5 text-sm hover:border-secondary hover:bg-lilac-50">
           {all ? 'Show fewer' : `View all (${items.length})`}
         </button>
       )}
@@ -92,7 +92,7 @@ export type Column = {
 };
 
 // Stacked columns. Missing periods are drawn as a hatched "No data" gap.
-export function ColumnChart({ columns, height = 220 }: { columns: Column[]; height?: number }) {
+export function ColumnChart({ columns, height = 170 }: { columns: Column[]; height?: number }) {
   if (!columns.length) return <Empty>No cases in this date range.</Empty>;
   const totals = columns.map((c) => c.segments.reduce((a, s) => a + s.value, 0));
   const max = Math.max(...totals, 1);
@@ -168,7 +168,7 @@ export function HeatTable({
                   return (
                     <td key={c.key} className="p-1 text-center">
                       <div
-                        className="flex h-8 min-w-9 items-center justify-center rounded-md text-[13px]"
+                        className="flex h-7 min-w-9 items-center justify-center rounded-md text-[13px]"
                         style={gap ? { background: HATCH } : { background: v ? `rgba(159,125,255,${0.15 + (v / max) * 0.85})` : '#F6F3FF', color: v / max > 0.6 ? '#fff' : undefined }}
                       >
                         {gap ? '' : v || ''}
@@ -193,10 +193,10 @@ export function Donut({ a, b, aLabel, bLabel, aColor = '#FF4500', bColor = '#9F7
   const total = a + b;
   const aPct = total ? Math.round((a / total) * 100) : 0;
   return (
-    <div className="relative size-[200px] shrink-0" role="img" aria-label={`${aLabel} ${aPct}%, ${bLabel} ${100 - aPct}%`}>
+    <div className="relative size-[168px] shrink-0" role="img" aria-label={`${aLabel} ${aPct}%, ${bLabel} ${100 - aPct}%`}>
       <div className="size-full rounded-full" style={{ background: `conic-gradient(${aColor} 0 ${aPct}%, ${bColor} ${aPct}% 100%)` }} />
       {/* The first part fills clockwise from the top, so it sits on the right: its label goes on the right too. */}
-      <div className="absolute inset-5 flex items-center justify-center gap-3 rounded-full bg-white">
+      <div className="absolute inset-4 flex items-center justify-center gap-3 rounded-full bg-white">
         <div className="text-center">
           <div className="font-display text-[22px] leading-tight font-semibold" style={{ color: bColor }}>{total ? 100 - aPct : 0}%</div>
           <div className="text-[11px] text-ink-muted">{bLabel}</div>

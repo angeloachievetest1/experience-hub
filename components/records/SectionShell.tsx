@@ -74,12 +74,12 @@ export function SectionShell<T>({
 
   return (
     <Ctx.Provider value={value as ShellContext<unknown>}>
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <PageHeader title={title} subtitle={subtitle} />
           <div className="flex flex-wrap items-center gap-3">
             {hasSample && (
-              <span className="rounded-full border border-lilac-200 bg-white px-3.5 py-2 text-[13px] text-ink-muted">Includes sample records</span>
+              <span className="rounded-full border border-lilac-200 bg-white px-3 py-1.5 text-[13px] text-ink-muted">Includes sample records</span>
             )}
             {showRange && <DateRangeButton value={range} onChange={setRange} />}
           </div>

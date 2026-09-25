@@ -69,7 +69,7 @@ export function RecordDrawer(props: RecordDrawerProps) {
         role="dialog"
         aria-modal="true"
         aria-label={record ? title : 'Record details'}
-        className="relative flex h-full w-full max-w-[480px] flex-col gap-6 overflow-y-auto border-l [&>*]:shrink-0 border-peach-200 bg-white px-7 pt-7 pb-10 shadow-[-12px_0_32px_rgba(45,21,89,0.12)]"
+        className="relative flex h-full w-full max-w-[480px] flex-col gap-5 overflow-y-auto border-l [&>*]:shrink-0 border-peach-200 bg-white px-6 pt-6 pb-10 shadow-[-12px_0_32px_rgba(45,21,89,0.12)]"
       >
         {record ? (
           <RecordForm key={`${record.id}:${record.updated_at ?? ''}`} {...props} record={record} closeRef={closeRef} message={message} setMessage={setMessage} />
@@ -87,7 +87,7 @@ export function RecordDrawer(props: RecordDrawerProps) {
 function CloseButton({ onClick, ref }: { onClick: () => void; ref: React.Ref<HTMLButtonElement> }) {
   return (
     <button ref={ref} type="button" onClick={onClick} aria-label="Close details"
-      className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-lilac-200 bg-white">
+      className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-lilac-200 bg-white">
       <Icon name="cross" size={18} />
     </button>
   );
@@ -164,7 +164,7 @@ function RecordForm({
             <span>{kindLabel}</span>
             {isSample && <span className="rounded-full bg-highlight px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase">Sample</span>}
           </div>
-          <h2 className="mt-1.5 mb-0 font-display text-[26px] leading-tight font-semibold [overflow-wrap:anywhere]">{title}</h2>
+          <h2 className="mt-1.5 mb-0 font-display text-[22px] leading-tight font-semibold [overflow-wrap:anywhere]">{title}</h2>
           {!canEdit && <p className="mt-1 mb-0 text-[13px] text-ink-muted">{readOnlyText}</p>}
         </div>
         <CloseButton ref={closeRef} onClick={close} />
@@ -218,10 +218,10 @@ function RecordForm({
               <div className="text-sm">{deleteQuestion} This can’t be undone. It will be recorded in the activity log.</div>
               <div className="flex gap-2">
                 <button type="button" onClick={remove} disabled={pending}
-                  className="h-11 cursor-pointer rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:opacity-60">
+                  className="h-10 cursor-pointer rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:opacity-60">
                   {pending ? 'Deleting…' : `Yes, ${deleteLabel.toLowerCase()}`}
                 </button>
-                <button type="button" onClick={() => setConfirming(false)} className="h-11 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">
+                <button type="button" onClick={() => setConfirming(false)} className="h-10 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">
                   Cancel
                 </button>
               </div>
@@ -229,17 +229,17 @@ function RecordForm({
           ) : (
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" onClick={save} disabled={!dirty || pending}
-                className="h-11 cursor-pointer rounded-[10px] bg-primary px-5 text-sm font-semibold disabled:cursor-default disabled:opacity-50">
+                className="h-10 cursor-pointer rounded-[10px] bg-primary px-5 text-sm font-semibold disabled:cursor-default disabled:opacity-50">
                 {pending ? 'Saving…' : 'Save changes'}
               </button>
               {dirty && (
                 <button type="button" onClick={() => { setDraft(original); setMessage(null); }}
-                  className="h-11 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">
+                  className="h-10 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">
                   Undo changes
                 </button>
               )}
               <button type="button" onClick={() => setConfirming(true)}
-                className="ml-auto h-11 cursor-pointer rounded-[10px] border border-[#FFB199] bg-white px-4 text-sm font-semibold text-primary">
+                className="ml-auto h-10 cursor-pointer rounded-[10px] border border-[#FFB199] bg-white px-4 text-sm font-semibold text-primary">
                 {deleteLabel}
               </button>
             </div>

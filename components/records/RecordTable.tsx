@@ -28,7 +28,7 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
   const shown = rows.slice(0, limit);
   const pad = fit ? 'px-1.5' : 'px-2.5';
   const edge = fit ? 'pl-3' : 'pl-6';
-  const th = `${pad} py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase ${fit ? 'align-bottom' : ''}`;
+  const th = `${pad} py-2.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase ${fit ? 'align-bottom' : ''}`;
 
   return (
     <div className="overflow-hidden rounded-2xl border border-peach-200 bg-white">
@@ -47,8 +47,8 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
               return (
                 <tr key={row.id} onClick={() => onOpen(row.id)}
                   className="cursor-pointer border-t border-lilac-50 align-middle hover:bg-peach-50">
-                  {leading && <td className={`py-3 ${fit ? 'pr-2' : 'pr-2.5'} ${edge}`}>{leading.render(row)}</td>}
-                  <td className={`py-3 ${fit ? 'pr-2' : 'pr-2.5'} ${leading ? (fit ? 'pl-2' : 'pl-2.5') : edge}`}>
+                  {leading && <td className={`py-2 ${fit ? 'pr-2' : 'pr-2.5'} ${edge}`}>{leading.render(row)}</td>}
+                  <td className={`py-2 ${fit ? 'pr-2' : 'pr-2.5'} ${leading ? (fit ? 'pl-2' : 'pl-2.5') : edge}`}>
                     <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(row.id); }}
                       className="cursor-pointer p-0 py-1 text-left font-semibold underline decoration-primary underline-offset-[3px]">
                       {label(row)}
@@ -60,18 +60,18 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
                       </div>
                     )}
                   </td>
-                  {link && <td className={`${pad} py-3`}><LinkCell url={link(row)} compact={fit} /></td>}
-                  {columns.map((c) => <td key={c.key} className={`${pad} py-3`}>{c.render(row)}</td>)}
+                  {link && <td className={`${pad} py-2`}><LinkCell url={link(row)} compact={fit} /></td>}
+                  {columns.map((c) => <td key={c.key} className={`${pad} py-2`}>{c.render(row)}</td>)}
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
-      {rows.length === 0 && <div className="p-6 text-sm text-ink-muted">{empty}</div>}
+      {rows.length === 0 && <div className="p-5 text-sm text-ink-muted">{empty}</div>}
       {rows.length > limit && (
         <div className="border-t border-lilac-50 p-4 text-center">
-          <button type="button" onClick={() => setLimit(limit + 100)} className="h-11 cursor-pointer rounded-[10px] border border-lilac-200 px-5 text-sm">
+          <button type="button" onClick={() => setLimit(limit + 100)} className="h-9 cursor-pointer rounded-[10px] border border-lilac-200 px-5 text-sm">
             Show more ({rows.length - limit} left)
           </button>
         </div>

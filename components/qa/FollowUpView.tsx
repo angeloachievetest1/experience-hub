@@ -46,15 +46,15 @@ export function FollowUpView() {
   ];
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {tiles.map((t) => {
           const on = filter === t.key;
           return (
             <button key={t.key} type="button" aria-pressed={on} onClick={() => setFilter(t.key)}
-              className={`flex cursor-pointer flex-col items-start gap-1 rounded-2xl border px-5 py-4 text-left ${on ? 'border-ink bg-ink text-white' : 'border-peach-200 bg-white hover:border-secondary'}`}>
+              className={`flex cursor-pointer flex-col items-start gap-1 rounded-2xl border px-4 py-3 text-left ${on ? 'border-ink bg-ink text-white' : 'border-peach-200 bg-white hover:border-secondary'}`}>
               <span className="text-sm">{t.label}</span>
-              <span className="font-display text-[40px] leading-[1.1] font-light">{t.count}</span>
+              <span className="font-display text-[30px] leading-[1.1] font-light">{t.count}</span>
             </button>
           );
         })}
@@ -79,7 +79,7 @@ export function FollowUpView() {
       </Panel>
 
       <div className="flex items-center gap-3">
-        <h2 className="m-0 font-display text-[22px] font-normal">{filter === 'All' ? 'Open items' : filter}</h2>
+        <h2 className="m-0 font-display text-[18px] font-normal">{filter === 'All' ? 'Open items' : filter}</h2>
         <span className="text-sm text-ink-muted">{rows.length} cases</span>
       </div>
       <CaseTable cases={rows} columns={['date', 'source', 'course', 'instructor', 'analyst', 'issue', 'needs']} needs={needsOf}

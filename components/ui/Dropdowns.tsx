@@ -29,7 +29,7 @@ export const Chevron = () => (
 );
 
 const triggerClass =
-  'flex h-11 cursor-pointer items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3 text-sm whitespace-nowrap hover:border-secondary';
+  'flex h-9 cursor-pointer items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3 text-sm whitespace-nowrap hover:border-secondary';
 const panelClass =
   'absolute top-[52px] left-0 z-30 flex max-h-80 w-60 flex-col gap-0.5 overflow-y-auto rounded-xl border border-lilac-200 bg-white p-2 shadow-[0_12px_32px_rgba(45,21,89,0.16)]';
 
@@ -55,7 +55,7 @@ export function FilterSelect({
               role="option"
               aria-selected={value === o}
               onClick={() => choose(o)}
-              className={`min-h-11 cursor-pointer rounded-lg px-3 text-left text-sm ${value === o ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'}`}
+              className={`min-h-9 cursor-pointer rounded-lg px-3 text-left text-sm ${value === o ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'}`}
             >
               {o ?? allLabel}
             </button>
@@ -110,7 +110,7 @@ export function CheckOption({ label, checked, onToggle }: { label: string; check
       role="option"
       aria-selected={checked}
       onClick={onToggle}
-      className={`flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-sm ${checked ? 'bg-lilac-50 font-semibold' : 'hover:bg-lilac-50'}`}
+      className={`flex min-h-9 w-full cursor-pointer items-center gap-2 rounded-md px-2.5 text-left text-sm ${checked ? 'bg-lilac-50 font-semibold' : 'hover:bg-lilac-50'}`}
     >
       <span
         className={`flex size-4 shrink-0 items-center justify-center rounded border-[1.5px] ${checked ? 'border-ink bg-ink' : 'border-lilac-200 bg-white'}`}
@@ -141,7 +141,7 @@ export function Segmented<T extends string>({
             type="button"
             aria-pressed={on}
             onClick={() => onChange(o.value)}
-            className={`h-11 cursor-pointer rounded-full border px-4 text-sm ${on ? 'border-ink bg-ink font-semibold text-white' : 'border-lilac-200 bg-white hover:border-secondary'}`}
+            className={`h-9 cursor-pointer rounded-full border px-4 text-sm ${on ? 'border-ink bg-ink font-semibold text-white' : 'border-lilac-200 bg-white hover:border-secondary'}`}
           >
             {o.label}
           </button>

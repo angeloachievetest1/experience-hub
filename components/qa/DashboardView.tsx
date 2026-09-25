@@ -43,7 +43,7 @@ export function DashboardView() {
       .map((v) => ({ ...v, color: VALIDITY_COLORS[v.name] ?? '#F6F3FF' }));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <Kpi label="Total records" value={shown.length} note={picked.length ? picked.join(', ') : 'All sources'} />
         {QA_SOURCES.map((s) => {
@@ -80,7 +80,7 @@ export function DashboardView() {
         )}
       </Panel>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="Validity split" aside={picked.length ? picked.join(', ') : 'All sources'}>
           {/* Returned cases have no validity (owner decision 2026-09-30). */}
           <BarList items={validity(shown.filter((c) => c.source !== 'Returned'))} />

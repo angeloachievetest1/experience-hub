@@ -30,15 +30,15 @@ export function RequestsView() {
     matches(query, [r.requester_name, courseName(r.course_id), r.comments, r.notes, r.base_material]));
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         {statuses.map((s) => {
           const on = status === s;
           return (
             <button key={s} type="button" aria-pressed={on} onClick={() => setStatus(s)}
-              className={`flex cursor-pointer flex-col items-start gap-1 rounded-2xl border px-5 py-4 text-left ${on ? 'border-ink bg-ink text-white' : 'border-peach-200 bg-white hover:border-secondary'}`}>
+              className={`flex cursor-pointer flex-col items-start gap-1 rounded-2xl border px-4 py-3 text-left ${on ? 'border-ink bg-ink text-white' : 'border-peach-200 bg-white hover:border-secondary'}`}>
               <span className="text-sm">{s === 'All' ? 'All requests' : s}</span>
-              <span className="font-display text-[40px] leading-[1.1] font-light">{count(s)}</span>
+              <span className="font-display text-[30px] leading-[1.1] font-light">{count(s)}</span>
             </button>
           );
         })}

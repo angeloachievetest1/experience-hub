@@ -46,7 +46,7 @@ export function EntityView({ kind }: { kind: 'instructor' | 'course' }) {
   const heading = kind === 'instructor' ? 'Instructors' : 'Courses';
 
   return (
-    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
       <section className="flex flex-col gap-1.5 rounded-2xl border border-peach-200 bg-white p-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto">
         <div className="px-2.5 pt-1 pb-2 text-xs tracking-wide text-ink-muted uppercase">{heading} with cases</div>
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${heading.toLowerCase()}`}
@@ -55,7 +55,7 @@ export function EntityView({ kind }: { kind: 'instructor' | 'course' }) {
           const on = current?.id === e.id;
           return (
             <button key={e.id} type="button" aria-pressed={on} onClick={() => setSelected(e.id)}
-              className={`flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-[10px] px-3 text-left text-sm ${on ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'}`}>
+              className={`flex min-h-9 cursor-pointer items-center justify-between gap-2 rounded-[10px] px-3 text-left text-sm ${on ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'}`}>
               <span>{e.name}</span>
               <span className="text-[13px] text-ink-muted">{e.count}</span>
             </button>
@@ -65,8 +65,8 @@ export function EntityView({ kind }: { kind: 'instructor' | 'course' }) {
       </section>
 
       {current ? (
-        <div className="flex min-w-0 flex-col gap-6">
-          <h2 className="m-0 font-display text-[26px] font-semibold">{current.name}</h2>
+        <div className="flex min-w-0 flex-col gap-4">
+          <h2 className="m-0 font-display text-[22px] font-semibold">{current.name}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Kpi label="All cases" value={cases.length} />
             <Kpi label="Complaints" value={complaints.length} note="Instructor and Course cases" />
@@ -79,7 +79,7 @@ export function EntityView({ kind }: { kind: 'instructor' | 'course' }) {
               <Kpi label="Avg Moodle activity" value={avgText(instructorCases.map((c) => c.moodle_pct))} note="From instructor complaints" />
             </div>
           )}
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
             <Panel title="Most common issues" aside="Complaint types and survey reasons">
               <BarList items={issues.slice(0, 8)} compact />
             </Panel>

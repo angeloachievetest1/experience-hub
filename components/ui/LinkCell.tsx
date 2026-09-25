@@ -10,7 +10,7 @@ export function LinkCell({ url, compact = false }: { url: string | null; compact
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
       title={compact ? `Open case link: ${url}` : url}
-      className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-lilac-200 bg-white ${compact ? 'min-w-9 justify-center px-0' : 'px-2.5'} text-[13px] font-medium whitespace-nowrap no-underline hover:border-secondary hover:bg-lilac-50`}
+      className={`inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-lilac-200 bg-white ${compact ? 'min-w-8 justify-center px-0' : 'px-2.5'} text-[13px] font-medium whitespace-nowrap no-underline hover:border-secondary hover:bg-lilac-50`}
     >
       {!compact && 'Open'}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

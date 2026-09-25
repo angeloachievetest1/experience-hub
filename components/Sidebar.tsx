@@ -25,12 +25,12 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
   return (
     <nav
       aria-label="Main"
-      className="flex flex-col gap-8 border-b border-peach-200 bg-white px-5 py-4 md:sticky md:top-0 md:h-screen md:w-[248px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 md:py-7"
+      className="flex flex-col gap-3 border-b border-peach-200 bg-white px-4 py-3 md:sticky md:top-0 md:h-screen md:w-[220px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 md:py-4"
     >
       <div className="flex items-center justify-between gap-3">
-        <Link href={inAdmin ? '/admin' : START_PAGE} className="flex items-center gap-3 no-underline">
+        <Link href={inAdmin ? '/admin' : START_PAGE} className="flex items-center gap-2.5 no-underline">
           <Logo />
-          <span className="font-display text-lg leading-tight font-semibold">
+          <span className="font-display text-base leading-tight font-semibold">
             {inAdmin ? 'Experience Hub Dashboard' : 'Experience Hub'}
           </span>
         </Link>
@@ -46,11 +46,11 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
         </button>
       </div>
 
-      <div id="main-menu" className={`${menuOpen ? 'flex' : 'hidden'} flex-1 flex-col gap-8 pb-3 md:flex md:pb-0`}>
-      <div className="flex flex-col gap-6">
+      <div id="main-menu" className={`${menuOpen ? 'flex' : 'hidden'} flex-1 flex-col gap-4 pb-3 md:flex md:pb-0`}>
+      <div className="flex flex-col gap-2">
         {groups.map((group) => (
-          <div key={group.key} className="flex flex-col gap-1">
-            <div className="px-3.5 pb-2 font-display text-[15px] font-semibold tracking-[0.03em] uppercase">
+          <div key={group.key} className="flex flex-col">
+            <div className="px-3 pb-1 font-display text-[12px] font-semibold tracking-[0.06em] uppercase">
               {inAdmin ? 'Admin' : group.name}
             </div>
             {group.pages.map((page) => (
@@ -66,31 +66,28 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
         ))}
       </div>
 
-      <div className="mt-auto flex flex-col gap-3">
+      <div className="mt-auto flex flex-col gap-2">
         {inAdmin ? (
           <SwitchLink href={START_PAGE} label="Back to Experience Hub" icon="back" />
         ) : (
           isSuperAdmin && <SwitchLink href="/admin" label="Switch to Experience Hub Dashboard" icon="arrow" />
         )}
 
-        <div className="flex flex-col gap-2 rounded-[10px] bg-lilac-50 p-3.5">
-          <div className="min-w-0">
-            <div className="truncate font-semibold">{name || email}</div>
-            <div className="truncate text-[13px] text-ink-muted">{email}</div>
+        {/* Account: name + sign-out on one line, role tags below (email shows on hover). */}
+        <div className="flex flex-col gap-1.5 rounded-[10px] bg-lilac-50 p-2.5">
+          <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1 truncate text-sm font-semibold" title={email}>{name || email}</div>
+            <form action={signOut}>
+              <button type="submit" aria-label="Sign out" title="Sign out"
+                className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-lilac-200 bg-white hover:bg-peach-50">
+                <Icon name="logout" size={16} />
+              </button>
+            </form>
           </div>
-          <div className="flex flex-wrap gap-1.5 text-xs">
-            <span className="rounded-full bg-lilac-100 px-2.5 py-0.5">{roleLabel}</span>
-            {isSuperAdmin && <span className="rounded-full bg-highlight px-2.5 py-0.5 font-semibold">Super-admin</span>}
+          <div className="flex flex-wrap gap-1 text-[11px]">
+            <span className="rounded-full bg-lilac-100 px-2 py-0.5">{roleLabel}</span>
+            {isSuperAdmin && <span className="rounded-full bg-highlight px-2 py-0.5 font-semibold">Super-admin</span>}
           </div>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="mt-1 flex min-h-11 w-full cursor-pointer items-center gap-2.5 rounded-[10px] border border-lilac-200 bg-white px-3.5 text-sm font-medium hover:bg-peach-50"
-            >
-              <Icon name="logout" size={18} />
-              Sign out
-            </button>
-          </form>
         </div>
       </div>
       </div>
@@ -103,11 +100,11 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
-      className={`flex min-h-11 items-center gap-3 rounded-[10px] px-3.5 no-underline ${
+      className={`flex min-h-8 items-center gap-2.5 rounded-lg px-3 text-sm no-underline ${
         active ? 'bg-lilac-100 font-semibold' : 'hover:bg-lilac-50'
       }`}
     >
-      <Icon name={icon} />
+      <Icon name={icon} size={18} />
       <span>{label}</span>
     </Link>
   );
@@ -117,9 +114,9 @@ function SwitchLink({ href, label, icon }: { href: string; label: string; icon: 
   return (
     <Link
       href={href}
-      className="flex min-h-11 items-center gap-2.5 rounded-[10px] border border-lilac-200 px-3.5 text-sm font-medium no-underline hover:bg-lilac-50"
+      className="flex min-h-8 items-center gap-2 rounded-lg border border-lilac-200 px-2.5 py-1 text-[13px] leading-tight font-medium no-underline hover:bg-lilac-50"
     >
-      <Icon name={icon} size={18} />
+      <Icon name={icon} size={16} />
       <span>{label}</span>
     </Link>
   );

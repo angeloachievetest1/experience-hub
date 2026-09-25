@@ -1,5 +1,5 @@
 // Small, pure helpers for filtering and counting cases. No React here.
-import type { DataGap, QaCase, QaSource } from './types';
+import type { DataGap, QaSource } from './types';
 
 export type DateRange = { from: string | null; to: string | null }; // YYYY-MM-DD, inclusive
 export const ALL_TIME: DateRange = { from: null, to: null };
@@ -115,6 +115,3 @@ export function pct(part: number, whole: number) {
   return whole ? Math.round((part / whole) * 100) : 0;
 }
 
-export function inCases(cases: QaCase[], range: DateRange, sources?: QaSource[]) {
-  return cases.filter((c) => inRange(c.case_date, range) && (!sources || sources.includes(c.source)));
-}

@@ -21,7 +21,6 @@ export type CurCase = {
   date_resolved: string | null;
   case_link: string | null;
   field_notes: Record<string, string>;
-  is_sample: boolean;
   updated_at: string;
 };
 
@@ -40,7 +39,6 @@ export type CurRequest = {
   date_completed: string | null;
   ticket_manager: string | null;
   field_notes: Record<string, string>;
-  is_sample: boolean;
   updated_at: string;
 };
 

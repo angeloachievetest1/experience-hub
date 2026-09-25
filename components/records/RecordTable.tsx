@@ -8,7 +8,7 @@ export type TableColumn<T> = { key: string; header: string; render: (row: T) => 
 // Clickable table used by every case log. Columns: an optional leading column
 // (Date), the clickable name (Case = customer name), an optional one-click Link,
 // then the rest.
-export function RecordTable<T extends { id: string; is_sample?: boolean }>({
+export function RecordTable<T extends { id: string }>({
   rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case', leading, fit = false,
 }: {
   // Fit the screen width: smaller text, tighter spacing, text wraps (no sideways scrolling).
@@ -53,10 +53,9 @@ export function RecordTable<T extends { id: string; is_sample?: boolean }>({
                       className="cursor-pointer p-0 py-1 text-left font-semibold underline decoration-primary underline-offset-[3px]">
                       {label(row)}
                     </button>
-                    {(subLabel || row.is_sample) && (
+                    {subLabel && (
                       <div className="flex items-center gap-1.5 text-[13px] text-ink-muted">
-                        {subLabel && <span className="max-w-44 truncate">{subLabel(row)}</span>}
-                        {row.is_sample && <span className="rounded-full bg-highlight px-2 py-0.5 text-[11px] font-semibold tracking-wide text-ink uppercase">Sample</span>}
+                        <span className="max-w-44 truncate">{subLabel(row)}</span>
                       </div>
                     )}
                   </td>

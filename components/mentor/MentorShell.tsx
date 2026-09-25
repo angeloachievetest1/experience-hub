@@ -16,7 +16,6 @@ export function MentorShell({ data, title, subtitle, children }: {
       title={title}
       subtitle={subtitle}
       rangeKey="eh.mentor.range"
-      hasSample={data.cases.some((c) => c.is_sample)}
       renderDrawer={(id, close) => <MentorDrawer id={id} onClose={close} />}
     >
       {children}
@@ -87,7 +86,6 @@ function MentorDrawer({ id, onClose }: { id: string; onClose: () => void }) {
       kindLabel="Mentor complaint"
       color={MENTOR_COLOR}
       title={c ? customerLabel(c) : ''}
-      isSample={c?.is_sample}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText="Read only. You can’t edit Mentor cases."

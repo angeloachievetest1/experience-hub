@@ -17,7 +17,6 @@ export function QaShell({
       subtitle={subtitle}
       rangeKey="eh.qa.range"
       showRange={showRange}
-      hasSample={data.cases.some((c) => c.is_sample)}
       renderDrawer={(id, close) => <CaseDrawer id={id} onClose={close} />}
     >
       {children}

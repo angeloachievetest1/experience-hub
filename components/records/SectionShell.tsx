@@ -30,14 +30,13 @@ export function useShell<T>() {
 // Frame shared by every section page: header, date range (remembered while
 // moving between the section's pages), errors, and the record panel.
 export function SectionShell<T>({
-  data, title, subtitle, rangeKey, showRange = true, hasSample = false, renderDrawer, children,
+  data, title, subtitle, rangeKey, showRange = true, renderDrawer, children,
 }: {
   data: T;
   title: string;
   subtitle: string;
   rangeKey: string;
   showRange?: boolean;
-  hasSample?: boolean;
   renderDrawer: (id: string, close: () => void) => React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -77,12 +76,7 @@ export function SectionShell<T>({
       <div className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <PageHeader title={title} subtitle={subtitle} />
-          <div className="flex flex-wrap items-center gap-3">
-            {hasSample && (
-              <span className="rounded-full border border-lilac-200 bg-white px-3 py-1.5 text-[13px] text-ink-muted">Includes sample records</span>
-            )}
-            {showRange && <DateRangeButton value={range} onChange={setRange} />}
-          </div>
+          {showRange && <DateRangeButton value={range} onChange={setRange} />}
         </div>
         {error && <p role="alert" className="m-0 rounded-[10px] border border-primary bg-peach-100 px-4 py-3 text-sm">{error}</p>}
         {children}

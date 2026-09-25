@@ -34,8 +34,7 @@ export type RecordDrawerProps = {
   loadingText?: string;
   kindLabel: string;           // e.g. "Instructor record"
   color: string;               // little square next to kindLabel
-  title: string;               // e.g. QA-0017
-  isSample?: boolean;
+  title: string;               // the customer (or requester) name
   groups: FieldGroup[];
   canEdit: boolean;
   readOnlyText: string;
@@ -94,7 +93,7 @@ function CloseButton({ onClick, ref }: { onClick: () => void; ref: React.Ref<HTM
 }
 
 function RecordForm({
-  record, kindLabel, color, title, isSample, groups, canEdit, readOnlyText, onSave, onDelete,
+  record, kindLabel, color, title, groups, canEdit, readOnlyText, onSave, onDelete,
   deleteQuestion, deleteLabel = 'Delete case', onClose, derive, extra, closeRef, message, setMessage,
 }: RecordDrawerProps & {
   record: NonNullable<RecordDrawerProps['record']>;
@@ -162,7 +161,6 @@ function RecordForm({
           <div className="flex items-center gap-2 text-[13px] text-ink-muted">
             <span className="size-2.5 rounded-[3px]" style={{ background: color }} aria-hidden="true" />
             <span>{kindLabel}</span>
-            {isSample && <span className="rounded-full bg-highlight px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase">Sample</span>}
           </div>
           <h2 className="mt-1.5 mb-0 font-display text-[22px] leading-tight font-semibold [overflow-wrap:anywhere]">{title}</h2>
           {!canEdit && <p className="mt-1 mb-0 text-[13px] text-ink-muted">{readOnlyText}</p>}

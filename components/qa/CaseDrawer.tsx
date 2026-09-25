@@ -99,7 +99,6 @@ export function CaseDrawer({ id, onClose }: { id: string; onClose: () => void })
       kindLabel={c ? `${c.source} record` : ''}
       color={c ? SOURCE_COLORS[c.source] : '#DDD1FF'}
       title={c ? customerLabel(c) : ''}
-      isSample={c?.is_sample}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText="Read only. You can’t edit Quality Analyst cases."

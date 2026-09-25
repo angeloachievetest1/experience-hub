@@ -99,15 +99,16 @@ export function ColumnChart({ columns, height = 170 }: { columns: Column[]; heig
   if (!columns.length) return <Empty>No cases in this date range.</Empty>;
   const totals = columns.map((c) => c.segments.reduce((a, s) => a + s.value, 0));
   const max = Math.max(...totals, 1);
-  const wide = columns.length > 14;
+  // Each column is at least as wide as its label; a long chart scrolls inside its box.
+  const many = columns.length > 14;
   return (
     <div className="overflow-x-auto pb-1">
-      <div className="flex items-end gap-2.5" style={{ height: height + 44, minWidth: wide ? columns.length * 44 : undefined }}>
+      <div className={`flex w-max min-w-full items-end ${many ? 'gap-1.5' : 'gap-2.5'}`} style={{ height: height + 44 }}>
         {columns.map((c, i) => {
           const total = totals[i];
           const label = `${c.label}: ${c.missing ? 'no data' : total}${c.partial ? ` (${c.partial})` : ''}`;
           return (
-            <div key={c.key} className="flex min-w-7 flex-1 flex-col items-center justify-end gap-1.5" title={c.missing ?? c.partial ?? undefined} aria-label={label} role="img">
+            <div key={c.key} className="flex min-w-max flex-1 flex-col items-center justify-end gap-1.5" title={c.missing ?? c.partial ?? undefined} aria-label={label} role="img">
               {c.missing ? (
                 <>
                   <div className="text-[11px] font-semibold text-ink-muted">No data</div>

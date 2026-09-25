@@ -30,6 +30,3 @@ export function FollowBadge({ c }: { c: QaCase }) {
   );
 }
 
-export function SampleTag() {
-  return <span className="rounded-full bg-highlight px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase">Sample</span>;
-}

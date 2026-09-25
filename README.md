@@ -39,8 +39,7 @@ Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phas
 | `npm run dev` | Start the app at http://localhost:3000 |
 | `npm run db:migrate` | Apply new files from `supabase/migrations/` to the Supabase database |
 | `npm run db:test` | Check every security rule with temporary users (all rolled back) |
-| `npm run db:sample` | Add the clearly marked sample records |
-| `npm run db:sample:remove` | Delete every sample record |
+| `npm run import:qa` (also `import:mentor`, `import:curriculum`) | Practice run of a spreadsheet import; add `-- --write` to import for real (already done) |
 | `npm run build` | Production build (checks everything compiles) |
 
 ## How access works
@@ -60,7 +59,7 @@ app/                 pages (app/(app)/ = signed-in pages)
 components/          shared UI
 lib/                 Supabase clients, auth helpers, navigation
 supabase/migrations/ database schema, security rules, audit triggers, seed data
-scripts/             migration runner and database security test
-data/                instructor master list (placeholder) and import folder
-docs/reference/      design prototypes (read-only reference)
+scripts/             migration runner, database security test, spreadsheet import
+data/import/         spreadsheets for the import (git-ignored)
+docs/                setup guide, Admin Dashboard test guide, design prototypes
 ```

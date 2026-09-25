@@ -20,7 +20,6 @@ export type MentorCase = {
   email_sms_preview: string | null;
   case_link: string | null;
   field_notes: Record<string, string>;
-  is_sample: boolean;
   updated_at: string;
 };
 

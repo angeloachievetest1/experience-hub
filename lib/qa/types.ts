@@ -36,7 +36,6 @@ export type QaCase = {
   reason_type: string | null;
   reassign_reason: string | null;
   field_notes: Record<string, string>; // { field_name: note } from "+ Add note"
-  is_sample: boolean;
   updated_at: string;
 };
 

@@ -280,6 +280,31 @@ try {
   check('A user created by the Admin Dashboard gets their role and sections straight away',
     inv?.role === 'admin' && JSON.stringify(inv.sections) === JSON.stringify(['curriculum']) && inv.status === 'active' && inv.department === 'QA',
     JSON.stringify(inv));
+  // Supabase Auth really does it in two steps: create the account, then attach app_metadata.
+  const twoStep = randomUUID();
+  await q(
+    `insert into auth.users (id, aud, role, email, raw_user_meta_data, raw_app_meta_data, created_at, updated_at)
+     values ($1, 'authenticated', 'authenticated', $2, '{"full_name":"RLS test two-step"}', '{"provider":"email"}', now(), now())`,
+    [twoStep, `rls-test-twostep-${twoStep.slice(0, 8)}@example.invalid`]);
+  await q(`update auth.users set raw_app_meta_data = raw_app_meta_data || $2::jsonb where id = $1`,
+    [twoStep, JSON.stringify({ eh_approved: true, eh_role: 'admin', eh_sections: ['mentor'], eh_super_admin: true })]);
+  const two = (await q('select role, sections, is_super_admin, status, deactivation_note from public.profiles where id = $1', [twoStep])).rows[0];
+  check('A dashboard user is active with their role even when Auth attaches the details a moment later',
+    two?.role === 'admin' && JSON.stringify(two.sections) === JSON.stringify(['mentor']) && two.is_super_admin && two.status === 'active' && two.deactivation_note === null,
+    JSON.stringify(two));
+  const twoLog = (await q(`select action, changes from public.activity_log where record_id = $1 order by id`, [twoStep])).rows;
+  check('...and the log shows one "Created a user" entry with the final role',
+    twoLog.length === 1 && twoLog[0].action === 'Created a user' && twoLog[0].changes.role?.after === 'admin' && twoLog[0].changes.status?.after === 'active',
+    JSON.stringify(twoLog));
+  const selfSignup = randomUUID();
+  await q(
+    `insert into auth.users (id, aud, role, email, raw_user_meta_data, raw_app_meta_data, created_at, updated_at)
+     values ($1, 'authenticated', 'authenticated', $2, '{}', '{"provider":"email"}', now(), now())`,
+    [selfSignup, `rls-test-selfsignup-${selfSignup.slice(0, 8)}@example.invalid`]);
+  await q(`update auth.users set raw_app_meta_data = raw_app_meta_data || '{"providers":["email"]}'::jsonb where id = $1`, [selfSignup]);
+  const self = (await q('select role, status from public.profiles where id = $1', [selfSignup])).rows[0];
+  check('An account made outside the dashboard still starts deactivated', self?.status === 'deactivated' && self.role === 'viewer', JSON.stringify(self));
+
   check('A viewer cannot write to the log through the admin helper', denied(await as(users.viewer,
     run(`select public.admin_log_event('x', 'x', 'x', 'x')`))));
   check('A viewer cannot claim log entries', denied(await as(users.viewer,

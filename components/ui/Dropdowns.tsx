@@ -31,7 +31,7 @@ export const Chevron = () => (
 const triggerClass =
   'flex h-9 cursor-pointer items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3 text-sm whitespace-nowrap hover:border-secondary';
 const panelClass =
-  'absolute top-[52px] left-0 z-30 flex max-h-80 w-60 flex-col gap-0.5 overflow-y-auto rounded-xl border border-lilac-200 bg-white p-2 shadow-[0_12px_32px_rgba(45,21,89,0.16)]';
+  'absolute top-[42px] left-0 z-30 flex max-h-80 w-60 flex-col gap-0.5 [&>*]:shrink-0 overflow-y-auto rounded-xl border border-lilac-200 bg-white p-2 shadow-[0_12px_32px_rgba(45,21,89,0.16)]';
 
 // Single-choice filter: "Analyst  All analysts ▾"
 export function FilterSelect({

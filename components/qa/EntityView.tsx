@@ -47,7 +47,7 @@ export function EntityView({ kind }: { kind: 'instructor' | 'course' }) {
 
   return (
     <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-      <section className="flex flex-col gap-1.5 rounded-2xl border border-peach-200 bg-white p-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto">
+      <section className="flex flex-col gap-1.5 [&>*]:shrink-0 rounded-2xl border border-peach-200 bg-white p-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-48px)] lg:overflow-y-auto">
         <div className="px-2.5 pt-1 pb-2 text-xs tracking-wide text-ink-muted uppercase">{heading} with cases</div>
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={`Search ${heading.toLowerCase()}`}
           aria-label={`Search ${heading.toLowerCase()}`} className="mb-1 h-10 rounded-lg border border-lilac-200 px-3 text-sm" />

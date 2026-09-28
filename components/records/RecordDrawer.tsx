@@ -405,7 +405,7 @@ function MultiPicker({ id, label, options, value, onChange }: {
       </button>
       {open && (
         <div role="listbox" aria-multiselectable="true" aria-label={label}
-          className="absolute top-full left-0 z-50 mt-1 flex max-h-72 w-full flex-col gap-0.5 overflow-y-auto rounded-[10px] border border-lilac-200 bg-white p-1.5 shadow-[0_12px_32px_rgba(45,21,89,0.16)]">
+          className="absolute top-full left-0 z-50 mt-1 flex max-h-72 w-full flex-col gap-0.5 [&>*]:shrink-0 overflow-y-auto rounded-[10px] border border-lilac-200 bg-white p-1.5 shadow-[0_12px_32px_rgba(45,21,89,0.16)]">
           {all.map((o) => <CheckOption key={o.id} label={o.name} checked={value.includes(o.id)} onToggle={() => toggle(o.id)} />)}
           <button type="button" onClick={() => setOpen(false)} className="mt-1 h-9 cursor-pointer rounded-md bg-ink text-[13px] font-semibold text-white">Done</button>
         </div>

@@ -25,7 +25,7 @@ export function Sidebar({ name, email, roleLabel, isSuperAdmin }: Props) {
   return (
     <nav
       aria-label="Main"
-      className="flex flex-col gap-3 border-b border-peach-200 bg-white px-4 py-3 md:sticky md:top-0 md:h-screen md:w-[220px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 md:py-4"
+      className="flex flex-col gap-3 [&>*]:shrink-0 border-b border-peach-200 bg-white px-4 py-3 md:sticky md:top-0 md:h-screen md:w-[220px] md:shrink-0 md:overflow-y-auto md:border-r md:border-b-0 md:py-4"
     >
       <div className="flex items-center justify-between gap-3">
         <Link href={inAdmin ? '/admin' : START_PAGE} className="flex items-center gap-2.5 no-underline">

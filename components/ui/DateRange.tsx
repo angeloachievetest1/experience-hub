@@ -52,7 +52,7 @@ export function DateRangeButton({ value, onChange }: { value: DateRange; onChang
         <Chevron />
       </button>
       {open && (
-        <div role="dialog" aria-label="Choose a date range" className="absolute top-[52px] right-0 z-30 flex w-[min(92vw,500px)] flex-col overflow-hidden rounded-2xl border border-lilac-200 bg-white shadow-[0_12px_32px_rgba(45,21,89,0.16)] sm:flex-row">
+        <div role="dialog" aria-label="Choose a date range" className="absolute top-[42px] right-0 z-30 flex w-[min(92vw,500px)] flex-col overflow-hidden rounded-2xl border border-lilac-200 bg-white shadow-[0_12px_32px_rgba(45,21,89,0.16)] sm:flex-row">
           <div className="flex flex-col gap-1 border-b border-lilac-50 p-3 sm:w-44 sm:border-r sm:border-b-0">
             <div className="px-2 pb-2 text-xs tracking-wide text-ink-muted uppercase">Quick ranges</div>
             {presets().map((p) => {

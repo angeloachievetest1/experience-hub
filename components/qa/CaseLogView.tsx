@@ -85,7 +85,7 @@ export function AddCaseButton() {
       </button>
       {open && (
         <div role="listbox" aria-label="Choose a case type"
-          className="absolute top-[52px] left-0 z-30 flex w-56 flex-col gap-0.5 rounded-xl border border-lilac-200 bg-white p-2 shadow-[0_12px_32px_rgba(45,21,89,0.16)]">
+          className="absolute top-[42px] left-0 z-30 flex w-56 flex-col gap-0.5 rounded-xl border border-lilac-200 bg-white p-2 shadow-[0_12px_32px_rgba(45,21,89,0.16)]">
           <div className="px-2.5 pt-1.5 pb-1 text-xs tracking-wide text-ink-muted uppercase">New case type</div>
           {QA_SOURCES.map((s) => (
             <button key={s} type="button" role="option" aria-selected={false} onClick={() => { setOpen(false); addCase(s); }}

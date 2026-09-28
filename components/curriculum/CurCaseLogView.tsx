@@ -15,6 +15,7 @@ const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolea
 export function CurCaseLogView() {
   const { data, range, open, add, adding, courseName } = useCur();
   const [category, setCategory] = useState<string | null>(null);
+  const [course, setCourse] = useState<string | null>(null);
   const [material, setMaterial] = useState<string | null>(null);
   const [issueType, setIssueType] = useState<string | null>(null);
   const [sme, setSme] = useState<string | null>(null);
@@ -23,6 +24,7 @@ export function CurCaseLogView() {
   const inDates = useMemo(() => data.cases.filter((c) => inRange(c.case_date, range)), [data.cases, range]);
   const rows = inDates.filter((c) =>
     (!category || c.category === category) &&
+    (!course || courseName(c.course_id) === course) &&
     (!material || c.material_type === material) &&
     (!issueType || c.issue_type === issueType) &&
     (!sme || c.curriculum_sme === sme) &&
@@ -33,6 +35,8 @@ export function CurCaseLogView() {
       <div className="flex flex-wrap items-center gap-3">
         <FilterSelect label="Category" allLabel="All categories" value={category} onChange={setCategory}
           options={distinct([...(data.options.cur_category ?? []), ...data.cases.map((c) => c.category)])} />
+        <FilterSelect label="Course" allLabel="All courses" value={course} onChange={setCourse}
+          options={distinct(data.cases.map((c) => courseName(c.course_id) || null))} />
         <FilterSelect label="Type" allLabel="All types" value={issueType} onChange={setIssueType}
           options={distinct(data.cases.map((c) => c.issue_type))} />
         <FilterSelect label="Achieve material" allLabel="All materials" value={material} onChange={setMaterial}

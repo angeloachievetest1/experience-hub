@@ -43,7 +43,7 @@ export function FilterSelect({
     <div ref={ref} className="relative">
       <button type="button" className={triggerClass} aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)}>
         <span className="text-ink-muted">{label}</span>
-        <span className="font-medium">{value ?? allLabel}</span>
+        <span className="max-w-52 truncate font-medium" title={value ?? undefined}>{value ?? allLabel}</span>
         <Chevron />
       </button>
       {open && (

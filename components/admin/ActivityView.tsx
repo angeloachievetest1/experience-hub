@@ -4,6 +4,7 @@ import { Fragment, useMemo, useState } from 'react';
 import { useShell } from '@/components/records/SectionShell';
 import { FilterMulti, FilterSelect, Segmented } from '@/components/ui/Dropdowns';
 import { SearchBox, matches } from '@/components/ui/SearchBox';
+import { CASE_OPTION_RECORD_TYPES } from '@/lib/admin/lists';
 import { actorLabel, formatDateTime, localDate, type ActivityRow } from '@/lib/admin/types';
 import { downloadCsv, today } from '@/lib/csv';
 import { inRange } from '@/lib/qa/stats';
@@ -12,18 +13,25 @@ import { ExportButton } from './bits';
 
 export type ActivityData = { rows: ActivityRow[]; names: Record<string, string> };
 
-type Tab = 'all' | SectionKey;
+type Tab = 'all' | SectionKey | 'case_options';
 const TABS: { value: Tab; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'quality_analyst', label: 'Quality Analyst' },
   { value: 'curriculum', label: 'Curriculum' },
   { value: 'mentor', label: 'Mentor' },
+  { value: 'case_options', label: 'Case options' },
 ];
+
+// Case options changes show in their section's tab too; shared ones (courses) have no section.
+const isCaseOption = (r: ActivityRow) => CASE_OPTION_RECORD_TYPES.includes(r.record_type);
+const sectionText = (r: ActivityRow) => (r.section ? SECTION_NAMES[r.section] : isCaseOption(r) ? 'Shared' : 'Users');
 
 const FIELD_LABELS: Record<string, string> = {
   customer_name: 'Customer', course_id: 'Course', course_ids: 'Courses', instructor_id: 'Instructor',
   mentor_id: 'Mentor', case_date: 'Date', is_sample: 'Sample record', field_notes: 'Field notes',
   is_super_admin: 'Super-admin', full_name: 'Full name', resolution_tat_days: 'Resolution TAT (days)',
+  // Case options
+  value: 'Name', is_active: 'In dropdown', sort_order: 'Position', position: 'Position', aliases: 'Other spellings', list_key: 'List',
 };
 const fieldLabel = (k: string) => FIELD_LABELS[k] ?? k.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
 
@@ -48,7 +56,7 @@ export function ActivityView() {
   };
 
   const rows = data.rows.filter((r) =>
-    (tab === 'all' || r.section === tab) &&
+    (tab === 'all' || (tab === 'case_options' ? isCaseOption(r) : r.section === tab)) &&
     inRange(localDate(r.occurred_at), range) &&
     (!user || actorLabel(r) === user) &&
     (!actions.length || actions.includes(r.action)) &&
@@ -56,7 +64,7 @@ export function ActivityView() {
 
   const exportCsv = () => downloadCsv(`experience-hub-activity-${today()}.csv`,
     ['When', 'User', 'Action', 'Section', 'Record', 'Detail', 'Changes'],
-    rows.map((r) => [formatDateTime(r.occurred_at), actorLabel(r), r.action, r.section ? SECTION_NAMES[r.section] : '',
+    rows.map((r) => [formatDateTime(r.occurred_at), actorLabel(r), r.action, sectionText(r),
       r.record_label, r.summary,
       Object.entries(r.changes).map(([k, c]) => `${fieldLabel(k)}: ${show(c.before)} → ${show(c.after)}`).join(' | ')]));
 
@@ -96,7 +104,7 @@ export function ActivityView() {
                       <td className="py-3 pr-3 pl-6 whitespace-nowrap">{formatDateTime(r.occurred_at)}</td>
                       <td className="px-3 py-3">{actorLabel(r)}</td>
                       <td className="px-3 py-3 whitespace-nowrap">{r.action}</td>
-                      <td className="px-3 py-3 whitespace-nowrap">{r.section ? SECTION_NAMES[r.section] : <span className="text-ink-muted">Users</span>}</td>
+                      <td className="px-3 py-3 whitespace-nowrap">{r.section ? SECTION_NAMES[r.section] : <span className="text-ink-muted">{sectionText(r)}</span>}</td>
                       <td className="px-3 py-3 font-semibold whitespace-nowrap">{r.record_label || '—'}</td>
                       <td className="px-3 py-3">
                         <div className="flex flex-wrap items-center gap-2">

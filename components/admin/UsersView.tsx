@@ -24,6 +24,25 @@ export function UsersView() {
   const [addOpen, setAddOpen] = useState(false);
 
   const users = data.users;
+
+  // The summary tiles are quick filters: each one sets the filters below, so the
+  // dropdowns show what's applied and the table count matches the tile.
+  type Tile = { label: string; role: string | null; statuses: string[]; count: number };
+  const tiles: Tile[] = [
+    { label: 'Total users', role: null, statuses: [], count: users.length },
+    { label: 'Admins', role: 'Admin', statuses: [], count: users.filter((u) => u.role === 'admin').length },
+    { label: 'Viewers', role: 'Viewer', statuses: [], count: users.filter((u) => u.role === 'viewer').length },
+    { label: 'Deactivated', role: null, statuses: ['Deactivated'], count: users.filter((u) => u.status === 'deactivated').length },
+  ];
+  const isShowing = (t: Tile) => !sections.length && !query && role === t.role && statuses.join() === t.statuses.join();
+  const showTile = (t: Tile) => {
+    const next = isShowing(t) ? tiles[0] : t; // clicking the selected tile again shows everyone
+    setSections([]);
+    setQuery('');
+    setRole(next.role);
+    setStatuses(next.statuses);
+  };
+
   const rows = users.filter((u) =>
     (!sections.length || sections.some((s) => u.role === 'admin' && u.sections.some((k) => SECTION_NAMES[k] === s))) &&
     (!statuses.length || statuses.includes(STATUS_LABELS[u.status])) &&
@@ -39,10 +58,7 @@ export function UsersView() {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi label="Total users" value={users.length} />
-        <Kpi label="Admins" value={users.filter((u) => u.role === 'admin').length} />
-        <Kpi label="Viewers" value={users.filter((u) => u.role === 'viewer').length} />
-        <Kpi label="Deactivated" value={users.filter((u) => u.status === 'deactivated').length} />
+        {tiles.map((t) => <Kpi key={t.label} label={t.label} value={t.count} active={isShowing(t)} onClick={() => showTile(t)} />)}
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

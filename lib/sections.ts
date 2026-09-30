@@ -99,6 +99,13 @@ export const SECTION_GROUPS: NavGroup[] = [
         icon: 'list',
       },
       {
+        href: '/curriculum/courses',
+        label: 'Course view',
+        title: 'Course view',
+        subtitle: 'Customer cases grouped by course.',
+        icon: 'bookmark',
+      },
+      {
         href: '/curriculum/instructor-requests',
         label: 'Instructor requests',
         title: 'Instructor requests',
@@ -139,6 +146,13 @@ export const ADMIN_GROUP: NavGroup = {
       title: 'Users',
       subtitle: 'Who can sign in, and what they can do.',
       icon: 'users',
+    },
+    {
+      href: '/admin/case-options',
+      label: 'Case options',
+      title: 'Case options',
+      subtitle: 'Courses, people and every choice used on cases.',
+      icon: 'list',
     },
     {
       href: '/admin/activity-log',

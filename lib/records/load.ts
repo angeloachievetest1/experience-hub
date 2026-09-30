@@ -40,8 +40,9 @@ export async function loadOptions(supabase: SupabaseClient, prefix: string) {
   return { options, names };
 }
 
+// Every course, hidden ones included so older cases keep showing their name.
 export async function loadCourses(supabase: SupabaseClient) {
-  const { data, error } = await supabase.from('courses').select('id, name').eq('is_active', true).order('sort_order');
+  const { data, error } = await supabase.from('courses').select('id, name, is_active').order('sort_order');
   if (error) throw new Error(`Could not load courses: ${error.message}`);
-  return (data ?? []).map((c) => ({ id: c.id as string, name: c.name as string }));
+  return (data ?? []).map((c) => ({ id: c.id as string, name: c.name as string, hidden: !c.is_active }));
 }

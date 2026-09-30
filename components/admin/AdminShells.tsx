@@ -1,8 +1,10 @@
 'use client';
 
 import { SectionShell } from '@/components/records/SectionShell';
+import type { ListData } from '@/lib/admin/lists';
 import type { LoginRow } from '@/lib/admin/types';
 import { ActivityView, type ActivityData } from './ActivityView';
+import { ListsView } from './ListsView';
 import { LoginsView } from './LoginsView';
 import { UserDrawer, type UsersData } from './UserDrawer';
 import { UsersView } from './UsersView';
@@ -22,6 +24,14 @@ export function ActivityPage({ data, title, subtitle }: Head & { data: ActivityD
   return (
     <SectionShell data={data} title={title} subtitle={subtitle} rangeKey="eh.admin.range" renderDrawer={() => null}>
       <ActivityView />
+    </SectionShell>
+  );
+}
+
+export function ListsPage({ data, title, subtitle }: Head & { data: ListData[] }) {
+  return (
+    <SectionShell data={data} title={title} subtitle={subtitle} rangeKey="eh.admin.range" showRange={false} renderDrawer={() => null}>
+      <ListsView />
     </SectionShell>
   );
 }

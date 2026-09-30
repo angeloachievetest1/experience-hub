@@ -36,8 +36,9 @@ export async function loadQaData(): Promise<QaData> {
   }
 
   const [courses, instructors, options, gaps] = await Promise.all([
-    supabase.from('courses').select('id, name').eq('is_active', true).order('sort_order'),
-    supabase.from('instructors').select('id, full_name').eq('is_active', true).order('full_name'),
+    // Hidden courses and instructors too, so older cases keep showing their names.
+    supabase.from('courses').select('id, name, is_active').order('sort_order'),
+    supabase.from('instructors').select('id, full_name, is_active').order('full_name'),
     supabase.from('option_values').select('list_key, value, description').eq('is_active', true).order('sort_order'),
     supabase.from('qa_data_gaps').select('source, start_month, end_month, note'),
   ]);
@@ -55,8 +56,8 @@ export async function loadQaData(): Promise<QaData> {
 
   return {
     cases,
-    courses: (courses.data ?? []).map((c) => ({ id: c.id, name: c.name })),
-    instructors: (instructors.data ?? []).map((i) => ({ id: i.id, name: i.full_name })),
+    courses: (courses.data ?? []).map((c) => ({ id: c.id, name: c.name, hidden: !c.is_active })),
+    instructors: (instructors.data ?? []).map((i) => ({ id: i.id, name: i.full_name, hidden: !i.is_active })),
     options: optionMap,
     optionNames,
     gaps: (gaps.data ?? []).map((g) => ({

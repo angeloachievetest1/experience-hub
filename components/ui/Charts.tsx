@@ -16,13 +16,24 @@ export function Panel({
   );
 }
 
-export function Kpi({ label, value, note }: { label: string; value: React.ReactNode; note?: React.ReactNode }) {
+// With onClick the tile becomes a button (e.g. a quick filter); active highlights it.
+export function Kpi({ label, value, note, onClick, active = false }: {
+  label: string; value: React.ReactNode; note?: React.ReactNode; onClick?: () => void; active?: boolean;
+}) {
+  const body = (
+    <>
+      <span className="block text-sm text-ink-muted">{label}</span>
+      <span className="block font-display text-[32px] leading-[1.1] font-light">{value}</span>
+      {note && <span className="block text-sm text-ink-muted">{note}</span>}
+    </>
+  );
+  const base = 'flex flex-col gap-1 rounded-2xl border bg-white px-5 py-4';
+  if (!onClick) return <div className={`${base} border-peach-200`}>{body}</div>;
   return (
-    <div className="flex flex-col gap-1 rounded-2xl border border-peach-200 bg-white px-5 py-4">
-      <div className="text-sm text-ink-muted">{label}</div>
-      <div className="font-display text-[32px] leading-[1.1] font-light">{value}</div>
-      {note && <div className="text-sm text-ink-muted">{note}</div>}
-    </div>
+    <button type="button" onClick={onClick} aria-pressed={active}
+      className={`${base} cursor-pointer text-left ${active ? 'border-secondary bg-lilac-50 ring-1 ring-secondary' : 'border-peach-200 hover:border-secondary'}`}>
+      {body}
+    </button>
   );
 }
 

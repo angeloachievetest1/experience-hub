@@ -13,7 +13,7 @@ export async function loadMentorData(): Promise<MentorData> {
     fetchAll<MentorCase>(supabase, 'mentor_cases', '*', [
       { column: 'case_date', ascending: false }, { column: 'created_at', ascending: false },
     ]),
-    supabase.from('mentors').select('id, full_name').eq('is_active', true).order('full_name'),
+    supabase.from('mentors').select('id, full_name, is_active').order('full_name'), // hidden too, for older cases
     loadCourses(supabase),
     loadOptions(supabase, 'mentor_'),
   ]);
@@ -21,7 +21,7 @@ export async function loadMentorData(): Promise<MentorData> {
 
   return {
     cases: cases.map((c) => ({ ...c, field_notes: c.field_notes ?? {} })),
-    mentors: (mentors.data ?? []).map((m) => ({ id: m.id, name: m.full_name })),
+    mentors: (mentors.data ?? []).map((m) => ({ id: m.id, name: m.full_name, hidden: !m.is_active })),
     courses,
     options,
     canEdit: canWriteSection(profile, 'mentor'),

@@ -9,7 +9,8 @@ import { formatDate } from '@/lib/qa/stats';
 
 // The right-hand panel used by every case log to view, edit and delete a record.
 
-export type Named = { id: string; name: string };
+// hidden: taken out of dropdowns on the Case options page; still shown on the cases that use it.
+export type Named = { id: string; name: string; hidden?: boolean };
 
 export type FieldDef = (
   | { key: string; label: string; kind: 'text' | 'textarea' | 'date' | 'url' | 'pct' | 'number' | 'rating' | 'bool' }
@@ -369,21 +370,24 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
           ))}
         </select>
       );
-    case 'lookup':
+    case 'lookup': {
+      const options = f.options.filter((o) => !o.hidden || o.id === value);
       return (
         <>
           <select id={id} value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass}>
             <option value="">Not set</option>
-            {f.options.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+            {options.map((o) => <option key={o.id} value={o.id}>{o.name}{o.hidden ? ' (hidden)' : ''}</option>)}
           </select>
-          {f.options.length === 0 && f.emptyHint && <div className="mt-1 text-xs text-ink-muted">{f.emptyHint}</div>}
+          {options.length === 0 && f.emptyHint && <div className="mt-1 text-xs text-ink-muted">{f.emptyHint}</div>}
         </>
       );
+    }
     case 'multi':
       return <MultiPicker id={id} label={f.label} options={f.options.map((o) => ({ id: o, name: o }))}
         value={(value as string[]) ?? []} onChange={onChange} />;
     case 'multiLookup':
-      return <MultiPicker id={id} label={f.label} options={f.options} value={(value as string[]) ?? []} onChange={onChange} />;
+      return <MultiPicker id={id} label={f.label} value={(value as string[]) ?? []} onChange={onChange}
+        options={f.options.filter((o) => !o.hidden || ((value as string[]) ?? []).includes(o.id))} />;
   }
 }
 

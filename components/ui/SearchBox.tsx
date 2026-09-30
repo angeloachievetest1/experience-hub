@@ -1,10 +1,11 @@
 'use client';
 
-export function SearchBox({ value, onChange, placeholder, label }: {
-  value: string; onChange: (v: string) => void; placeholder: string; label: string;
+// width: classes for wider screens; pass '' to fill the space it's in.
+export function SearchBox({ value, onChange, placeholder, label, width = 'sm:w-72' }: {
+  value: string; onChange: (v: string) => void; placeholder: string; label: string; width?: string;
 }) {
   return (
-    <label className="flex h-9 w-full items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3.5 sm:w-72">
+    <label className={`flex h-9 w-full items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3.5 ${width}`}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
         <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M20 20l-4-4" />
       </svg>

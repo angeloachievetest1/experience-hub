@@ -8,8 +8,8 @@ import { LinkCell } from '@/components/ui/LinkCell';
 
 export type TableColumn<T> = { key: string; header: string; render: (row: T) => React.ReactNode };
 
-// Clickable table used by every case log. Columns: an optional leading column
-// (Date), the clickable name (Case = customer name), an optional one-click Link,
+// Clickable table used by every case log. Columns: optional leading columns
+// (e.g. Date), the clickable name (Case = customer name), an optional one-click Link,
 // then the rest.
 export function RecordTable<T extends { id: string }>({
   rows, label, subLabel, link, columns, onOpen, empty = 'No records match these filters.', minWidth = 980, firstHeader = 'Case', leading, fit = false,
@@ -17,7 +17,7 @@ export function RecordTable<T extends { id: string }>({
   // Fit the screen width: smaller text, tighter spacing, text wraps (no sideways scrolling).
   fit?: boolean;
   firstHeader?: string;
-  leading?: TableColumn<T>; // shown before the name column, e.g. Date
+  leading?: TableColumn<T> | TableColumn<T>[]; // shown before the name column, e.g. Date
   rows: T[];
   label: (row: T) => string;
   subLabel?: (row: T) => string;
@@ -33,8 +33,9 @@ export function RecordTable<T extends { id: string }>({
   const edge = fit ? 'pl-3' : 'pl-6';
   const th = `relative ${pad} py-2.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase ${fit ? 'align-bottom' : ''}`;
 
+  const leads = leading ? [leading].flat() : [];
   const headers = [
-    ...(leading ? [{ key: leading.key, header: leading.header }] : []),
+    ...leads.map((c) => ({ key: c.key, header: c.header })),
     { key: '__name', header: firstHeader },
     ...(link ? [{ key: '__link', header: 'Link' }] : []),
     ...columns.map((c) => ({ key: c.key, header: c.header })),
@@ -64,8 +65,10 @@ export function RecordTable<T extends { id: string }>({
               return (
                 <tr key={row.id} onClick={() => onOpen(row.id)}
                   className="cursor-pointer border-t border-lilac-50 align-middle hover:bg-peach-50">
-                  {leading && <td className={`py-2 ${fit ? 'pr-2' : 'pr-2.5'} ${edge}`}>{leading.render(row)}</td>}
-                  <td className={`py-2 ${fit ? 'pr-2' : 'pr-2.5'} ${leading ? (fit ? 'pl-2' : 'pl-2.5') : edge}`}>
+                  {leads.map((c, i) => (
+                    <td key={c.key} className={`py-2 ${fit ? 'pr-2' : 'pr-2.5'} ${i === 0 ? edge : (fit ? 'pl-2' : 'pl-2.5')}`}>{c.render(row)}</td>
+                  ))}
+                  <td className={`py-2 ${fit ? 'pr-2' : 'pr-2.5'} ${leads.length ? (fit ? 'pl-2' : 'pl-2.5') : edge}`}>
                     <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(row.id); }}
                       className="cursor-pointer p-0 py-1 text-left font-semibold underline decoration-primary underline-offset-[3px]">
                       {label(row)}

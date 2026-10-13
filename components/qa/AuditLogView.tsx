@@ -5,7 +5,7 @@ import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { AUDIT_LISTS, auditResult, withTypedIn, type AuditCase } from '@/lib/qa/audits';
-import { formatDate } from '@/lib/qa/stats';
+import { formatDate, formatDateTime } from '@/lib/qa/stats';
 import { customerLabel } from '@/lib/records/labels';
 import { useAudits } from './AuditShell';
 
@@ -57,8 +57,11 @@ export function AuditLogView() {
       />
       <RecordTable
         rows={rows}
-        minWidth={1180}
-        leading={{ key: 'week', header: 'Week ending', render: (c) => <span className="whitespace-nowrap">{formatDate(c.week_ending) || '—'}</span> }}
+        minWidth={1340}
+        leading={[
+          { key: 'week', header: 'Week ending', render: (c) => <span className="whitespace-nowrap">{formatDate(c.week_ending) || '—'}</span> },
+          { key: 'opened', header: 'Date/Time Opened', render: (c) => <span className="whitespace-nowrap">{formatDateTime(c.opened_at) || '—'}</span> },
+        ]}
         label={customerLabel}
         subLabel={(c) => c.subject ?? ''}
         link={(c) => c.case_link}

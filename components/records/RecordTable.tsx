@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useColumnWidths } from '@/components/ui/ColumnResize';
+import { ScrollX } from '@/components/ui/ScrollX';
 import { LinkCell } from '@/components/ui/LinkCell';
 
 export type TableColumn<T> = { key: string; header: string; render: (row: T) => React.ReactNode };
@@ -28,18 +31,32 @@ export function RecordTable<T extends { id: string }>({
   const shown = rows.slice(0, limit);
   const pad = fit ? 'px-1.5' : 'px-2.5';
   const edge = fit ? 'pl-3' : 'pl-6';
-  const th = `${pad} py-2.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase ${fit ? 'align-bottom' : ''}`;
+  const th = `relative ${pad} py-2.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase ${fit ? 'align-bottom' : ''}`;
+
+  const headers = [
+    ...(leading ? [{ key: leading.key, header: leading.header }] : []),
+    { key: '__name', header: firstHeader },
+    ...(link ? [{ key: '__link', header: 'Link' }] : []),
+    ...columns.map((c) => ({ key: c.key, header: c.header })),
+  ];
+  // Column widths can be dragged; remembered per page and set of columns.
+  const pathname = usePathname();
+  const cols = useColumnWidths(`${pathname}|${headers.map((h) => h.key).join(',')}`, headers.map((h) => h.key));
 
   return (
     <div className="overflow-hidden rounded-2xl border border-peach-200 bg-white">
-      <div className="overflow-x-auto">
-        <table className={`w-full border-collapse ${fit ? 'text-[13px]' : 'text-sm'}`} style={fit ? undefined : { minWidth }}>
+      <ScrollX>
+        <table ref={cols.tableRef} className={`${cols.resized ? '' : 'w-full'} border-collapse ${fit ? 'text-[13px]' : 'text-sm'} ${cols.tableClass}`}
+          style={cols.tableStyle ?? (fit ? undefined : { minWidth })}>
+          {cols.colgroup}
           <thead className="bg-lilac-50">
             <tr>
-              {leading && <th scope="col" className={`${th} ${edge}`}>{leading.header}</th>}
-              <th scope="col" className={`${th} ${leading ? '' : edge}`}>{firstHeader}</th>
-              {link && <th scope="col" className={th}>Link</th>}
-              {columns.map((c) => <th key={c.key} scope="col" className={th}>{c.header}</th>)}
+              {headers.map((h, i) => (
+                <th key={h.key} data-col={h.key} scope="col" className={`${th} ${i === 0 ? edge : ''}`}>
+                  {h.header}
+                  {cols.handle(h.key, h.header)}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -55,18 +72,19 @@ export function RecordTable<T extends { id: string }>({
                     </button>
                     {subLabel && (
                       <div className="flex items-center gap-1.5 text-[13px] text-ink-muted">
-                        <span className="max-w-44 truncate">{subLabel(row)}</span>
+                        {/* Cut off at a set width until the column is resized, then at the column's width. */}
+                        <span className={`${cols.resized ? 'min-w-0' : 'max-w-44'} truncate`} title={subLabel(row)}>{subLabel(row)}</span>
                       </div>
                     )}
                   </td>
-                  {link && <td className={`${pad} py-2`}><LinkCell url={link(row)} compact={fit} /></td>}
+                  {link && <td className={`${pad} py-2`}><LinkCell url={link(row)} /></td>}
                   {columns.map((c) => <td key={c.key} className={`${pad} py-2`}>{c.render(row)}</td>)}
                 </tr>
               );
             })}
           </tbody>
         </table>
-      </div>
+      </ScrollX>
       {rows.length === 0 && <div className="p-5 text-sm text-ink-muted">{empty}</div>}
       {rows.length > limit && (
         <div className="border-t border-lilac-50 p-4 text-center">

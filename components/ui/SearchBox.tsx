@@ -25,5 +25,22 @@ export function AddButton({ label, onClick, busy }: { label: string; onClick: ()
   );
 }
 
-export const matches = (q: string, values: (string | null | undefined)[]) =>
+// Toolbar above a log table: filters on top; search, the Add button and the
+// "Showing …" count on the row below.
+export function LogToolbar({ filters, add, search, count }: {
+  filters: React.ReactNode; add?: React.ReactNode; search: React.ReactNode; count: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">{filters}</div>
+      <div className="flex flex-wrap items-center gap-3">
+        {search}
+        {add}
+        <span className="ml-auto text-sm text-ink-muted">{count}</span>
+      </div>
+    </div>
+  );
+}
+
+export const matches =(q: string, values: (string | null | undefined)[]) =>
   !q.trim() || values.some((v) => v?.toLowerCase().includes(q.trim().toLowerCase()));

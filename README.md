@@ -20,6 +20,8 @@ The full specification is in [BRIEF.md](BRIEF.md).
 
 | Date | Decision |
 |---|---|
+| 2026-10-13 | **Operation Tasks and Task Log (Quality Analyst)** (migrations 025–026). The E-learning case audits (sheet "Case Audits: E-learning") move to the website from October 2026, when the audit set-up changed; `npm run import:tasklog` imported the October tab. Task Log: one row per audited case, edited by Quality Analyst admins like other cases and logged in the Activity Log. Operation Tasks follows the sheet: each week is no-error cases ÷ cases audited, a month is the average of its weeks, a quarter the average of its months; dates count by week ending (the Saturday on or after the date closed); case cycle runs from first touch to closed, as in the sheet. The dropdown lists are on Case options (Operation Tasks group); the two staff lists were added straight to the database. Type and Error 1 also offer "Others", typed in by hand. |
+| 2026-10-13 | **Tables, case panel and menu.** Every table: drag a column edge to resize (remembered per browser, double-click to reset), a second scrollbar on top of wide tables, a small ↗ Link button. Case logs: filters on top, then search and Add. Case panel: Close button at the bottom, and closing with unsaved changes asks inside the panel (Save and close / Close without saving / Keep editing). Menu: drag its edge to resize (212–400 px), « hides it to a slim strip. |
 | 2026-09-29 | **Case options page (Admin Dashboard)** lets super-admins add, rename, hide, delete and reorder courses, instructors, mentors and every other dropdown (migration 023). Every change asks for confirmation first and is logged (Activity Log has a Case options tab). Renaming an option also updates the cases that use it, logged as one entry. Options in use can only be hidden; hidden ones stay on older cases. QA Source/Validity and Mentor Status/Complaint analysis are locked because the dashboards count their exact values. |
 | 2026-09-29 | **Curriculum has a Course view** (customer cases grouped by course, like Quality Analyst's). Instructor requests are left out on purpose: they are instructors' own feedback, not customer complaints. Every imported case has a date resolved, so the page shows the most common type and material instead of an open/resolved split. |
 | 2026-09-30 | **Quality Analyst import uses the visible tabs only** (Instructor Complaints, Course Complaints, Low Survey Scores, Returned Cases). Hidden tabs, including Low Survey Scores 2025 and the Provisional Instructor List, are ignored. The instructor list is built from the names in these tabs. |
@@ -41,7 +43,7 @@ Setup steps for the project owner are in [docs/setup-phase-1.md](docs/setup-phas
 | `npm run dev` | Start the app at http://localhost:3000 |
 | `npm run db:migrate` | Apply new files from `supabase/migrations/` to the Supabase database |
 | `npm run db:test` | Check every security rule with temporary users (all rolled back) |
-| `npm run import:qa` (also `import:mentor`, `import:curriculum`) | Practice run of a spreadsheet import; add `-- --write` to import for real (already done) |
+| `npm run import:qa` (also `import:mentor`, `import:curriculum`, `import:tasklog`) | Practice run of a spreadsheet import; add `-- --write` to import for real (already done) |
 | `npm run build` | Production build (checks everything compiles) |
 
 ## Deployment (Netlify)

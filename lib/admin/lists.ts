@@ -1,10 +1,10 @@
 // Every dropdown list the Admin "Case options" page manages: what it's called,
 // where it appears, and which case fields use its values.
 
-export type ListGroup = 'Shared' | 'Quality Analyst' | 'Curriculum' | 'Mentor';
-export const LIST_GROUPS: ListGroup[] = ['Shared', 'Quality Analyst', 'Curriculum', 'Mentor'];
+export type ListGroup = 'Shared' | 'Quality Analyst' | 'Operation Tasks' | 'Curriculum' | 'Mentor';
+export const LIST_GROUPS: ListGroup[] = ['Shared', 'Quality Analyst', 'Operation Tasks', 'Curriculum', 'Mentor'];
 
-export type CaseTable = 'qa_cases' | 'curriculum_customer_cases' | 'curriculum_instructor_requests' | 'mentor_cases';
+export type CaseTable = 'qa_cases' | 'qa_task_cases' | 'curriculum_customer_cases' | 'curriculum_instructor_requests' | 'mentor_cases';
 
 // Case fields that store a list's values (as text). source limits Quality Analyst to one source.
 export type ListUse = { table: CaseTable; columns: string[]; source?: string };
@@ -25,6 +25,7 @@ const qa = (columns: string[], source?: string): ListUse[] => [{ table: 'qa_case
 const cur = (columns: string[]): ListUse[] => [{ table: 'curriculum_customer_cases', columns }];
 const req = (columns: string[]): ListUse[] => [{ table: 'curriculum_instructor_requests', columns }];
 const men = (columns: string[]): ListUse[] => [{ table: 'mentor_cases', columns }];
+const task = (columns: string[]): ListUse[] => [{ table: 'qa_task_cases', columns }];
 const COUNTED = 'Dashboards and charts count these exact values, so they can’t be renamed or hidden.';
 
 export const LIST_DEFS: ListDef[] = [
@@ -46,6 +47,14 @@ export const LIST_DEFS: ListDef[] = [
   { key: 'qa_case_closed_by', label: 'Case closed by', group: 'Quality Analyst', usedIn: 'Case closed by on Course and Survey cases', kind: 'text', uses: qa(['case_closed_by']) },
   { key: 'qa_followup_sent', label: 'Follow-up sent', group: 'Quality Analyst', usedIn: 'Email sent, SMS sent and Call made', kind: 'text', uses: qa(['followup_email', 'followup_sms', 'followup_call']) },
   { key: 'qa_reached', label: 'Customer reached', group: 'Quality Analyst', usedIn: 'Customer reached on every case', kind: 'text', uses: qa(['customer_reached']) },
+
+  // Operation Tasks (Quality Analyst › Task Log).
+  { key: 'qa_task_record_type', label: 'Case record types', group: 'Operation Tasks', usedIn: 'Case record type on the Task Log', kind: 'text', uses: task(['record_type']) },
+  { key: 'qa_task_type', label: 'Types', group: 'Operation Tasks', usedIn: 'Type on the Task Log (plus “Others”, typed in by hand)', kind: 'text', uses: task(['case_type']) },
+  { key: 'qa_task_error', label: 'Errors', group: 'Operation Tasks', usedIn: 'Error 1 on the Task Log (plus “Others”, typed in by hand)', kind: 'text', uses: task(['error_type']) },
+  { key: 'qa_task_error_category', label: 'Error categories', group: 'Operation Tasks', usedIn: 'Error 1 category on the Task Log', kind: 'text', uses: task(['error_category']) },
+  { key: 'qa_task_person', label: 'E-learning team', group: 'Operation Tasks', usedIn: 'Manager and Handled by on the Task Log', kind: 'text', uses: task(['manager', 'handled_by']) },
+  { key: 'qa_task_auditor', label: 'Auditors', group: 'Operation Tasks', usedIn: 'Auditor on the Task Log', kind: 'text', uses: task(['auditor']) },
 
   { key: 'cur_category', label: 'Categories', group: 'Curriculum', usedIn: 'Category on customer cases', kind: 'text', uses: cur(['category']) },
   { key: 'cur_issue_type', label: 'Types', group: 'Curriculum', usedIn: 'Type on customer cases', kind: 'text', uses: cur(['issue_type']) },

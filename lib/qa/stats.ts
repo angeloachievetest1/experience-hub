@@ -100,6 +100,14 @@ export function formatDate(date: string | null) {
   return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
 }
 
+// "YYYY-MM-DDTHH:mm" → "30 Sep 2026, 8:55 AM"
+export function formatDateTime(dt: string | null) {
+  if (!dt) return '';
+  const [date, time = '00:00'] = dt.split('T');
+  const [h, min] = time.split(':').map(Number);
+  return `${formatDate(date)}, ${h % 12 || 12}:${String(min).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
 // For chart titles: "all time", "in 2026" (a whole year, or this year so far), or the chosen dates.
 export function periodText(r: DateRange) {
   if (!r.from && !r.to) return 'all time';

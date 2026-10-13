@@ -2,6 +2,8 @@
 
 import { Fragment, useMemo, useState } from 'react';
 import { useShell } from '@/components/records/SectionShell';
+import { useColumnWidths } from '@/components/ui/ColumnResize';
+import { ScrollX } from '@/components/ui/ScrollX';
 import { FilterMulti, FilterSelect, Segmented } from '@/components/ui/Dropdowns';
 import { SearchBox, matches } from '@/components/ui/SearchBox';
 import { CASE_OPTION_RECORD_TYPES } from '@/lib/admin/lists';
@@ -12,6 +14,10 @@ import { SECTION_NAMES, type SectionKey } from '@/lib/sections';
 import { ExportButton } from './bits';
 
 export type ActivityData = { rows: ActivityRow[]; names: Record<string, string> };
+
+const ACTIVITY_COLUMNS = [
+  ['when', 'When'], ['user', 'User'], ['action', 'Action'], ['section', 'Section'], ['record', 'Record'], ['detail', 'Detail'],
+] as const;
 
 type Tab = 'all' | SectionKey | 'case_options';
 const TABS: { value: Tab; label: string }[] = [
@@ -30,6 +36,9 @@ const FIELD_LABELS: Record<string, string> = {
   customer_name: 'Customer', course_id: 'Course', course_ids: 'Courses', instructor_id: 'Instructor',
   mentor_id: 'Mentor', case_date: 'Date', is_sample: 'Sample record', field_notes: 'Field notes',
   is_super_admin: 'Super-admin', full_name: 'Full name', resolution_tat_days: 'Resolution TAT (days)',
+  // Task Log
+  record_type: 'Case record type', opened_at: 'Opened', first_touch_at: 'First touch', closed_at: 'Closed',
+  error_type: 'Error 1', error_category: 'Error 1 category',
   // Case options
   value: 'Name', is_active: 'In dropdown', sort_order: 'Position', position: 'Position', aliases: 'Other spellings', list_key: 'List',
 };
@@ -69,6 +78,7 @@ export function ActivityView() {
       Object.entries(r.changes).map(([k, c]) => `${fieldLabel(k)}: ${show(c.before)} → ${show(c.after)}`).join(' | ')]));
 
   const th = 'px-3 py-3.5 text-left text-xs font-normal tracking-wide text-ink-muted uppercase';
+  const cols = useColumnWidths('activity-log', ACTIVITY_COLUMNS.map(([key]) => key));
 
   return (
     <div className="flex flex-col gap-5">
@@ -82,16 +92,17 @@ export function ActivityView() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-peach-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] border-collapse text-sm">
+        <ScrollX>
+          <table ref={cols.tableRef} className={`${cols.resized ? '' : 'w-full min-w-[900px]'} border-collapse text-sm ${cols.tableClass}`} style={cols.tableStyle}>
+            {cols.colgroup}
             <thead className="bg-lilac-50">
               <tr>
-                <th scope="col" className={`${th} pl-6`}>When</th>
-                <th scope="col" className={th}>User</th>
-                <th scope="col" className={th}>Action</th>
-                <th scope="col" className={th}>Section</th>
-                <th scope="col" className={th}>Record</th>
-                <th scope="col" className={th}>Detail</th>
+                {ACTIVITY_COLUMNS.map(([key, header], i) => (
+                  <th key={key} data-col={key} scope="col" className={`relative ${th} ${i === 0 ? 'pl-6' : ''}`}>
+                    {header}
+                    {cols.handle(key, header)}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -105,7 +116,7 @@ export function ActivityView() {
                       <td className="px-3 py-3">{actorLabel(r)}</td>
                       <td className="px-3 py-3 whitespace-nowrap">{r.action}</td>
                       <td className="px-3 py-3 whitespace-nowrap">{r.section ? SECTION_NAMES[r.section] : <span className="text-ink-muted">{sectionText(r)}</span>}</td>
-                      <td className="px-3 py-3 font-semibold whitespace-nowrap">{r.record_label || '—'}</td>
+                      <td className="px-3 py-3 font-semibold whitespace-nowrap" title={r.record_label ?? undefined}>{r.record_label || '—'}</td>
                       <td className="px-3 py-3">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="text-ink-muted">{r.summary || (changes.length ? `${changes.length} field${changes.length > 1 ? 's' : ''}` : '—')}</span>
@@ -147,7 +158,7 @@ export function ActivityView() {
               })}
             </tbody>
           </table>
-        </div>
+        </ScrollX>
         {rows.length === 0 && <div className="p-6 text-sm text-ink-muted">No activity matches these filters.</div>}
         {rows.length > 500 && (
           <div className="border-t border-lilac-50 p-4 text-center text-sm text-ink-muted">

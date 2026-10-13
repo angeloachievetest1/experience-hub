@@ -5,7 +5,7 @@ import { createMentorCase } from '@/app/(app)/mentor/actions';
 import { ValidityBadge } from '@/components/qa/Badges';
 import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
-import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
+import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { MENTOR_VALIDITY, periodDate } from '@/lib/mentor/types';
 import { customerLabel } from '@/lib/records/labels';
@@ -35,16 +35,18 @@ export function MentorCaseLogView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterSelect label="Mentor" allLabel="All mentors" value={mentor} onChange={setMentor} options={data.mentors.map((m) => m.name)} />
-        <FilterSelect label="Complaint type" allLabel="All types" value={type} onChange={setType} options={o('mentor_complaint_type')} />
-        <FilterSelect label="Sub type" allLabel="All sub types" value={subType} onChange={setSubType} options={o('mentor_complaint_sub_type')} />
-        <FilterSelect label="Status" allLabel="All statuses" value={status} onChange={setStatus} options={o('mentor_status')} />
-        <FilterSelect label="Validity" allLabel="All validity" value={validity} onChange={setValidity} options={[...MENTOR_VALIDITY]} />
-        <SearchBox value={query} onChange={setQuery} placeholder="Search customer, mentor, course" label="Search mentor complaints" />
-        {data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(createMentorCase)} />}
-        <span className="ml-auto text-sm text-ink-muted">Showing {rows.length} of {inDates.length} cases</span>
-      </div>
+      <LogToolbar
+        filters={<>
+          <FilterSelect label="Mentor" allLabel="All mentors" value={mentor} onChange={setMentor} options={data.mentors.map((m) => m.name)} />
+          <FilterSelect label="Complaint type" allLabel="All types" value={type} onChange={setType} options={o('mentor_complaint_type')} />
+          <FilterSelect label="Sub type" allLabel="All sub types" value={subType} onChange={setSubType} options={o('mentor_complaint_sub_type')} />
+          <FilterSelect label="Status" allLabel="All statuses" value={status} onChange={setStatus} options={o('mentor_status')} />
+          <FilterSelect label="Validity" allLabel="All validity" value={validity} onChange={setValidity} options={[...MENTOR_VALIDITY]} />
+        </>}
+        add={data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(createMentorCase)} />}
+        search={<SearchBox value={query} onChange={setQuery} placeholder="Search customer, mentor, course" label="Search mentor complaints" width="sm:w-96" />}
+        count={`Showing ${rows.length} of ${inDates.length} cases`}
+      />
       <RecordTable
         rows={rows}
         leading={{ key: 'date', header: 'Date', render: (c) => <span className="whitespace-nowrap">{formatDate(c.case_date) || (c.year ? `${c.year} ${c.quarter ?? ''}` : '—')}</span> }}

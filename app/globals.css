@@ -52,3 +52,10 @@ a {
   outline: 2px solid var(--color-secondary);
   outline-offset: 2px;
 }
+
+/* Tables after a column was resized (components/ui/ColumnResize.tsx): text that
+   doesn't fit is trimmed instead of spilling into the next column. */
+table.cols-resized > tbody > tr > td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

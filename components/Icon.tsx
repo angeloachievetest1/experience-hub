@@ -1,6 +1,6 @@
 import type { IconName } from '@/lib/sections';
 
-const PATHS: Record<IconName | 'arrow' | 'back' | 'logout' | 'check' | 'cross', string> = {
+const PATHS: Record<IconName | 'arrow' | 'back' | 'collapse' | 'expand' | 'logout' | 'check' | 'cross', string> = {
   home: 'M4 11l8-7 8 7 M6 9.5V20h12V9.5 M10 20v-5h4v5',
   grid: 'M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z',
   chart: 'M5 20v-6 M12 20V5 M19 20v-9 M3 20h18',
@@ -12,8 +12,11 @@ const PATHS: Record<IconName | 'arrow' | 'back' | 'logout' | 'check' | 'cross', 
   chat: 'M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z',
   users: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M2 21c0-3.3 3.1-6 7-6s7 2.7 7 6 M16 3.1a4 4 0 0 1 0 7.8 M22 21c0-2.8-2-5.1-4.8-5.8',
   login: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4 M10 17l5-5-5-5 M15 12H3',
+  audit: 'M9 3h6v3H9z M7 4.5H5V21h14V4.5h-2 M9 13.5l2 2 4-4',
   arrow: 'M7 7h10v10 M17 7L7 17',
   back: 'M15 6l-6 6 6 6',
+  collapse: 'M11 6l-6 6 6 6 M18 6l-6 6 6 6',
+  expand: 'M13 6l6 6-6 6 M6 6l6 6-6 6',
   logout: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9',
   check: 'M5 12l5 5L20 7',
   cross: 'M6 6l12 12 M18 6L6 18',

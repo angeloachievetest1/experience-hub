@@ -5,7 +5,7 @@ import { RecordTable } from '@/components/records/RecordTable';
 import { useShell } from '@/components/records/SectionShell';
 import { Kpi } from '@/components/ui/Charts';
 import { FilterMulti, FilterSelect } from '@/components/ui/Dropdowns';
-import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
+import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { ROLE_LABELS, STATUS_LABELS, formatDateTime, type AdminUser } from '@/lib/admin/types';
 import { downloadCsv, today } from '@/lib/csv';
 import { SECTION_KEYS, SECTION_NAMES } from '@/lib/sections';
@@ -61,15 +61,19 @@ export function UsersView() {
         {tiles.map((t) => <Kpi key={t.label} label={t.label} value={t.count} active={isShowing(t)} onClick={() => showTile(t)} />)}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterMulti label="Section" allLabel="All sections" options={SECTION_KEYS.map((k) => SECTION_NAMES[k])} value={sections} onChange={setSections} />
-        <FilterMulti label="Status" allLabel="All statuses" options={['Active', 'Deactivated']} value={statuses} onChange={setStatuses} />
-        <FilterSelect label="Role" allLabel="All roles" options={['Viewer', 'Admin']} value={role} onChange={setRole} />
-        <SearchBox value={query} onChange={setQuery} placeholder="Search name, email, department" label="Search users" />
-        <AddButton label="Add user" busy={adding} onClick={() => setAddOpen(true)} />
-        <ExportButton onClick={exportCsv} disabled={!rows.length} />
-        <span className="ml-auto text-sm text-ink-muted">Showing {rows.length} of {users.length} users</span>
-      </div>
+      <LogToolbar
+        filters={<>
+          <FilterMulti label="Section" allLabel="All sections" options={SECTION_KEYS.map((k) => SECTION_NAMES[k])} value={sections} onChange={setSections} />
+          <FilterMulti label="Status" allLabel="All statuses" options={['Active', 'Deactivated']} value={statuses} onChange={setStatuses} />
+          <FilterSelect label="Role" allLabel="All roles" options={['Viewer', 'Admin']} value={role} onChange={setRole} />
+        </>}
+        add={<>
+          <AddButton label="Add user" busy={adding} onClick={() => setAddOpen(true)} />
+          <ExportButton onClick={exportCsv} disabled={!rows.length} />
+        </>}
+        search={<SearchBox value={query} onChange={setQuery} placeholder="Search name, email, department" label="Search users" width="sm:w-96" />}
+        count={`Showing ${rows.length} of ${users.length} users`}
+      />
 
       <RecordTable
         firstHeader="Name"

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/Icon';
 import { CheckOption, Chevron, usePopover } from '@/components/ui/Dropdowns';
 import type { ActionResult } from '@/lib/records/sanitize';
-import { formatDate } from '@/lib/qa/stats';
+import { formatDate, formatDateTime } from '@/lib/qa/stats';
 
 // The right-hand panel used by every case log to view, edit and delete a record.
 
@@ -13,16 +13,20 @@ import { formatDate } from '@/lib/qa/stats';
 export type Named = { id: string; name: string; hidden?: boolean };
 
 export type FieldDef = (
-  | { key: string; label: string; kind: 'text' | 'textarea' | 'date' | 'url' | 'pct' | 'number' | 'rating' | 'bool' }
+  | { key: string; label: string; kind: 'text' | 'textarea' | 'date' | 'datetime' | 'url' | 'pct' | 'number' | 'rating' | 'bool' }
   | { key: string; label: string; kind: 'suggest'; suggestions: string[] }
   // names: shown next to the value (MCS – Mid Course Survey); labels: shown instead of it (admin → Admin)
   | { key: string; label: string; kind: 'select'; options: readonly string[]; names?: Record<string, string>; labels?: Record<string, string>; required?: boolean }
+  // A list plus "Others", which opens a blank box to type the value in.
+  | { key: string; label: string; kind: 'selectOther'; options: readonly string[] }
   | { key: string; label: string; kind: 'lookup'; options: Named[]; emptyHint?: string }
   | { key: string; label: string; kind: 'multi'; options: readonly string[] }
   | { key: string; label: string; kind: 'multiLookup'; options: Named[] }
 ) & {
   // Show the field only when this returns true (e.g. sections only for Admins).
   visible?: (draft: Record<string, unknown>) => boolean;
+  // Shown but never typed into (e.g. calculated elsewhere); the text says why.
+  readOnly?: string;
 };
 
 export type FieldGroup = { title: string; fields: FieldDef[] };
@@ -93,6 +97,18 @@ function CloseButton({ onClick, ref }: { onClick: () => void; ref: React.Ref<HTM
   );
 }
 
+// The same as the × at the top, for when you have scrolled to the bottom.
+// iconOnly: just the × (next to Save/Undo/Delete, where a label wouldn't fit).
+function BottomCloseButton({ onClick, iconOnly = false }: { onClick: () => void; iconOnly?: boolean }) {
+  return (
+    <button type="button" onClick={onClick} aria-label={iconOnly ? 'Close' : undefined} title={iconOnly ? 'Close' : undefined}
+      className={`flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[10px] border border-lilac-200 bg-white text-sm ${iconOnly ? 'w-10' : 'px-4'}`}>
+      <Icon name="cross" size={iconOnly ? 18 : 16} />
+      {!iconOnly && 'Close'}
+    </button>
+  );
+}
+
 function RecordForm({
   record, kindLabel, color, title, groups, canEdit, readOnlyText, onSave, onDelete,
   deleteQuestion, deleteLabel = 'Delete case', onClose, derive, extra, closeRef, message, setMessage,
@@ -115,13 +131,18 @@ function RecordForm({
   const notes = (draft.field_notes as Record<string, string> | undefined) ?? {};
   const hasNotes = 'field_notes' in record;
 
-  const close = () => {
-    if (dirty && !window.confirm('Discard your unsaved changes?')) return;
-    onClose();
-  };
+  // With unsaved changes, closing asks first, inside the panel (browser
+  // pop-ups don't show everywhere, e.g. in an embedded browser).
+  const [leaving, setLeaving] = useState(false);
+  const close = () => { if (dirty) setLeaving(true); else onClose(); };
+  // Remounts the inputs after "Undo" so they forget anything half-typed.
+  const [undoCount, setUndoCount] = useState(0);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (leaving) setLeaving(false); else close();
+    };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   });
@@ -134,13 +155,13 @@ function RecordForm({
     setMessage(null);
   };
 
-  const save = () => {
+  const save = (thenClose = false) => {
     setMessage(null);
     const patch = Object.fromEntries(changed.map((k) => [k, draft[k]]));
     startTransition(async () => {
       const result = await onSave(patch);
-      if (!result.ok) { setMessage({ kind: 'error', text: result.error }); return; }
-      setMessage({ kind: 'ok', text: 'Changes saved.' });
+      if (!result.ok) { setMessage({ kind: 'error', text: result.error }); setLeaving(false); return; }
+      if (thenClose) onClose(); else setMessage({ kind: 'ok', text: 'Changes saved.' });
       router.refresh();
     });
   };
@@ -177,9 +198,10 @@ function RecordForm({
               <div key={f.key} className="grid grid-cols-[130px_minmax(0,1fr)] items-start gap-3 border-t border-lilac-50 py-2 text-sm">
                 <label htmlFor={`f-${f.key}`} className="pt-2.5 text-ink-muted">{f.label}</label>
                 <div className="min-w-0">
-                  {canEdit
-                    ? <FieldInput f={f} value={draft[f.key]} onChange={(v) => set(f.key, v)} />
+                  {canEdit && !f.readOnly
+                    ? <FieldInput key={undoCount} f={f} value={draft[f.key]} onChange={(v) => set(f.key, v)} />
                     : <FieldValue f={f} value={draft[f.key]} />}
+                  {canEdit && f.readOnly && <div className="mt-1 text-xs text-ink-muted">{f.readOnly}</div>}
                   {hasNotes && NOTE_KINDS.includes(f.kind) && (
                     <FieldNote
                       label={f.label}
@@ -200,6 +222,12 @@ function RecordForm({
       ))}
 
       {extra}
+
+      {!canEdit && (
+        <div className="border-t border-lilac-50 pt-4">
+          <BottomCloseButton onClick={close} />
+        </div>
+      )}
 
       {canEdit && (
         <div className="flex flex-col gap-3 border-t border-lilac-50 pt-4">
@@ -227,22 +255,42 @@ function RecordForm({
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={save} disabled={!dirty || pending}
+              <button type="button" onClick={() => save()} disabled={!dirty || pending}
                 className="h-10 cursor-pointer rounded-[10px] bg-primary px-5 text-sm font-semibold disabled:cursor-default disabled:opacity-50">
                 {pending ? 'Saving…' : 'Save changes'}
               </button>
               {dirty && (
-                <button type="button" onClick={() => { setDraft(original); setMessage(null); }}
+                <button type="button" onClick={() => { setDraft(original); setMessage(null); setUndoCount((n) => n + 1); }}
                   className="h-10 cursor-pointer rounded-[10px] border border-lilac-200 px-4 text-sm">
-                  Undo changes
+                  Undo
                 </button>
               )}
+              <BottomCloseButton onClick={close} iconOnly />
               <button type="button" onClick={() => setConfirming(true)}
                 className="ml-auto h-10 cursor-pointer rounded-[10px] border border-[#FFB199] bg-white px-4 text-sm font-semibold text-primary">
                 {deleteLabel}
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {leaving && (
+        <div role="alertdialog" aria-label="Unsaved changes"
+          className="fixed right-0 bottom-0 z-50 flex w-full max-w-[480px] flex-col gap-3 border-t border-l border-peach-200 bg-white px-6 py-4 shadow-[0_-8px_24px_rgba(45,21,89,0.12)]">
+          <div className="text-sm">You have unsaved changes. Close anyway?</div>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => save(true)} disabled={pending}
+              className="h-10 cursor-pointer rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:opacity-60">
+              {pending ? 'Saving…' : 'Save and close'}
+            </button>
+            <button type="button" autoFocus onClick={onClose} className="h-10 cursor-pointer rounded-[10px] border border-lilac-200 bg-white px-4 text-sm">
+              Close without saving
+            </button>
+            <button type="button" onClick={() => setLeaving(false)} className="h-10 cursor-pointer rounded-[10px] border border-lilac-200 bg-white px-4 text-sm">
+              Keep editing
+            </button>
+          </div>
         </div>
       )}
     </>
@@ -334,6 +382,8 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
       return <textarea id={id} rows={3} value={str} onChange={(e) => onChange(e.target.value)} className={`${inputClass} h-auto py-2`} />;
     case 'date':
       return <input id={id} type="date" value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass} />;
+    case 'datetime':
+      return <input id={id} type="datetime-local" value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass} />;
     case 'pct':
     case 'number':
       return <input id={id} type="number" min={0} max={f.kind === 'pct' ? 100 : undefined} step="0.01" value={str}
@@ -370,6 +420,8 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
           ))}
         </select>
       );
+    case 'selectOther':
+      return <SelectOther id={id} label={f.label} options={f.options} value={str} onChange={onChange} />;
     case 'lookup': {
       const options = f.options.filter((o) => !o.hidden || o.id === value);
       return (
@@ -389,6 +441,40 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
       return <MultiPicker id={id} label={f.label} value={(value as string[]) ?? []} onChange={onChange}
         options={f.options.filter((o) => !o.hidden || ((value as string[]) ?? []).includes(o.id))} />;
   }
+}
+
+const OTHERS = '__others__';
+
+function SelectOther({ id, label, options, value, onChange }: {
+  id: string; label: string; options: readonly string[]; value: string; onChange: (v: unknown) => void;
+}) {
+  // A value that isn't in the list was typed in, so it shows as Others.
+  const custom = value !== '' && !options.includes(value);
+  const [typing, setTyping] = useState(custom);
+  const [text, setText] = useState(custom ? value : '');
+  // Picking Others changes nothing until something is typed; clearing the box
+  // goes back to the value from before.
+  const [before, setBefore] = useState(value);
+  return (
+    <>
+      <select id={id} value={typing ? OTHERS : value} className={inputClass}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === OTHERS) { setTyping(true); setBefore(value); setText(''); return; }
+          setTyping(false);
+          onChange(v || null);
+        }}>
+        <option value="">Not set</option>
+        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        <option value={OTHERS}>Others</option>
+      </select>
+      {typing && (
+        <input type="text" autoFocus={!custom} value={text} placeholder="Type it here" aria-label={`${label}: others`}
+          onChange={(e) => { setText(e.target.value); onChange(e.target.value.trim() ? e.target.value : before || null); }}
+          className={`${inputClass} mt-1.5`} />
+      )}
+    </>
+  );
 }
 
 function MultiPicker({ id, label, options, value, onChange }: {
@@ -425,6 +511,7 @@ function FieldValue({ f, value }: { f: FieldDef; value: unknown }) {
   }
   switch (f.kind) {
     case 'date': return box(formatDate(value as string));
+    case 'datetime': return box(formatDateTime(value as string));
     case 'pct': return box(`${value}%`);
     case 'bool': return box(value ? 'Yes' : 'No');
     case 'url':

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { FilterMulti, FilterSelect, usePopover } from '@/components/ui/Dropdowns';
+import { LogToolbar, SearchBox } from '@/components/ui/SearchBox';
 import { inRange } from '@/lib/qa/stats';
 import { QA_SOURCES, VALIDITY_VALUES, caseIssue, type QaSource } from '@/lib/qa/types';
 import { CaseTable } from './CaseTable';
@@ -48,21 +49,17 @@ export function CaseLogView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterMulti label="Source" allLabel="All sources" options={[...QA_SOURCES]} value={sources} onChange={setSources} />
-        {hasAnalyst && <FilterSelect label="Analyst" allLabel="All analysts" options={analysts} value={analyst} onChange={setAnalyst} />}
-        <FilterSelect label="Category" allLabel="All categories" options={categories} value={category} onChange={setCategory} />
-        {hasOutcome && <FilterSelect label="Validity" allLabel="All validity" options={[...VALIDITY_VALUES]} value={validity} onChange={setValidity} />}
-        <label className="flex h-9 w-full items-center gap-2 rounded-[10px] border border-lilac-200 bg-white px-3.5 sm:w-72">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-            <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z M20 20l-4-4" />
-          </svg>
-          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search customer, course, instructor"
-            aria-label="Search cases" className="w-full border-0 bg-transparent text-sm outline-none" />
-        </label>
-        {data.canEdit && <AddCaseButton />}
-        <span className="ml-auto text-sm text-ink-muted">Showing {filtered.length} of {inDateRange} cases</span>
-      </div>
+      <LogToolbar
+        filters={<>
+          <FilterMulti label="Source" allLabel="All sources" options={[...QA_SOURCES]} value={sources} onChange={setSources} />
+          {hasAnalyst && <FilterSelect label="Analyst" allLabel="All analysts" options={analysts} value={analyst} onChange={setAnalyst} />}
+          <FilterSelect label="Category" allLabel="All categories" options={categories} value={category} onChange={setCategory} />
+          {hasOutcome && <FilterSelect label="Validity" allLabel="All validity" options={[...VALIDITY_VALUES]} value={validity} onChange={setValidity} />}
+        </>}
+        add={data.canEdit && <AddCaseButton />}
+        search={<SearchBox value={query} onChange={setQuery} placeholder="Search customer, course, instructor" label="Search cases" width="sm:w-96" />}
+        count={`Showing ${filtered.length} of ${inDateRange} cases`}
+      />
       <CaseTable cases={filtered} columns={([
         'date', 'source', 'course', 'instructor', 'analyst', 'issue', 'validity', 'follow',
       ] as const).filter((c) => (c !== 'analyst' || hasAnalyst) && (c !== 'validity' || hasOutcome) && (c !== 'follow' || hasResolution))} />

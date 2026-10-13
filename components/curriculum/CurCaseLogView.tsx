@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { createCustomerCase } from '@/app/(app)/curriculum/actions';
 import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
-import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
+import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { resolutionDays } from '@/lib/curriculum/types';
 import { customerLabel } from '@/lib/records/labels';
@@ -32,21 +32,23 @@ export function CurCaseLogView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterSelect label="Category" allLabel="All categories" value={category} onChange={setCategory}
-          options={distinct([...(data.options.cur_category ?? []), ...data.cases.map((c) => c.category)])} />
-        <FilterSelect label="Course" allLabel="All courses" value={course} onChange={setCourse}
-          options={distinct(data.cases.map((c) => courseName(c.course_id) || null))} />
-        <FilterSelect label="Type" allLabel="All types" value={issueType} onChange={setIssueType}
-          options={distinct(data.cases.map((c) => c.issue_type))} />
-        <FilterSelect label="Achieve material" allLabel="All materials" value={material} onChange={setMaterial}
-          options={distinct(data.cases.map((c) => c.material_type))} />
-        <FilterSelect label="Curriculum SME" allLabel="All SMEs" value={sme} onChange={setSme}
-          options={distinct(data.cases.map((c) => c.curriculum_sme))} />
-        <SearchBox value={query} onChange={setQuery} placeholder="Search customer, course, comment" label="Search curriculum cases" />
-        {data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(() => withKey(caseKey)(createCustomerCase()))} />}
-        <span className="ml-auto text-sm text-ink-muted">Showing {rows.length} of {inDates.length} cases</span>
-      </div>
+      <LogToolbar
+        filters={<>
+          <FilterSelect label="Category" allLabel="All categories" value={category} onChange={setCategory}
+            options={distinct([...(data.options.cur_category ?? []), ...data.cases.map((c) => c.category)])} />
+          <FilterSelect label="Course" allLabel="All courses" value={course} onChange={setCourse}
+            options={distinct(data.cases.map((c) => courseName(c.course_id) || null))} />
+          <FilterSelect label="Type" allLabel="All types" value={issueType} onChange={setIssueType}
+            options={distinct(data.cases.map((c) => c.issue_type))} />
+          <FilterSelect label="Achieve material" allLabel="All materials" value={material} onChange={setMaterial}
+            options={distinct(data.cases.map((c) => c.material_type))} />
+          <FilterSelect label="Curriculum SME" allLabel="All SMEs" value={sme} onChange={setSme}
+            options={distinct(data.cases.map((c) => c.curriculum_sme))} />
+        </>}
+        add={data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(() => withKey(caseKey)(createCustomerCase()))} />}
+        search={<SearchBox value={query} onChange={setQuery} placeholder="Search customer, course, comment" label="Search curriculum cases" width="sm:w-96" />}
+        count={`Showing ${rows.length} of ${inDates.length} cases`}
+      />
       <RecordTable
         rows={rows}
         fit

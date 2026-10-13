@@ -2,7 +2,7 @@
 // database. Only fields listed in the spec can be changed.
 
 export type FieldType =
-  | 'text' | 'date' | 'url' | 'uuid' | 'bool' | 'notes'
+  | 'text' | 'date' | 'datetime' | 'url' | 'uuid' | 'bool' | 'notes'
   | { number: { min: number; max: number; integer?: boolean } }
   | { oneOf: readonly string[] };
 
@@ -10,6 +10,7 @@ export type Spec = Record<string, FieldType>;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/; // local time, no time zone
 const URL = /^https?:\/\/\S+$/i;
 
 export function sanitize(patch: Record<string, unknown>, spec: Spec): { values: Record<string, unknown> } | { error: string } {
@@ -23,6 +24,9 @@ export function sanitize(patch: Record<string, unknown>, spec: Spec): { values: 
     if (type === 'text') values[key] = empty ? null : String(text);
     else if (type === 'date') {
       if (!empty && !DATE.test(String(text))) return { error: 'Please enter dates as a full date.' };
+      values[key] = empty ? null : text;
+    } else if (type === 'datetime') {
+      if (!empty && !DATETIME.test(String(text))) return { error: 'Please enter a full date and time.' };
       values[key] = empty ? null : text;
     } else if (type === 'url') {
       if (!empty && !URL.test(String(text))) return { error: 'Links must be a full web address starting with https://' };

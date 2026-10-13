@@ -48,7 +48,7 @@ export async function loadLists(): Promise<ListData[]> {
   await requireSuperAdmin();
   const supabase = await createClient();
   const byId = [{ column: 'id' }];
-  const [courses, instructors, mentors, options, qa, qaCourses, curCases, curRequests, mentorCases] = await Promise.all([
+  const [courses, instructors, mentors, options, qa, qaCourses, curCases, curRequests, mentorCases, taskCases] = await Promise.all([
     fetchAll<{ id: string; name: string; is_active: boolean }>(supabase, 'courses', 'id, name, is_active', [{ column: 'sort_order' }, { column: 'name' }]),
     fetchAll<{ id: string; full_name: string; aliases: string[]; is_active: boolean }>(supabase, 'instructors', 'id, full_name, aliases, is_active', [{ column: 'full_name' }]),
     fetchAll<{ id: string; full_name: string; is_active: boolean }>(supabase, 'mentors', 'id, full_name, is_active', [{ column: 'full_name' }]),
@@ -58,9 +58,10 @@ export async function loadLists(): Promise<ListData[]> {
     fetchAll<Row>(supabase, 'curriculum_customer_cases', 'id, course_id, category, issue_type, material_type, case_source, case_resolution, case_status_in_sf', byId),
     fetchAll<Row>(supabase, 'curriculum_instructor_requests', 'id, course_id, feedback_type, base_material, status', byId),
     fetchAll<Row>(supabase, 'mentor_cases', 'id, mentor_id, course_id, complaint_type, complaint_sub_type, case_type, case_closed_by, status, complaint_analysis', byId),
+    fetchAll<Row>(supabase, 'qa_task_cases', 'id, record_type, case_type, error_type, error_category, manager, handled_by, auditor', byId),
   ]);
   const tables: Record<CaseTable, Row[]> = {
-    qa_cases: qa, curriculum_customer_cases: curCases, curriculum_instructor_requests: curRequests, mentor_cases: mentorCases,
+    qa_cases: qa, qa_task_cases: taskCases, curriculum_customer_cases: curCases, curriculum_instructor_requests: curRequests, mentor_cases: mentorCases,
   };
 
   const tally = (map: Map<string, number>, key: unknown) => {

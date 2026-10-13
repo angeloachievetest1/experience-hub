@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createRequest } from '@/app/(app)/curriculum/actions';
 import { RecordTable } from '@/components/records/RecordTable';
 import { FilterSelect } from '@/components/ui/Dropdowns';
-import { AddButton, SearchBox, matches } from '@/components/ui/SearchBox';
+import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { requesterLabel } from '@/lib/records/labels';
 import { reqKey, useCur, withKey } from './useCur';
@@ -43,15 +43,17 @@ export function RequestsView() {
           );
         })}
       </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterSelect label="Feedback type" allLabel="All types" value={feedback} onChange={setFeedback}
-          options={distinct([...(data.options.cur_feedback_type ?? []), ...inDates.map((r) => r.feedback_type)])} />
-        <FilterSelect label="Ticket manager" allLabel="All ticket managers" value={tm} onChange={setTm}
-          options={distinct(data.requests.map((r) => r.ticket_manager))} />
-        <SearchBox value={query} onChange={setQuery} placeholder="Search requester, course, comment" label="Search instructor requests" />
-        {data.canEdit && <AddButton label="Add request" busy={adding} onClick={() => add(() => withKey(reqKey)(createRequest()))} />}
-        <span className="ml-auto text-sm text-ink-muted">Showing {rows.length} of {inDates.length} requests</span>
-      </div>
+      <LogToolbar
+        filters={<>
+          <FilterSelect label="Feedback type" allLabel="All types" value={feedback} onChange={setFeedback}
+            options={distinct([...(data.options.cur_feedback_type ?? []), ...inDates.map((r) => r.feedback_type)])} />
+          <FilterSelect label="Ticket manager" allLabel="All ticket managers" value={tm} onChange={setTm}
+            options={distinct(data.requests.map((r) => r.ticket_manager))} />
+        </>}
+        add={data.canEdit && <AddButton label="Add request" busy={adding} onClick={() => add(() => withKey(reqKey)(createRequest()))} />}
+        search={<SearchBox value={query} onChange={setQuery} placeholder="Search requester, course, comment" label="Search instructor requests" width="sm:w-96" />}
+        count={`Showing ${rows.length} of ${inDates.length} requests`}
+      />
       <RecordTable
         rows={rows}
         leading={{ key: 'date', header: 'Date', render: (r) => <span className="whitespace-nowrap">{formatDate(r.date_submitted) || '—'}</span> }}

@@ -7,7 +7,7 @@ export const START_PAGE = '/quality-analyst';
 
 export type IconName =
   | 'home' | 'grid' | 'chart' | 'list' | 'person' | 'bookmark' | 'clock'
-  | 'cap' | 'chat' | 'users' | 'login';
+  | 'cap' | 'chat' | 'users' | 'login' | 'audit';
 
 export type PageInfo = {
   href: string;
@@ -77,6 +77,20 @@ export const SECTION_GROUPS: NavGroup[] = [
         title: 'Resolution',
         subtitle: 'Customers still waiting on contact or action.',
         icon: 'clock',
+      },
+      {
+        href: '/quality-analyst/operation-tasks',
+        label: 'Operation Tasks',
+        title: 'Operation Tasks',
+        subtitle: 'Weekly accuracy and errors from the E-learning case audits.',
+        icon: 'audit',
+      },
+      {
+        href: '/quality-analyst/task-log',
+        label: 'Task Log',
+        title: 'Task Log',
+        subtitle: 'Every audited E-learning case.',
+        icon: 'list',
       },
     ],
   },

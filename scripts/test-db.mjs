@@ -188,6 +188,13 @@ try {
       r.message ?? JSON.stringify(r.rows?.[0]?.a));
   }
 
+  console.log('\nTask Log (Quality Analyst › Operation Tasks)');
+  const addTask = `insert into public.qa_task_cases (customer_name, handled_by) values ('RLS test', 'x')`;
+  check('A Quality Analyst admin can add a Task Log case', (await as(users.qaAdmin, run(addTask))).ok);
+  check('A Curriculum admin can view the Task Log but cannot add to it',
+    denied(await as(users.curAdmin, run(addTask))) && (await as(users.curAdmin, run('select id from public.qa_task_cases limit 1'))).ok);
+  check('A Viewer cannot add to the Task Log', denied(await as(users.viewer, run(addTask))));
+
   console.log('\nViewers are view-only');
   for (const [what, sql] of [['sections', `update public.profiles set sections = '{mentor}' where id = $1`],
     ['super-admin', `update public.profiles set is_super_admin = true where id = $1`]]) {

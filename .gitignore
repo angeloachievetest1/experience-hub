@@ -19,3 +19,7 @@ next-env.d.ts
 .DS_Store
 Thumbs.db
 *.log
+
+# Google Sheets sync, paused (2026-10-13): kept out of Git because Code.gs
+# names the team sheets. See sheet-sync/SETUP.md before committing any of it.
+/sheet-sync/

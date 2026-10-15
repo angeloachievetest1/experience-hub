@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/Icon';
 import { CheckOption, Chevron, usePopover } from '@/components/ui/Dropdowns';
 import type { ActionResult } from '@/lib/records/sanitize';
-import { formatDate, formatDateTime } from '@/lib/qa/stats';
+import { formatDate, formatDateTime, parseDateTime } from '@/lib/qa/stats';
 
 // The right-hand panel used by every case log to view, edit and delete a record.
 
@@ -47,6 +47,8 @@ export type RecordDrawerProps = {
   onDelete: () => Promise<ActionResult>;
   deleteQuestion: string;
   deleteLabel?: string;
+  canDelete?: boolean;         // false for a new case that hasn't been saved yet
+  saveLabel?: string;          // e.g. "Save case" for a new case
   onClose: () => void;
   // Adjust other fields when one changes (e.g. fill year/quarter from a date).
   derive?: (draft: Draft, changedKey: string) => Draft;
@@ -111,7 +113,7 @@ function BottomCloseButton({ onClick, iconOnly = false }: { onClick: () => void;
 
 function RecordForm({
   record, kindLabel, color, title, groups, canEdit, readOnlyText, onSave, onDelete,
-  deleteQuestion, deleteLabel = 'Delete case', onClose, derive, extra, closeRef, message, setMessage,
+  deleteQuestion, deleteLabel = 'Delete case', canDelete = true, saveLabel = 'Save changes', onClose, derive, extra, closeRef, message, setMessage,
 }: RecordDrawerProps & {
   record: NonNullable<RecordDrawerProps['record']>;
   closeRef: React.Ref<HTMLButtonElement>; message: Message; setMessage: (m: Message) => void;
@@ -238,7 +240,7 @@ function RecordForm({
             </p>
           )}
           {dirty && !message && !confirming && (
-            <p role="status" className="m-0 text-[13px] text-ink-muted">You have unsaved changes. Click <strong>Save changes</strong> to keep them.</p>
+            <p role="status" className="m-0 text-[13px] text-ink-muted">You have unsaved changes. Click <strong>{saveLabel}</strong> to keep them.</p>
           )}
           {confirming ? (
             <div className="flex flex-col gap-2.5">
@@ -257,7 +259,7 @@ function RecordForm({
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" onClick={() => save()} disabled={!dirty || pending}
                 className="h-10 cursor-pointer rounded-[10px] bg-primary px-5 text-sm font-semibold disabled:cursor-default disabled:opacity-50">
-                {pending ? 'Saving…' : 'Save changes'}
+                {pending ? 'Saving…' : saveLabel}
               </button>
               {dirty && (
                 <button type="button" onClick={() => { setDraft(original); setMessage(null); setUndoCount((n) => n + 1); }}
@@ -266,10 +268,12 @@ function RecordForm({
                 </button>
               )}
               <BottomCloseButton onClick={close} iconOnly />
-              <button type="button" onClick={() => setConfirming(true)}
-                className="ml-auto h-10 cursor-pointer rounded-[10px] border border-[#FFB199] bg-white px-4 text-sm font-semibold text-primary">
-                {deleteLabel}
-              </button>
+              {canDelete && (
+                <button type="button" onClick={() => setConfirming(true)}
+                  className="ml-auto h-10 cursor-pointer rounded-[10px] border border-[#FFB199] bg-white px-4 text-sm font-semibold text-primary">
+                  {deleteLabel}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -383,7 +387,7 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
     case 'date':
       return <input id={id} type="date" value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass} />;
     case 'datetime':
-      return <input id={id} type="datetime-local" value={str} onChange={(e) => onChange(e.target.value || null)} className={inputClass} />;
+      return <DateTimeInput id={id} label={f.label} value={str} onChange={onChange} />;
     case 'pct':
     case 'number':
       return <input id={id} type="number" min={0} max={f.kind === 'pct' ? 100 : undefined} step="0.01" value={str}
@@ -441,6 +445,61 @@ function FieldInput({ f, value, onChange }: { f: FieldDef; value: unknown; onCha
       return <MultiPicker id={id} label={f.label} value={(value as string[]) ?? []} onChange={onChange}
         options={f.options.filter((o) => !o.hidden || ((value as string[]) ?? []).includes(o.id))} />;
   }
+}
+
+// Date and time you can type or paste ("9/28/2026 2:13 PM", copied from the sheet
+// or Kustomer), or pick with the calendar button. Read when you paste, press
+// Enter or leave the box; shown back as "28 Sep 2026, 2:13 PM".
+function DateTimeInput({ id, label, value, onChange }: {
+  id: string; label: string; value: string; onChange: (v: unknown) => void;
+}) {
+  const [text, setText] = useState(value ? formatDateTime(value) : '');
+  const [unreadable, setUnreadable] = useState(false);
+  const picker = useRef<HTMLInputElement>(null);
+  useEffect(() => { setText(value ? formatDateTime(value) : ''); setUnreadable(false); }, [value]);
+
+  const commit = (raw: string) => {
+    const parsed = raw.trim() ? parseDateTime(raw) : '';
+    if (parsed === null) { setText(raw); setUnreadable(true); return; }
+    setText(parsed ? formatDateTime(parsed) : '');
+    setUnreadable(false);
+    if (parsed !== value) onChange(parsed || null);
+  };
+
+  const openPicker = () => {
+    const el = picker.current;
+    if (!el) return;
+    try { el.showPicker(); } catch { el.focus(); el.click(); }
+  };
+
+  return (
+    <>
+      <div className="relative flex gap-1.5">
+        <input id={id} type="text" value={text} placeholder="e.g. 9/28/2026 2:13 PM" autoComplete="off"
+          aria-invalid={unreadable || undefined} aria-describedby={unreadable ? `${id}-hint` : undefined}
+          onChange={(e) => { setText(e.target.value); setUnreadable(false); }}
+          onPaste={(e) => { e.preventDefault(); commit(e.clipboardData.getData('text')); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(text); } }}
+          onBlur={() => commit(text)}
+          className={`${inputClass} ${unreadable ? 'border-primary' : ''}`} />
+        <button type="button" onClick={openPicker} aria-label={`Pick ${label.toLowerCase()} from a calendar`} title="Pick from a calendar"
+          className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-lilac-200 bg-white hover:bg-lilac-50">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4" />
+          </svg>
+        </button>
+        {/* The browser's own picker, opened by the button; kept in the page so it can open. */}
+        <input ref={picker} type="datetime-local" tabIndex={-1} aria-hidden="true" value={value}
+          onChange={(e) => onChange(e.target.value || null)}
+          className="pointer-events-none absolute right-0 bottom-0 h-0 w-0 opacity-0" />
+      </div>
+      {unreadable && (
+        <div id={`${id}-hint`} className="mt-1 text-xs text-primary">
+          Couldn’t read that date and time. Try 9/28/2026 2:13 PM, or use the calendar.
+        </div>
+      )}
+    </>
+  );
 }
 
 const OTHERS = '__others__';

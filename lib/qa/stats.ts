@@ -108,6 +108,36 @@ export function formatDateTime(dt: string | null) {
   return `${formatDate(date)}, ${h % 12 || 12}:${String(min).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
 }
 
+// A pasted or typed date and time → "YYYY-MM-DDTHH:mm", or null if it can't be read.
+// Reads "9/28/2026 2:13 PM" (the sheet), "2026-09-28 14:13", "Sep 28, 2026 at 2:13 PM"
+// and "28 Sep 2026, 2:13 PM" (how the site shows it); seconds are ignored.
+export function parseDateTime(input: string): string | null {
+  const s = input.trim()
+    .replace(/\b([ap])\.?\s?m\.?(?=\s|$)/gi, (_, x: string) => `${x.toUpperCase()}M`)
+    .replace(/\s+at\s+/i, ' ').replace(/,/g, ' ').replace(/\s+/g, ' ');
+  const time = String.raw`(\d{1,2}):(\d{2})(?::\d{2}(?:\.\d+)?)?\s*(AM|PM)?`;
+  const month = (name: string) => MONTHS.findIndex((m) => name.slice(0, 3).toLowerCase() === m.toLowerCase()) + 1;
+  let y: number, mo: number, d: number, hh: string, mm: string, ap: string | undefined;
+  let m: RegExpExecArray | null;
+  if ((m = new RegExp(String.raw`^(\d{4})-(\d{1,2})-(\d{1,2})[T ]${time}$`, 'i').exec(s))) {
+    [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])]; [hh, mm, ap] = [m[4], m[5], m[6]];
+  } else if ((m = new RegExp(String.raw`^(\d{1,2})/(\d{1,2})/(\d{2}|\d{4}) ${time}$`, 'i').exec(s))) {
+    [mo, d, y] = [Number(m[1]), Number(m[2]), Number(m[3].length === 2 ? `20${m[3]}` : m[3])]; [hh, mm, ap] = [m[4], m[5], m[6]];
+  } else if ((m = new RegExp(String.raw`^([a-z]{3,})\.? (\d{1,2}) (\d{4}) ${time}$`, 'i').exec(s))) {
+    [mo, d, y] = [month(m[1]), Number(m[2]), Number(m[3])]; [hh, mm, ap] = [m[4], m[5], m[6]];
+  } else if ((m = new RegExp(String.raw`^(\d{1,2}) ([a-z]{3,})\.? (\d{4}) ${time}$`, 'i').exec(s))) {
+    [d, mo, y] = [Number(m[1]), month(m[2]), Number(m[3])]; [hh, mm, ap] = [m[4], m[5], m[6]];
+  } else return null;
+
+  let h = Number(hh);
+  const min = Number(mm);
+  if (ap) { if (h < 1 || h > 12) return null; h = (h % 12) + (ap.toUpperCase() === 'PM' ? 12 : 0); }
+  const real = new Date(Date.UTC(y, mo - 1, d));
+  if (mo < 1 || real.getUTCMonth() !== mo - 1 || real.getUTCDate() !== d || h > 23 || min > 59) return null;
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${y}-${p(mo)}-${p(d)}T${p(h)}:${p(min)}`;
+}
+
 // For chart titles: "all time", "in 2026" (a whole year, or this year so far), or the chosen dates.
 export function periodText(r: DateRange) {
   if (!r.from && !r.to) return 'all time';

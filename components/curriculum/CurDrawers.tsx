@@ -1,8 +1,12 @@
 'use client';
 
-import { deleteCustomerCase, deleteRequest, updateCustomerCase, updateRequest } from '@/app/(app)/curriculum/actions';
+import {
+  createCustomerCase, createRequest, deleteCustomerCase, deleteRequest, updateCustomerCase, updateRequest,
+} from '@/app/(app)/curriculum/actions';
 import { RecordDrawer, type FieldGroup } from '@/components/records/RecordDrawer';
-import { CURRICULUM_COLOR, daysBetween, type CurData } from '@/lib/curriculum/types';
+import { useNewRecord } from '@/components/records/useNewRecord';
+import { CURRICULUM_COLOR, daysBetween, type CurCase, type CurData, type CurRequest } from '@/lib/curriculum/types';
+import { localToday } from '@/lib/qa/stats';
 import { customerLabel, requesterLabel } from '@/lib/records/labels';
 import { useCur } from './useCur';
 
@@ -10,8 +14,13 @@ const READ_ONLY = 'Read only. You can’t edit Curriculum records.';
 const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
 
 export function CustomerCaseDrawer({ id, onClose }: { id: string; onClose: () => void }) {
-  const { data, adding } = useCur();
-  const c = data.cases.find((x) => x.id === id) ?? null;
+  const { data } = useCur();
+  // "Add case": a blank case, saved only by its Save case button.
+  const record = useNewRecord<CurCase>({
+    id, rows: data.cases, create: createCustomerCase, update: updateCustomerCase,
+    start: { case_date: localToday(), field_notes: {} },
+  });
+  const c = record.record;
   const o = (k: string) => data.options[k] ?? [];
 
   const groups: FieldGroup[] = [
@@ -51,15 +60,15 @@ export function CustomerCaseDrawer({ id, onClose }: { id: string; onClose: () =>
   return (
     <RecordDrawer
       record={c}
-      loadingText={adding ? 'Creating the new case…' : undefined}
       kindLabel="Curriculum customer case"
       color={CURRICULUM_COLOR}
-      title={c ? customerLabel(c) : ''}
+      title={record.isNew ? 'New case' : c ? customerLabel(c) : ''}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText={READ_ONLY}
-      onSave={(patch) => updateCustomerCase(id, patch)}
-      onDelete={() => deleteCustomerCase(id)}
+      onSave={record.save}
+      onDelete={record.remove(deleteCustomerCase)}
+      {...record.drawer}
       deleteQuestion={c ? `Delete the case for ${customerLabel(c)}?` : ''}
       onClose={onClose}
       // Fill the TAT from the two dates when both are set.
@@ -100,22 +109,27 @@ function requestGroups(data: CurData): FieldGroup[] {
 }
 
 export function RequestDrawer({ id, onClose }: { id: string; onClose: () => void }) {
-  const { data, adding } = useCur();
-  const r = data.requests.find((x) => x.id === id) ?? null;
-  const title = r ? requesterLabel(r) : '';
+  const { data } = useCur();
+  // "Add request": a blank request, saved only by its Save request button.
+  const record = useNewRecord<CurRequest>({
+    id, rows: data.requests, create: createRequest, update: updateRequest, saveLabel: 'Save request',
+    start: { date_submitted: localToday(), field_notes: {} },
+  });
+  const r = record.record;
+  const title = record.isNew ? 'New request' : r ? requesterLabel(r) : '';
 
   return (
     <RecordDrawer
       record={r}
-      loadingText={adding ? 'Creating the new request…' : undefined}
       kindLabel="Instructor request"
       color={CURRICULUM_COLOR}
       title={title}
       groups={requestGroups(data)}
       canEdit={data.canEdit}
       readOnlyText={READ_ONLY}
-      onSave={(patch) => updateRequest(id, patch)}
-      onDelete={() => deleteRequest(id)}
+      onSave={record.save}
+      onDelete={record.remove(deleteRequest)}
+      {...record.drawer}
       deleteQuestion={`Delete the request from ${title}?`}
       deleteLabel="Delete request"
       onClose={onClose}

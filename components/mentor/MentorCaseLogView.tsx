@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { createMentorCase } from '@/app/(app)/mentor/actions';
 import { ValidityBadge } from '@/components/qa/Badges';
 import { RecordTable } from '@/components/records/RecordTable';
+import { NEW_RECORD } from '@/components/records/useNewRecord';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
@@ -14,7 +14,7 @@ import { useMentor } from './MentorShell';
 const STATUS_STYLE: Record<string, string> = { 'New': '#FFE3D9', 'In-progress': '#DDD1FF', 'Closed': '#F6F3FF' };
 
 export function MentorCaseLogView() {
-  const { data, range, open, add, adding, mentorName, courseName } = useMentor();
+  const { data, range, open, mentorName, courseName } = useMentor();
   const [mentor, setMentor] = useState<string | null>(null);
   const [type, setType] = useState<string | null>(null);
   const [subType, setSubType] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export function MentorCaseLogView() {
           <FilterSelect label="Status" allLabel="All statuses" value={status} onChange={setStatus} options={o('mentor_status')} />
           <FilterSelect label="Validity" allLabel="All validity" value={validity} onChange={setValidity} options={[...MENTOR_VALIDITY]} />
         </>}
-        add={data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(createMentorCase)} />}
+        add={data.canEdit && <AddButton label="Add case" onClick={() => open(NEW_RECORD)} />}
         search={<SearchBox value={query} onChange={setQuery} placeholder="Search customer, mentor, course" label="Search mentor complaints" width="sm:w-96" />}
         count={`Showing ${rows.length} of ${inDates.length} cases`}
       />

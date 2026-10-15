@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { createQaCase } from '@/app/(app)/quality-analyst/actions';
 import { SectionShell, useShell } from '@/components/records/SectionShell';
+import { NEW_RECORD } from '@/components/records/useNewRecord';
 import type { QaCase, QaData, QaSource } from '@/lib/qa/types';
 import { CaseDrawer } from './CaseDrawer';
 
@@ -44,8 +44,8 @@ export function useQa() {
     range: shell.range,
     setRange: shell.setRange,
     openCase: shell.open,
-    addCase: (source: QaSource) => shell.add(() => createQaCase(source)),
-    adding: shell.adding,
+    // A blank case of that source, saved only by its Save case button.
+    addCase: (source: QaSource) => shell.open(`${NEW_RECORD}:${source}`),
     ...lookups,
   };
 }

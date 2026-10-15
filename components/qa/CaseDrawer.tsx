@@ -1,10 +1,12 @@
 'use client';
 
 import { useMemo } from 'react';
-import { deleteQaCase, updateQaCase } from '@/app/(app)/quality-analyst/actions';
+import { createQaCase, deleteQaCase, updateQaCase } from '@/app/(app)/quality-analyst/actions';
 import { RecordDrawer, type FieldDef, type FieldGroup } from '@/components/records/RecordDrawer';
+import { newRecordKind, useNewRecord } from '@/components/records/useNewRecord';
+import { localToday } from '@/lib/qa/stats';
 import { customerLabel } from '@/lib/records/labels';
-import { SOURCE_COLORS, VALIDITY_VALUES, type QaCase, type QaData, type QaPatch } from '@/lib/qa/types';
+import { SOURCE_COLORS, VALIDITY_VALUES, type QaCase, type QaData, type QaPatch, type QaSource } from '@/lib/qa/types';
 import { useQa } from './QaShell';
 
 function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
@@ -88,22 +90,30 @@ function groupsFor(c: QaCase, data: QaData): FieldGroup[] {
 }
 
 export function CaseDrawer({ id, onClose }: { id: string; onClose: () => void }) {
-  const { data, adding } = useQa();
-  const c = data.cases.find((x) => x.id === id) ?? null;
+  const { data } = useQa();
+  // "Add case" › a source: a blank case of that source, saved only by its Save case button.
+  const source = (newRecordKind(id) || 'Instructor') as QaSource;
+  const record = useNewRecord<QaCase>({
+    id, rows: data.cases,
+    start: { source, case_date: localToday(), field_notes: {}, course_ids: [], complaint_types: [] },
+    create: (fields) => createQaCase(source, fields as QaPatch),
+    update: (caseId, patch) => updateQaCase(caseId, patch as QaPatch),
+  });
+  const c = record.record;
   const groups = useMemo(() => (c ? groupsFor(c, data) : []), [c, data]);
 
   return (
     <RecordDrawer
       record={c}
-      loadingText={adding ? 'Creating the new case…' : undefined}
       kindLabel={c ? `${c.source} record` : ''}
       color={c ? SOURCE_COLORS[c.source] : '#DDD1FF'}
-      title={c ? customerLabel(c) : ''}
+      title={record.isNew ? 'New case' : c ? customerLabel(c) : ''}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText="Read only. You can’t edit Quality Analyst cases."
-      onSave={(patch) => updateQaCase(id, patch as QaPatch)}
-      onDelete={() => deleteQaCase(id)}
+      onSave={record.save}
+      onDelete={record.remove(deleteQaCase)}
+      {...record.drawer}
       deleteQuestion={c ? `Delete the case for ${customerLabel(c)}?` : ''}
       onClose={onClose}
     />

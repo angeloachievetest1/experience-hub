@@ -100,6 +100,12 @@ export function formatDate(date: string | null) {
   return `${Number(d)} ${MONTHS[Number(m) - 1]} ${y}`;
 }
 
+// Today's date on this computer, "YYYY-MM-DD" (e.g. the starting date of a new case).
+export function localToday() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
 // "YYYY-MM-DDTHH:mm" → "30 Sep 2026, 8:55 AM"
 export function formatDateTime(dt: string | null) {
   if (!dt) return '';

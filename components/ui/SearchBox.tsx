@@ -15,7 +15,8 @@ export function SearchBox({ value, onChange, placeholder, label, width = 'sm:w-7
   );
 }
 
-export function AddButton({ label, onClick, busy }: { label: string; onClick: () => void; busy: boolean }) {
+// busy: while something is being created (Add user); case logs open a blank case instantly.
+export function AddButton({ label, onClick, busy = false }: { label: string; onClick: () => void; busy?: boolean }) {
   return (
     <button type="button" disabled={busy} onClick={onClick}
       className="flex h-9 cursor-pointer items-center gap-2 rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:cursor-wait disabled:opacity-60">

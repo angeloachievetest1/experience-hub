@@ -13,15 +13,27 @@ export type ActionResult = { ok: true; id?: string } | { ok: false; error: strin
 
 const NO_PERMISSION = 'You don’t have permission to change Quality Analyst cases.';
 
-export async function createQaCase(source: QaSource): Promise<ActionResult> {
+// Saves a new case (nothing is created until the panel's "Save case" is clicked).
+export async function createQaCase(source: QaSource, fields: QaPatch): Promise<ActionResult> {
   if (!QA_SOURCES.includes(source)) return { ok: false, error: 'Unknown source.' };
+  const clean = sanitize(fields);
+  if ('error' in clean) return { ok: false, error: clean.error };
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('qa_cases')
-    .insert({ source, case_date: new Date().toISOString().slice(0, 10) })
+    .insert({ ...clean.values, source })
     .select('id')
     .single();
   if (error) return { ok: false, error: friendly(error) };
+
+  // Returned cases: their courses. If that fails, take the case back out so nothing is half saved.
+  if (clean.courseIds?.length) {
+    const r = await supabase.from('qa_case_courses').insert(clean.courseIds.map((course_id) => ({ case_id: data.id, course_id })));
+    if (r.error) {
+      await supabase.from('qa_cases').delete().eq('id', data.id);
+      return { ok: false, error: friendly(r.error) };
+    }
+  }
   return { ok: true, id: data.id };
 }
 

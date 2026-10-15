@@ -17,11 +17,14 @@ const SPEC: Spec = {
   status: 'text', case_closed_by: 'text', email_sent: 'bool', email_sms_preview: 'text', case_link: 'url', field_notes: 'notes',
 };
 
-export async function createMentorCase(): Promise<ActionResult> {
+// Saves a new case (nothing is created until the panel's "Save case" is clicked).
+export async function createMentorCase(fields: Record<string, unknown>): Promise<ActionResult> {
+  const clean = sanitize(fields, SPEC);
+  if ('error' in clean) return { ok: false, error: clean.error };
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('mentor_cases')
-    .insert({ case_date: new Date().toISOString().slice(0, 10), status: 'New' })
+    .insert(clean.values)
     .select('id').single();
   if (error) return { ok: false, error: friendlyError(error, NO_PERMISSION) };
   return { ok: true, id: data.id };

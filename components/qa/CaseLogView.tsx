@@ -68,17 +68,17 @@ export function CaseLogView() {
 }
 
 export function AddCaseButton() {
-  const { addCase, adding } = useQa();
+  const { addCase } = useQa();
   const { open, setOpen, ref } = usePopover();
   const labels: Record<QaSource, string> = {
     Instructor: 'Instructor complaint', Course: 'Course complaint', Survey: 'Survey record', Returned: 'Returned case',
   };
   return (
     <div ref={ref} className="relative">
-      <button type="button" disabled={adding} aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)}
-        className="flex h-9 cursor-pointer items-center gap-2 rounded-[10px] bg-primary px-4 text-sm font-semibold disabled:cursor-wait disabled:opacity-60">
+      <button type="button" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)}
+        className="flex h-9 cursor-pointer items-center gap-2 rounded-[10px] bg-primary px-4 text-sm font-semibold">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14 M5 12h14" /></svg>
-        {adding ? 'Adding…' : 'Add case'}
+        Add case
       </button>
       {open && (
         <div role="listbox" aria-label="Choose a case type"

@@ -1,19 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { createRequest } from '@/app/(app)/curriculum/actions';
 import { RecordTable } from '@/components/records/RecordTable';
+import { NEW_RECORD } from '@/components/records/useNewRecord';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { requesterLabel } from '@/lib/records/labels';
-import { reqKey, useCur, withKey } from './useCur';
+import { reqKey, useCur } from './useCur';
 
 const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
 
 // Instructor requests: one row per request, as in the prototype.
 export function RequestsView() {
-  const { data, range, open, add, adding, courseName } = useCur();
+  const { data, range, open, courseName } = useCur();
   const [status, setStatus] = useState<string>('All');
   const [feedback, setFeedback] = useState<string | null>(null);
   const [tm, setTm] = useState<string | null>(null);
@@ -50,7 +50,7 @@ export function RequestsView() {
           <FilterSelect label="Ticket manager" allLabel="All ticket managers" value={tm} onChange={setTm}
             options={distinct(data.requests.map((r) => r.ticket_manager))} />
         </>}
-        add={data.canEdit && <AddButton label="Add request" busy={adding} onClick={() => add(() => withKey(reqKey)(createRequest()))} />}
+        add={data.canEdit && <AddButton label="Add request" onClick={() => open(reqKey(NEW_RECORD))} />}
         search={<SearchBox value={query} onChange={setQuery} placeholder="Search requester, course, comment" label="Search instructor requests" width="sm:w-96" />}
         count={`Showing ${rows.length} of ${inDates.length} requests`}
       />

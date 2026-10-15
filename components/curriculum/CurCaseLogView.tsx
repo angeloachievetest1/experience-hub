@@ -1,19 +1,19 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { createCustomerCase } from '@/app/(app)/curriculum/actions';
 import { RecordTable } from '@/components/records/RecordTable';
+import { NEW_RECORD } from '@/components/records/useNewRecord';
 import { FilterSelect } from '@/components/ui/Dropdowns';
 import { AddButton, LogToolbar, SearchBox, matches } from '@/components/ui/SearchBox';
 import { formatDate, inRange } from '@/lib/qa/stats';
 import { resolutionDays } from '@/lib/curriculum/types';
 import { customerLabel } from '@/lib/records/labels';
-import { caseKey, useCur, withKey } from './useCur';
+import { caseKey, useCur } from './useCur';
 
 const distinct = (values: (string | null)[]) => [...new Set(values.filter(Boolean) as string[])].sort();
 
 export function CurCaseLogView() {
-  const { data, range, open, add, adding, courseName } = useCur();
+  const { data, range, open, courseName } = useCur();
   const [category, setCategory] = useState<string | null>(null);
   const [course, setCourse] = useState<string | null>(null);
   const [material, setMaterial] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export function CurCaseLogView() {
           <FilterSelect label="Curriculum SME" allLabel="All SMEs" value={sme} onChange={setSme}
             options={distinct(data.cases.map((c) => c.curriculum_sme))} />
         </>}
-        add={data.canEdit && <AddButton label="Add case" busy={adding} onClick={() => add(() => withKey(caseKey)(createCustomerCase()))} />}
+        add={data.canEdit && <AddButton label="Add case" onClick={() => open(caseKey(NEW_RECORD))} />}
         search={<SearchBox value={query} onChange={setQuery} placeholder="Search customer, course, comment" label="Search curriculum cases" width="sm:w-96" />}
         count={`Showing ${rows.length} of ${inDates.length} cases`}
       />

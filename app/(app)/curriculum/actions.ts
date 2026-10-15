@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/server';
 // say: only active admins with the Curriculum section can change anything.
 
 const NO_PERMISSION = 'You don’t have permission to change Curriculum records.';
-const today = () => new Date().toISOString().slice(0, 10);
 
 const CASE_SPEC: Spec = {
   case_date: 'date', customer_name: 'text', course_id: 'uuid', category: 'text', material_type: 'text', issue_type: 'text', case_source: 'text',
@@ -20,9 +19,12 @@ const REQUEST_SPEC: Spec = {
   comments: 'text', status: 'text', notes: 'text', date_completed: 'date', ticket_manager: 'text', field_notes: 'notes',
 };
 
-async function insert(table: string, values: Record<string, unknown>): Promise<ActionResult> {
+// Saves a new record (nothing is created until the panel's Save button is clicked).
+async function insert(table: string, fields: Record<string, unknown>, spec: Spec): Promise<ActionResult> {
+  const clean = sanitize(fields, spec);
+  if ('error' in clean) return { ok: false, error: clean.error };
   const supabase = await createClient();
-  const { data, error } = await supabase.from(table).insert(values).select('id').single();
+  const { data, error } = await supabase.from(table).insert(clean.values).select('id').single();
   if (error) return { ok: false, error: friendlyError(error, NO_PERMISSION) };
   return { ok: true, id: data.id };
 }
@@ -47,8 +49,8 @@ async function remove(table: string, id: string): Promise<ActionResult> {
 }
 
 // Customer Cases
-export async function createCustomerCase() {
-  return insert('curriculum_customer_cases', { case_date: today() });
+export async function createCustomerCase(fields: Record<string, unknown>) {
+  return insert('curriculum_customer_cases', fields, CASE_SPEC);
 }
 export async function updateCustomerCase(id: string, patch: Record<string, unknown>) {
   return update('curriculum_customer_cases', id, patch, CASE_SPEC);
@@ -58,8 +60,8 @@ export async function deleteCustomerCase(id: string) {
 }
 
 // Instructor requests
-export async function createRequest() {
-  return insert('curriculum_instructor_requests', { date_submitted: today() });
+export async function createRequest(fields: Record<string, unknown>) {
+  return insert('curriculum_instructor_requests', fields, REQUEST_SPEC);
 }
 export async function updateRequest(id: string, patch: Record<string, unknown>) {
   return update('curriculum_instructor_requests', id, patch, REQUEST_SPEC);

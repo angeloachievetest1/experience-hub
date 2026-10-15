@@ -1,10 +1,12 @@
 'use client';
 
 import { useMemo } from 'react';
-import { deleteMentorCase, updateMentorCase } from '@/app/(app)/mentor/actions';
+import { createMentorCase, deleteMentorCase, updateMentorCase } from '@/app/(app)/mentor/actions';
 import { RecordDrawer, type FieldGroup } from '@/components/records/RecordDrawer';
 import { SectionShell, useShell } from '@/components/records/SectionShell';
-import { MENTOR_COLOR, MENTOR_VALIDITY, QUARTERS, yearQuarterOf, type MentorData } from '@/lib/mentor/types';
+import { useNewRecord } from '@/components/records/useNewRecord';
+import { MENTOR_COLOR, MENTOR_VALIDITY, QUARTERS, yearQuarterOf, type MentorCase, type MentorData } from '@/lib/mentor/types';
+import { localToday } from '@/lib/qa/stats';
 import { customerLabel } from '@/lib/records/labels';
 
 export function MentorShell({ data, title, subtitle, children }: {
@@ -37,8 +39,14 @@ export function useMentor() {
 }
 
 function MentorDrawer({ id, onClose }: { id: string; onClose: () => void }) {
-  const { data, adding } = useMentor();
-  const c = data.cases.find((x) => x.id === id) ?? null;
+  const { data } = useMentor();
+  // "Add case": a blank case, saved only by its Save case button.
+  const today = localToday();
+  const record = useNewRecord<MentorCase>({
+    id, rows: data.cases, create: createMentorCase, update: updateMentorCase,
+    start: { case_date: today, ...yearQuarterOf(today), status: 'New', field_notes: {} },
+  });
+  const c = record.record;
   const o = (k: string) => data.options[k] ?? [];
 
   const groups: FieldGroup[] = [
@@ -82,15 +90,15 @@ function MentorDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   return (
     <RecordDrawer
       record={c}
-      loadingText={adding ? 'Creating the new case…' : undefined}
       kindLabel="Mentor complaint"
       color={MENTOR_COLOR}
-      title={c ? customerLabel(c) : ''}
+      title={record.isNew ? 'New case' : c ? customerLabel(c) : ''}
       groups={groups}
       canEdit={data.canEdit}
       readOnlyText="Read only. You can’t edit Mentor cases."
-      onSave={(patch) => updateMentorCase(id, patch)}
-      onDelete={() => deleteMentorCase(id)}
+      onSave={record.save}
+      onDelete={record.remove(deleteMentorCase)}
+      {...record.drawer}
       deleteQuestion={c ? `Delete the case for ${customerLabel(c)}?` : ''}
       onClose={onClose}
       // Changing the date updates year and quarter to match.
